@@ -3,8 +3,8 @@
 ## STATEMENT OF WORK
 LikeHomeis a web application (or mobile application) whichshares catalog of ideas.  LikeHomeis a mini clone of the very successful product hotels.com.
 
-## SCOPE OF WORKThe 
-Scope of this project is to design and develop LikeHome, which can manifest as an iOS, Android, Windows application. LikeHome should minimally provide the following functions:
+## SCOPE OF WORK
+The scope of this project is to design and develop LikeHome, which can manifest as an iOS, Android, Windows application. LikeHome should minimally provide the following functions:
 * Authentication (login/sign up)
 * Search oFilter resultsoSort results
 * ReservationoNewoChangeoCanceloNo multiple books in the same date under the same ID. 
