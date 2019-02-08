@@ -1,6 +1,6 @@
 # Bunker
 
-![alt text][https://drive.google.com/a/sjsu.edu/file/d/1bMyIn-7L8JW2-mIPNFnoGLZuqRUfhXi8/view?usp=sharing]
+![image](https://drive.google.com/uc?export=view&id=1bMyIn-7L8JW2-mIPNFnoGLZuqRUfhXi8)
 
 ### Statement of Work
 LikeHome is a web application (or mobile application) which shares catalog of ideas.  LikeHomeis a mini clone of the very successful product hotels.com.
