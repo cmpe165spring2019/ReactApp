@@ -44,7 +44,7 @@ class Firebase {
       this.auth.firebasefunctiontoSignUpwithGoogle(parameter);
   *
    */
-  
+
 
    /*
    * @todo Google Single Sign-In
@@ -57,7 +57,7 @@ class Firebase {
     */
 
     /*
-    * @todo Google Single Sign-up
+    * @todo Google Single Log Out
     * @body Log user from Google account function
     * DueDay: Sunday 2/17/2019
     * the format is
