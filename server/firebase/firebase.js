@@ -12,6 +12,8 @@ const config = {
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
 };
 
+const config =
+  process.env.NODE_ENV === config;
 
 class Firebase {
   constructor() {
@@ -47,7 +49,7 @@ class Firebase {
     */
 
     /*
-    * @todo Google Single Sign-up
+    * @todo Google Single Log Out
     * @body Log user from Google account function
     * DueDay: Sunday 2/17/2019
     * the format is
