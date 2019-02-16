@@ -1,0 +1,8 @@
+{
+  "name": "se165-backend",
+  "version": "1.0.0",
+  "dependencies": {},
+  "devDependencies": {
+    "firebase": "^5.8.3"
+  }
+}
