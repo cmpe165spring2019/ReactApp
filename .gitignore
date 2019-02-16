@@ -115,3 +115,4 @@ package-lock.json
 .idea/modules.xml
 .idea/se165-backend.iml
 .idea/ReactApp.iml
+.env
