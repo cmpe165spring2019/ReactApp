@@ -25,8 +25,9 @@ class Firebase {
   //TODO Auth API
 
   /*
-  * @todo Google Single Sign-up
+  * @todo Google Single Sign-up/Sign-in
   * @body Create user with Google account function
+  * *important* use Popup since Redirect have a security problem with browser
   * DueDay: Sunday 2/17/2019
   * the format is
   *   apiFunction = (parameter) =>
@@ -34,16 +35,6 @@ class Firebase {
   *
    */
 
-
-   /*
-   * @todo Google Single Sign-In
-   * @body Log In user with Google account function
-   * DueDay: Sunday 2/17/2019
-   * the format is
-   *   apiFunction = (parameter) =>
-       this.auth.firebasefunctiontoSignUpwithGoogle(parameter);
-   *
-    */
 
     /*
     * @todo Google Single Log Out
