@@ -23,6 +23,8 @@ const devConfig = {
 const config =
   process.env.NODE_ENV === 'production' ? prodConfig : devConfig;
 
+const provider = new firebase.auth.GoogleAuthProvider();
+
 class Firebase {
   constructor() {
     app.initializeApp(config);
@@ -32,40 +34,32 @@ class Firebase {
     this.database = app.database();
   }
 
-
   //TODO Auth API
 
-  /*
-  * @todo Google Single Sign-up
-  * @body Create user with Google account function
-  * DueDay: Sunday 2/17/2019
-  * the format is
-  *   apiFunction = (parameter) =>
-      this.auth.firebasefunctiontoSignUpwithGoogle(parameter);
-  *
-   */
+  //Google Signup
+  
 
+  //Google SignIn
+  googleSignIn= () => {
+    this.auth().signInWithPopup(provider).then(result => {
+      console.log(result);
+      console.log("Google Account Linked");
+    }).catch(err => {
+      console.log(err);
+      console.log("Failed to link.");
+    });
+  }
 
-   /*
-   * @todo Google Single Sign-In
-   * @body Log In user with Google account function
-   * DueDay: Sunday 2/17/2019
-   * the format is
-   *   apiFunction = (parameter) =>
-       this.auth.firebasefunctiontoSignUpwithGoogle(parameter);
-   *
-    */
-
-    /*
-    * @todo Google Single Log Out
-    * @body Log user from Google account function
-    * DueDay: Sunday 2/17/2019
-    * the format is
-    *   apiFunction = (parameter) =>
-        this.auth.firebasefunctiontoSignUpwithGoogle(parameter);
-    *
-     */
-
+  //Google Logout
+  googleSignOut = () => {
+    this.auth().signOut().then(() => {
+      // Sign-out successful.
+      console.log("Successfully Logout.");
+    }).catch(error => {
+      // An error happened.
+      console.log("Failed to Logout");
+    });
+  }
   // User API
 
 }
