@@ -23,8 +23,6 @@ const devConfig = {
 const config =
   process.env.NODE_ENV === 'production' ? prodConfig : devConfig;
 
-const provider = new firebase.auth.GoogleAuthProvider();
-
 class Firebase {
   constructor() {
     app.initializeApp(config);
@@ -32,12 +30,11 @@ class Firebase {
     this.auth = app.auth();
     //Initialize firebase database
     this.database = app.database();
+    //Initialize Google Authentication
+    this.provider = app.auth.GoogleAuthProvider();
   }
 
   //TODO Auth API
-
-  //Google Signup
-  
 
   //Google SignIn
   googleSignIn= () => {
