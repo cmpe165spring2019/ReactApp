@@ -19,33 +19,35 @@ class Firebase {
     this.auth = app.auth();
     //Initialize firebase database
     this.database = app.database();
+    //Initialize Google Authentication
+    this.provider = app.auth.GoogleAuthProvider();
   }
-
 
   //TODO Auth API
 
-  /*
-  * @todo Google Single Sign-up/Sign-in
-  * @body Create user with Google account function
-  * *important* use Popup since Redirect have a security problem with browser
-  * DueDay: Sunday 2/17/2019
-  * the format is
-  *   apiFunction = (parameter) =>
-      this.auth.firebasefunctiontoSignUpwithGoogle(parameter);
-  *
-   */
+
+  //Google SignIn
+  googleSignIn= () => {
+    this.auth().signInWithPopup(provider).then(result => {
+      console.log(result);
+      console.log("Google Account Linked");
+    }).catch(err => {
+      console.log(err);
+      console.log("Failed to link.");
+    });
+  }
 
 
-    /*
-    * @todo Google Single Log Out
-    * @body Log user from Google account function
-    * DueDay: Sunday 2/17/2019
-    * the format is
-    *   apiFunction = (parameter) =>
-        this.auth.firebasefunctiontoSignUpwithGoogle(parameter);
-    *
-     */
-
+  //Google Logout
+  googleSignOut = () => {
+    this.auth().signOut().then(() => {
+      // Sign-out successful.
+      console.log("Successfully Logout.");
+    }).catch(error => {
+      // An error happened.
+      console.log("Failed to Logout");
+    });
+  }
   // User API
 
 }
