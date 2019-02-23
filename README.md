@@ -37,12 +37,9 @@ For team members of this project, please run the following commands:
 
 ```npm start```
 
-Don't forget to add this repo to remote as upstream
 
-```git remote add upstream https://github.com/cmpe165spring2019/ReactApp.git```
+To keep updated and get the latest commits from master
 
-To keep updated and get the latest commits from upstream master
+```git fetch origin```
 
-```git fetch upstream```
-
-```git rebase upstream/master```
+```git rebase origin/master```
