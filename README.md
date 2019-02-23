@@ -27,9 +27,9 @@ LikeHome will have user interfaces that must look the same on iOS, Android, Wind
 LikeHome is an easy to use application. Usability good GUI design and user-friendness should be the design focuses.
 
 ## Setup
-For team members of this project, please fork your own repository and run the following commands:
+For team members of this project, please run the following commands:
 
-```git clone https://github.com/[your user name]/ReactApp.git```
+```git clone https://github.com/cmpe165spring2019/ReactApp.git```
 
 ```cd bunker```
 
