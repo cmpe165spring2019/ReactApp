@@ -111,3 +111,7 @@ Temporary Items
 package-lock.json
 .idea
 .env
+server/firebase/config.js
+yarn.lock
+bunker/src/server/firebase/config.js
+bunker/yarn.lock
