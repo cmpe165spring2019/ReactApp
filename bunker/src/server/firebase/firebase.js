@@ -42,7 +42,45 @@ class Firebase {
     });
   }
   // User API
+  //add data
+  addData(data, table, fn) {
+    if(fn){
+      this.collection(table).doc(data.id).set(data)
+      .then(() => {
+        console.log("New User was successfully added");
+        return true;
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
+        return false;
+      })
+    }
+    else {
+      console.log("Failed to add data");
+      return false;
+    } 
+  }
 
+  //add user
+  addUser(data) {
+    if(data.hasOwnProperty("first_name")&&data.hasOwnProperty("last_name")&&data.hasOwnProperty("email"))
+      return true;
+    else
+      return false;
+  }
+
+  //edit user data
+  editUser(user_id, data) {
+    this.collection("users").doc(user_id).update(data)
+      .then(() => {
+        console.log("User data was successfully changed");
+        return true;
+      })
+      .catch((error) => {
+        console.error("Error editing document: ", error);
+        return false;
+      })
+  }
 }
 
 export default Firebase;
