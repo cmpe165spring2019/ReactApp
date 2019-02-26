@@ -111,3 +111,4 @@ Temporary Items
 package-lock.json
 .idea
 .env
+.DS_Store
