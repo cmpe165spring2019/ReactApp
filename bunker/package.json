@@ -1,8 +1,10 @@
 {
-  "name": "bunker",
+  "name": "login-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^4.1.1",
+    "firebase": "^5.8.4",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
     "react-scripts": "2.1.5"
