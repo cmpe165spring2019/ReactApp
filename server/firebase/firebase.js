@@ -48,11 +48,12 @@ class Firebase {
       console.log("Failed to Logout");
     });
   }
+  
   // User API
   //add data
   addData(data, table, fn) {
     if(fn){
-      this.collection(table).doc(data.id).set(data)
+      this.collection(table).add(data)
       .then(() => {
         console.log("New User was successfully added");
         return true;
