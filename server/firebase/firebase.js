@@ -93,11 +93,24 @@ class Firebase {
   //add reservation data
   addReservation(data) {
     if(data.hasOwnProperty("user_id")&&data.hasOwnProperty("hotel_id")&&data.hasOwnProperty("room_id")
-    &&data.hasOwnProperty("room_id")&&data.hasOwnProperty("price")&&data.hasOwnProperty("star_date")
+    &&data.hasOwnProperty("room_id")&&data.hasOwnProperty("price")&&data.hasOwnProperty("start_date")
     &&data.hasOwnProperty("end_date"))
       return true;
     else
       return false;
+  }
+
+  //edit reservation data
+  editReservation(reservation_id, data) {
+    this.collection("reservation").doc(reservation_id).update(data)
+      .then(() => {
+        console.log("Reservation data was successfully changed");
+        return true;
+      })
+      .catch((error) => {
+        console.error("Error editing document: ", error);
+        return false;
+      })
   }
 }
 
