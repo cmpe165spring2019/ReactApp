@@ -5,8 +5,8 @@ import {
   AuthUserContext,
   withAuthorization,
   withEmailVerification,
-} from '../Session';
-import { withFirebase } from '../Firebase';
+} from '../../server/Session';
+import { withFirebase } from '../../server/Firebase';
 import { PasswordForgetForm } from '../PasswordForget';
 import PasswordChangeForm from '../PasswordChange';
 
