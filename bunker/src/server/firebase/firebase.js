@@ -3,8 +3,8 @@ import 'firebase/auth';
 import 'firebase/database';
 import Config from './config';
 
-
 const config = Config;
+
 class Firebase {
   constructor() {
     app.initializeApp(config);
@@ -21,7 +21,7 @@ class Firebase {
 
   //Google SignIn
   googleSignIn= () => {
-    this.auth().signInWithPopup(this.provider).then(result => {
+    this.auth().signInWithPopup(provider).then(result => {
       console.log(result);
       console.log("Google Account Linked");
     }).catch(err => {
@@ -41,11 +41,12 @@ class Firebase {
       console.log("Failed to Logout");
     });
   }
+  
   // User API
   //add data
   addData(data, table, fn) {
     if(fn){
-      this.collection(table).doc(data.id).set(data)
+      this.collection(table).add(data)
       .then(() => {
         console.log("New User was successfully added");
         return true;
@@ -74,6 +75,28 @@ class Firebase {
     this.collection("users").doc(user_id).update(data)
       .then(() => {
         console.log("User data was successfully changed");
+        return true;
+      })
+      .catch((error) => {
+        console.error("Error editing document: ", error);
+        return false;
+      })
+  }
+  
+  //add reservation data
+  addReservation(data) {
+    if(data.hasOwnProperty("user_id")&&data.hasOwnProperty("hotel_id")&&data.hasOwnProperty("room_id")
+    &&data.hasOwnProperty("price")&&data.hasOwnProperty("start_date")&&data.hasOwnProperty("end_date"))
+      return true;
+    else
+      return false;
+  }
+
+  //edit reservation data
+  editReservation(reservation_id, data) {
+    this.collection("reservation").doc(reservation_id).update(data)
+      .then(() => {
+        console.log("Reservation data was successfully changed");
         return true;
       })
       .catch((error) => {
