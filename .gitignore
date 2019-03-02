@@ -114,3 +114,4 @@ package-lock.json
 .DS_Store
 bunker/src/components/Firebase/config.js
 bunker/yarn.lock
+bunker/src/server/firebase/config.js
