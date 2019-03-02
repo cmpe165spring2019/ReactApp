@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { compose } from 'recompose';
 
-import { withAuthorization, withEmailVerification } from '../Session';
-import { withFirebase } from '../Firebase';
+import { withAuthorization, withEmailVerification } from '../../server/Session';
+import { withFirebase } from '../../server/Firebase';
 
 const HomePage = () => 
   (<div>
