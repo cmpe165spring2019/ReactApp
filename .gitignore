@@ -112,3 +112,4 @@ package-lock.json
 .idea
 .env
 .DS_Store
+bunker/src/components/Firebase/config.js
