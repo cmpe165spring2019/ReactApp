@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-import App from './components/App';
+import App from './App';
 import Firebase, { FirebaseContext } from './server/Firebase';
 
 import 'semantic-ui-css/semantic.min.css';
