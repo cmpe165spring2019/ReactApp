@@ -7,8 +7,8 @@ import {
   withEmailVerification,
 } from '../../server/Session';
 import { withFirebase } from '../../server/Firebase';
-import { PasswordForgetForm } from '../PasswordForget';
-import PasswordChangeForm from '../PasswordChange';
+import { PasswordForgetForm } from '../PasswordForget/PasswordForget';
+import PasswordChangeForm from '../PasswordChange/PasswordChange';
 
 const SIGN_IN_METHODS = [
   {
