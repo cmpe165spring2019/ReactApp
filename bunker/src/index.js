@@ -7,6 +7,8 @@ import * as serviceWorker from './serviceWorker';
 import App from './components/App';
 import Firebase, { FirebaseContext } from './server/Firebase';
 
+import 'semantic-ui-css/semantic.min.css';
+
 ReactDOM.render(
   <FirebaseContext.Provider value={new Firebase()}>
     <App />
