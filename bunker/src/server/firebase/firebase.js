@@ -50,7 +50,7 @@ class Firebase {
       this.database.collection(table).add(data)
       .then((docRef) => {
         console.log("New User was successfully added");
-        this.database.collection(table).doc(docRef.id).update({ref_id: docRef.id})
+        this.database.collection(table).doc(docRef.id).update({ref_id: docRef.id})  //Add reference id for thsi document
           .then(() => console.log("Reference ID was added"))
           .catch((error) => console.log("Reference ID was not added"));
         return true;
@@ -64,6 +64,17 @@ class Firebase {
       console.log("Failed to add data");
       return false;
     } 
+  }
+
+  //Adds reservation_id to users collection
+  updateUserReservations(user_id, reservation_id) {
+    this.database.collection("users").doc(user_id).get().then((doc) => {
+        let new_res = doc.data().reservations;  //Reference to reservation array in users collection
+        new_res.push(reservation_id); //add new reservation id
+        this.database.collection("users").doc(user_id).update({reservations: new_res}) //update reservation array in collection
+          .then(() => console.log("Successfully updated user reservation"))
+          .catch((error) => console.error("Error updating reservations: ", error));
+    })
   }
 
   //add user
