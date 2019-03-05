@@ -2,6 +2,7 @@ import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/database';
+
 import Config from './config';
 
 const config = Config;
@@ -14,15 +15,14 @@ class Firebase {
     //Initialize firebase database
     this.database = app.firestore();
     //Initialize Google Authentication
-    this.provider = new app.auth.GoogleAuthProvider();
+    this.googleProvider = new app.auth.GoogleAuthProvider();
   }
 
-  //TODO Auth API
-
-
+  //Auth API
   //Google SignIn
-  googleSignIn= () => {
-    this.auth.signInWithPopup(this.provider).then(result => {
+  googleSignIn= () => 
+  {
+    this.auth.signInWithPopup(this.googleProvider).then(result => {
       console.log(result);
       console.log("Google Account Linked");
     }).catch(err => {
@@ -31,26 +31,48 @@ class Firebase {
     });
   }
 
+  signIn = (email, password) => 
+  {
+    this.auth.signInWithEmailAndPassword(email, password)
+      .catch(error => {
+       console.log("Error: "+error.code+" "+error.message);
+      });
+  }
 
   //Google Logout
-  googleSignOut = () => {
+  signOut = () => 
+  {
     this.auth.signOut().then(() => {
-      // Sign-out successful.
       console.log("Successfully Logout.");
     }).catch(error => {
-      // An error happened.
       console.log("Failed to Logout");
     });
+  }
+
+  createAccount = (email, password, data) => 
+  {
+    this.auth.createUserWithEmailAndPassword(email, password)
+      .then(authUser => {
+        data.user_id = authUser.user.uid;
+        this.database.collection('users').doc(data.user_id).set(data)
+          .then(console.log("Successfully created account."))
+          .catch(error => console.log("Failed to creat account "+error));
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
   
   // User API
   //add data
-  addData(data, table, fn) {
+  addData = (data, table, fn) => 
+  {
     if(fn){
       this.database.collection(table).add(data)
+      //Add reference id for this document
       .then((docRef) => {
         console.log("New User was successfully added");
-        this.database.collection(table).doc(docRef.id).update({ref_id: docRef.id})  //Add reference id for thsi document
+        this.database.collection(table).doc(docRef.id).update({ref_id: docRef.id})
           .then(() => console.log("Reference ID was added"))
           .catch((error) => console.log("Reference ID was not added"));
         return true;
@@ -61,13 +83,14 @@ class Firebase {
       })
     }
     else {
-      console.log("Failed to add data");
+      console.log("Data is missing a field");
       return false;
     } 
   }
 
   //Adds reservation_id to users collection
-  updateUserReservations(user_id, reservation_id) {
+  updateUserReservations = (user_id, reservation_id) => 
+  {
     this.database.collection("users").doc(user_id).get().then((doc) => {
         let new_res = doc.data().reservations;  //Reference to reservation array in users collection
         new_res.push(reservation_id); //add new reservation id
@@ -78,7 +101,8 @@ class Firebase {
   }
 
   //add user
-  addUser(data) {
+  addUser = (data) => 
+  {
     if(data.hasOwnProperty("first_name")&&data.hasOwnProperty("last_name")&&data.hasOwnProperty("email"))
       return true;
     else
@@ -86,7 +110,8 @@ class Firebase {
   }
 
   //edit user data
-  editUser(user_id, data) {
+  editUser = (user_id, data) => 
+  {
     this.database.collection("users").doc(user_id).update(data)
       .then(() => {
         console.log("User data was successfully changed");
@@ -99,7 +124,8 @@ class Firebase {
   }
   
   //add reservation data
-  addReservation(data) {
+  addReservation = (data) => 
+  {
     if(data.hasOwnProperty("user_id")&&data.hasOwnProperty("hotel_id")&&data.hasOwnProperty("room_id")
     &&data.hasOwnProperty("price")&&data.hasOwnProperty("start_date")&&data.hasOwnProperty("end_date"))
       return true;
@@ -108,7 +134,8 @@ class Firebase {
   }
 
   //edit reservation data
-  editReservation(reservation_id, data) {
+  editReservation = (reservation_id, data) => 
+  {
     this.database.collection("reservation").doc(reservation_id).update(data)
       .then(() => {
         console.log("Reservation data was successfully changed");
