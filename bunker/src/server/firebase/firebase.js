@@ -89,11 +89,36 @@ class Firebase {
   }
   
   //add reservation data
-  addReservation = (data) => 
+  addReservation = (user_id,data) => 
   {
-    if(data.hasOwnProperty("user_id")&&data.hasOwnProperty("hotel_id")&&data.hasOwnProperty("room_id")
-    &&data.hasOwnProperty("price")&&data.hasOwnProperty("start_date")&&data.hasOwnProperty("end_date"))
+    //Check that data has valid properties
+    if(data.hasOwnProperty("user_id")&&data.hasOwnProperty("hotel_id")&&data.hasOwnProperty("room_id")&&data.hasOwnProperty("price")&&data.hasOwnProperty("start_date")&&data.hasOwnProperty("end_date"))
+    {
+      //Create new reservation document
+      this.database.collection('reservations').add(data)
+        .then((res_doc) => {
+          //Add reservation_id to reservation document
+          data.reservation_id = res_doc.id;
+          this.editReservation(res_doc.id, data);
+          //get user's document
+          this.database.collection("users").doc(user_id).get()
+          .then((user_doc) => {
+            //add reservation to user's current reservation array
+            let new_res = user_doc.data().reservations;  //Reference to reservation array
+            new_res.push(data.reservation_id);  //Adding new reservation_id
+            this.editUser(user_id, {reservations: new_res});
+          })
+          .catch(err => {
+            console.log("Failed to get user document.");
+            return false;
+          });
+        })
+        .catch(err => {
+          console.log("Failed to add new reservation. "+err);
+          return false;
+        });
       return true;
+    }   
     else
       return false;
   }
@@ -101,7 +126,7 @@ class Firebase {
   //edit reservation data
   editReservation = (reservation_id, data) => 
   {
-    this.database.collection("reservation").doc(reservation_id).update(data)
+    this.database.collection("reservations").doc(reservation_id).update(data)
       .then(() => {
         console.log("Reservation data was successfully changed");
         return true;
