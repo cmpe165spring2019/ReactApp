@@ -63,7 +63,7 @@ class Firebase {
       });
   }
   
-  // User API
+  // ******User API**********
   //add user
   addUser = (data) => 
   {
@@ -79,16 +79,19 @@ class Firebase {
   editUser = (user_id, data) => 
   {
     this.database.collection("users").doc(user_id).update(data)
-      .then(() => {
-        console.log("User data was successfully changed");
-        return true;
-      })
-      .catch((error) => {
-        console.error("Error editing document: ", error);
-        return false;
-      })
+      .then(() => {console.log("User data was successfully changed"); return true;})
+      .catch((error) => {console.error("Error editing document: ", error); return false;})
+  }
+
+  //Delete user account from database
+  deleteUser = (user_id) => 
+  {
+    this.database.collection('users').doc(user_id).delete()
+      .then(() => {console.log("Successfully deleted user account."); return true;})
+      .catch(error => {console.log("Failed to delete user account "+error); return false;});
   }
   
+  //*****Reservation API*********
   //add reservation data
   addReservation = (user_id,data) => 
   {
@@ -109,15 +112,9 @@ class Firebase {
             new_res.push(data.reservation_id);  //Adding new reservation_id
             this.editUser(user_id, {reservations: new_res});
           })
-          .catch(err => {
-            console.log("Failed to get user document.");
-            return false;
-          });
+          .catch(err => {console.log("Failed to get user document."); return false;});
         })
-        .catch(err => {
-          console.log("Failed to add new reservation. "+err);
-          return false;
-        });
+        .catch(err => {console.log("Failed to add new reservation. "+err); return false;});
       return true;
     }   
     else
@@ -128,14 +125,8 @@ class Firebase {
   editReservation = (reservation_id, data) => 
   {
     this.database.collection("reservations").doc(reservation_id).update(data)
-      .then(() => {
-        console.log("Reservation data was successfully changed");
-        return true;
-      })
-      .catch((error) => {
-        console.error("Error editing document: ", error);
-        return false;
-      })
+      .then(() => {console.log("Reservation data was successfully changed"); return true;})
+      .catch((error) => {console.error("Error editing document: ", error); return false;})
   }
 
   //Delete reservation
@@ -159,9 +150,10 @@ class Firebase {
               return false;
             }
           })
-          .catch(err => console.log("Failed to delete reservation from user. "+ err));
+          .catch(err => {console.log("Failed to delete reservation from user. "+ err); return false;});
       })
-      .catch(err => console.log("Failed to delete reservation from reservation collection. "+err));
+      .catch(err => {console.log("Failed to delete reservation from reservation collection. "+err); return false;});
+    return true;
   }
 }
 
