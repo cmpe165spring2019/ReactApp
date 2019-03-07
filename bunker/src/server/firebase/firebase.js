@@ -64,29 +64,6 @@ class Firebase {
   }
   
   // User API
-  //add data
-  addData = (data, table, fn) => 
-  {
-    if(fn){
-      this.database.collection(table).add(data)
-      //Add reference id for this document
-      .then((docRef) => {
-        console.log("New User was successfully added");
-        this.database.collection(table).doc(docRef.id).update({ref_id: docRef.id})
-          .then(() => console.log("Reference ID was added"))
-          .catch((error) => console.log("Reference ID was not added"));
-        return true;
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error);
-        return false;
-      })
-    }
-    else {
-      console.log("Data is missing a field");
-      return false;
-    } 
-  }
 
   //Adds reservation_id to users collection
   updateUserReservations = (user_id, reservation_id) => 
