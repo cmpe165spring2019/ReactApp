@@ -65,18 +65,6 @@ class Firebase {
   
   // User API
 
-  //Adds reservation_id to users collection
-  updateUserReservations = (user_id, reservation_id) => 
-  {
-    this.database.collection("users").doc(user_id).get().then((doc) => {
-        let new_res = doc.data().reservations;  //Reference to reservation array in users collection
-        new_res.push(reservation_id); //add new reservation id
-        this.database.collection("users").doc(user_id).update({reservations: new_res}) //update reservation array in collection
-          .then(() => console.log("Successfully updated user reservation"))
-          .catch((error) => console.error("Error updating reservations: ", error));
-    })
-  }
-
   //add user
   addUser = (data) => 
   {
