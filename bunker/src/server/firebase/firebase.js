@@ -64,12 +64,13 @@ class Firebase {
   }
   
   // User API
-
   //add user
   addUser = (data) => 
   {
-    if(data.hasOwnProperty("first_name")&&data.hasOwnProperty("last_name")&&data.hasOwnProperty("email"))
+    if(data.hasOwnProperty("first_name")&&data.hasOwnProperty("last_name")&&data.hasOwnProperty("email")){
+      
       return true;
+    }  
     else
       return false;
   }
@@ -135,6 +136,32 @@ class Firebase {
         console.error("Error editing document: ", error);
         return false;
       })
+  }
+
+  //Delete reservation
+  deleteReservation = (reservation_id, user_id) =>
+  {
+    //delete from reservations collection
+    this.database.collection('reservations').doc(reservation_id).delete()
+      .then(() => {
+        console.log("Successfully deleted reservation from reservation collection.")
+        //delete reservation from users reservations
+        this.database.collection('users').doc(user_id).get()
+          .then((doc) => {
+            let user_res = doc.data().reservations; //array of users reservation_id's
+            //Update user's reservations
+            if(user_res.indexOf(reservation_id)>=0){ 
+              user_res.splice(user_res.indexOf(reservation_id),1); //remove reservation_id from array
+              this.editUser(user_id, {reservations: user_res});
+            }
+            else{
+              console.log("Reservation was not present.");
+              return false;
+            }
+          })
+          .catch(err => console.log("Failed to delete reservation from user. "+ err));
+      })
+      .catch(err => console.log("Failed to delete reservation from reservation collection. "+err));
   }
 }
 
