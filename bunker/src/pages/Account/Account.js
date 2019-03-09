@@ -7,7 +7,6 @@ import {
   withEmailVerification,
 } from '../../server/Session';
 import { withFirebase } from '../../server/Firebase';
-import { PasswordForgetForm } from '../PasswordForget/PasswordForget';
 import PasswordChangeForm from '../PasswordChange/PasswordChange';
 
 const SIGN_IN_METHODS = [
@@ -34,7 +33,6 @@ const AccountPage = () => (
     {authUser => (
       <div>
         <h1>Account: {authUser.email}</h1>
-        <PasswordForgetForm />
         <PasswordChangeForm />
         <LoginManagement authUser={authUser} />
       </div>

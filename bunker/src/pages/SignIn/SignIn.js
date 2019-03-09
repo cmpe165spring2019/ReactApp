@@ -7,15 +7,24 @@ import { PasswordForgetLink } from '../PasswordForget/PasswordForget';
 import { withFirebase } from '../../server/Firebase';
 import * as ROUTES from '../../constants/routes';
 
+import {
+  Button,
+  Form,
+  Grid,
+  Header,
+  Segment,
+  Message,
+} from 'semantic-ui-react';
+
 const SignInPage = () => (
   <div>
-    <h1>SignIn</h1>
+    <h1></h1>
     <SignInForm />
     <SignInGoogle />
     <SignInFacebook />
     <SignInTwitter />
-    <PasswordForgetLink />
-    <SignUpLink />
+
+
   </div>
 );
 
@@ -68,27 +77,49 @@ class SignInFormBase extends Component {
     const isInvalid = password === '' || email === '';
 
     return (
-      <form onSubmit={this.onSubmit}>
-        <input
+      <Grid centered columns={2}>
+       <Grid.Column>
+          <Header as="h2" textAlign="center">
+            <h1>SignIn</h1>
+            </Header>
+            <Segment>
+
+      <Form size="large" onSubmit={this.onSubmit}>
+        <Form.Input
+          fluid
+          icon="user"
+          iconPosition="left"
           name="email"
           value={email}
           onChange={this.onChange}
           type="text"
           placeholder="Email Address"
         />
-        <input
+        <Form.Input
+          fluid
+          icon="lock"
+          iconPosition="left"
           name="password"
           value={password}
           onChange={this.onChange}
           type="password"
           placeholder="Password"
         />
-        <button disabled={isInvalid} type="submit">
+        <Button color="blue" fluid size="large" disabled={isInvalid} type="submit">
           Sign In
-        </button>
+        </Button>
+        </Form>
+      </Segment>
+         <Message>
 
-        {error && <p>{error.message}</p>}
-      </form>
+      <p>  Don't have an Account?
+        <a href="/signup"> Sign Up </a>   <PasswordForgetLink /></p>
+
+      </Message>
+
+          {error && <p>{error.message}</p>}
+      </Grid.Column>
+      </Grid>
     );
   }
 }
@@ -130,11 +161,18 @@ class SignInGoogleBase extends Component {
     const { error } = this.state;
 
     return (
+      <Grid centered columns={4.5}>
       <form onSubmit={this.onSubmit}>
-        <button type="submit">Sign In with Google</button>
+
+          <b>OR</b>
+<p></p>
+        <Button color="pink" fluid size="large" type="submit">
+          Sign In with Google
+        </Button>
 
         {error && <p>{error.message}</p>}
       </form>
+      </Grid>
     );
   }
 }
@@ -176,11 +214,18 @@ class SignInFacebookBase extends Component {
     const { error } = this.state;
 
     return (
+
+
+      <Grid centered columns={5}>
       <form onSubmit={this.onSubmit}>
-        <button type="submit">Sign In with Facebook</button>
+            <p> </p>
+        <Button color="olive" fluid size="large" type="submit">
+          Sign In with Facebook
+        </Button>
 
         {error && <p>{error.message}</p>}
       </form>
+      </Grid>
     );
   }
 }
@@ -222,11 +267,17 @@ class SignInTwitterBase extends Component {
     const { error } = this.state;
 
     return (
+      <Grid centered columns={5}>
       <form onSubmit={this.onSubmit}>
-        <button type="submit">Sign In with Twitter</button>
+
+                 <p> </p>
+        <Button color="teal" fluid size="large" type="submit">
+          Sign In with Twitter
+        </Button>
 
         {error && <p>{error.message}</p>}
       </form>
+      </Grid>
     );
   }
 }
