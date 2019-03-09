@@ -6,11 +6,23 @@ import { withFirebase } from '../../server/Firebase';
 import * as ROUTES from '../../constants/routes';
 import * as ROLES from '../../constants/roles';
 
+import {
+  Button,
+  Form,
+  Grid,
+  Header,
+  Segment,
+  Message,
+} from 'semantic-ui-react';
+
 const SignUpPage = () => (
+    <Grid centered columns={5}>
   <div>
-    <h1>SignUp</h1>
+  <p>       </p>
+        <h1><i>Sign Up to Join Us</i></h1>
     <SignUpForm />
   </div>
+  </Grid>
 );
 
 const INITIAL_STATE = {
@@ -100,36 +112,46 @@ class SignUpFormBase extends Component {
       username === '';
 
     return (
-      <form onSubmit={this.onSubmit}>
+      <Grid centered columns={5}>
+      <form class="ui form" onSubmit={this.onSubmit}>
+        <div class="field"><label><p></p><h3>Full Name</h3></label>
         <input
           name="username"
           value={username}
           onChange={this.onChange}
           type="text"
-          placeholder="Full Name"
-        />
+          placeholder="Donald_Duck"
+        /></div>
+
+        <div class="field"><label><h3>Email</h3></label>
         <input
           name="email"
           value={email}
           onChange={this.onChange}
           type="text"
-          placeholder="Email Address"
-        />
+          placeholder="lady@gaga.com"
+        /></div>
+
+        <div class="field"><label><h3>Password</h3></label>
         <input
           name="passwordOne"
           value={passwordOne}
           onChange={this.onChange}
           type="password"
-          placeholder="Password"
-        />
+          placeholder="123abc"
+        /></div>
+
+        <div class="field"><label><h3>Confirm Password</h3></label>
         <input
           name="passwordTwo"
           value={passwordTwo}
           onChange={this.onChange}
           type="password"
-          placeholder="Confirm Password"
-        />
-        <label>
+          placeholder="password again please"
+        /></div>
+
+        <div class="field">
+      <h4>  <label>
           Admin:
           <input
             name="isAdmin"
@@ -137,13 +159,16 @@ class SignUpFormBase extends Component {
             checked={isAdmin}
             onChange={this.onChangeCheckbox}
           />
-        </label>
-        <button disabled={isInvalid} type="submit">
-          Sign Up
-        </button>
+        </label></h4></div>
+
+        <Button color="green" fluid size="large" type="submit" disabled={isInvalid} >
+          <h2><i>Welcome Bunkerer!</i></h2>
+        </Button>
+
 
         {error && <p>{error.message}</p>}
       </form>
+      </Grid>
     );
   }
 }

@@ -4,7 +4,7 @@ import { compose } from 'recompose';
 import { withAuthorization, withEmailVerification } from '../../server/Session';
 import { withFirebase } from '../../server/Firebase';
 
-const HomePage = () => 
+const HomePage = () =>
   (<div>
 
     </div>
