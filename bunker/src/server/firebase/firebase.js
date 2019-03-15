@@ -80,6 +80,20 @@ class Firebase {
 			});
 	};
 
+    search = (location, callback) =>
+    {
+        this.database.collection('locations').doc(location).once('value')
+            .then( data => {
+                console.log('Successfully fetched rooms from ' + location);
+                callback(data);
+                return true;})
+
+            .catch( error => {
+                console.log("Failed to get hotels " + error);
+                return false;
+            })
+    };
+
 	//*****Reservation API*********
 	//add reservation data
 	addReservation = (user_id, data) => {
