@@ -1,11 +1,41 @@
 import React from 'react';
 import Background from '../../Image/LandingBackground.jpg';
 import BunkerImage from '../../Image/bunker.png';
-import { Button,Form} from 'semantic-ui-react';
+import {Form} from 'semantic-ui-react';
 
 
+import * as ROUTES from '../../constants/routes';
 
-const Landing = () => (
+
+class Landing extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            location: "",
+        }
+    }
+    onClick = () => {
+        const test = [{
+            name: "dasda",
+            location: "Dsadas",
+            image: "asda",
+        },
+            {
+                name: "123",
+                location: "123",
+                image: "123",
+            }]
+        // this.props.firebase.hotelFilter(this.state.location)
+    // .then( (hotels) =>{
+        this.props.history.push({
+            pathname: ROUTES.HOME,
+            // state: {hotels: test}
+        })
+    // });
+    }
+
+    render() {
+        return(
   <div style={backgroundStyle}>
       <div style={bunkerStyle}>
           <img src={BunkerImage} width="300" height="300" />
@@ -32,7 +62,7 @@ const Landing = () => (
                   <div style={CheckOut}>
                       <Form.Field size = "medium">
                           <label>CHECK OUT</label>
-                          <input placeholder="Check Out Date" />
+                          <input placeholder="Check Out Date" type="text"/>
                       </Form.Field >
                   </div>
                 </div>
@@ -51,12 +81,13 @@ const Landing = () => (
                   </Form.Field>
               </div>
               <div style={buttonDiv}>
-                <Button type="submit">Search</Button>
+                  <Form.Button onClick={this.onClick}>Submit</Form.Button>
               </div>
           </Form>
       </div>
   </div>
 );
+}}
 const bunkerStyle = {
     margin: "auto",
     width: "300px",
