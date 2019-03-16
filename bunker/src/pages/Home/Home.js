@@ -15,7 +15,7 @@ import {
   Divider
 } from 'semantic-ui-react';
 
-const condition = authUser => !!authUser;
+// const condition = authUser => !!authUser;
 
 const HomePage = () => (
   <div>
@@ -68,7 +68,7 @@ class ListingBase extends Component {
 }
 
 export default compose(
-  withFirebase,
-  withEmailVerification,
-  withAuthorization(condition)
+  // withFirebase,
+  // withEmailVerification,
+  // withAuthorization(condition)
 )(HomePage);

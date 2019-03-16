@@ -3,6 +3,8 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
+    "@appbaseio/reactivemaps": "^3.0.0-alpha.1",
+    "@appbaseio/reactivesearch": "file:./node_modules/@appbaseio/reactivesearch",
     "firebase": "^5.8.5",
     "react": "^16.8.3",
     "react-dom": "^16.8.2",
