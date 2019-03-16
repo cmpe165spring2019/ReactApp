@@ -15,21 +15,78 @@ class Landing extends React.Component{
         }
     }
     onClick = () => {
-        const test = [{
-            name: "dasda",
+        const hotel = [{
+            name: "1",
             location: "Dsadas",
-            image: "asda",
+            image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
+            address:"1111",
+            price:"222"
         },
             {
-                name: "123",
+                name: "2",
                 location: "123",
-                image: "123",
-            }]
+                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
+                address:"1111",
+                price:"222"
+            },
+            {
+                name: "3",
+                location: "123",
+                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
+                address:"1111",
+                price:"222"
+            },
+            {
+                name: "4",
+                location: "123",
+                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
+                address:"1111",
+                price:"222"
+            },
+            {
+                name: "5",
+                location: "123",
+                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
+                address:"1111",
+                price:"222"
+            },
+            {
+                name: "6",
+                location: "123",
+                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
+                address:"1111",
+                price:"222"
+            },
+            {
+                name: "7",
+                location: "123",
+                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
+                address:"1111",
+                price:"222"
+            },
+            {
+                name: "8",
+                location: "123",
+                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
+                address:"1111",
+                price:"222"
+            },
+            {
+                name: "9",
+                location: "123",
+                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
+                address:"1111",
+                price:"222"
+            },
+            ]
         // this.props.firebase.hotelFilter(this.state.location)
     // .then( (hotels) =>{
         this.props.history.push({
             pathname: ROUTES.HOME,
-            // state: {hotels: test}
+             state: {
+                hotels: hotel,
+
+             }
         })
     // });
     }
