@@ -50,7 +50,9 @@ class Firebase {
 		this.auth
 			.createUserWithEmailAndPassword(email, password)
 			.then(authUser => {
-				data.user_id = authUser.user.uid;
+        data.user_id = authUser.user.uid;
+        data.reservations = [];
+        data.reward_points = 0;
 				this.database
 					.collection("users")
 					.doc(data.user_id)
