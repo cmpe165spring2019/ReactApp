@@ -114,10 +114,10 @@ class SignInFormBase extends Component {
 
       <p>  Don't have an Account?
         <a href="/signup"> Sign Up </a>   <PasswordForgetLink /></p>
-
+         {error && <font size="+1"><i><p>****{error.message}****</p></i></font>}
       </Message>
 
-          {error && <p>{error.message}</p>}
+
       </Grid.Column>
       </Grid>
     );

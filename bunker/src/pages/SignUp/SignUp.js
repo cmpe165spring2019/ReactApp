@@ -38,10 +38,6 @@ const ERROR_CODE_ACCOUNT_EXISTS = 'auth/email-already-in-use';
 
 const ERROR_MSG_ACCOUNT_EXISTS = `
   An account with this E-Mail address already exists.
-  Try to login with this account instead. If you think the
-  account is already used from one of the social logins, try
-  to sign in with one of them. Afterward, associate your accounts
-  on your personal account page.
 `;
 
 class SignUpFormBase extends Component {
@@ -164,10 +160,8 @@ class SignUpFormBase extends Component {
         <Button color="green" fluid size="large" type="submit" disabled={isInvalid} >
           <h2><i>Welcome Bunkerer!</i></h2>
         </Button>
-
-
-        {error && <p>{error.message}</p>}
       </form>
+      {error && <font size="+1"><i><p>********{error.message} Please use a registered email(a new one if already taken) such as Gmail, Yahoo Email or School Email if you want to continue to sign up********</p></i></font>}
       </Grid>
     );
   }
