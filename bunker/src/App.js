@@ -10,6 +10,7 @@ import PasswordForgetPage from './pages/PasswordForget/PasswordForget';
 import HomePage from './pages/Home/Home';
 import AccountPage from './pages/Account/Account';
 import AdminPage from './pages/Admin/Admin';
+import HotelPage from './pages/Hotel/Hotel'
 
 import * as ROUTES from './constants/routes';
 import { withAuthentication } from './server/Session';
@@ -29,6 +30,7 @@ const App = () => (
         component={PasswordForgetPage}
       />
       <Route path={ROUTES.HOME} component={HomePage} />
+        <Route path={ROUTES.HOTEL} component={HotelPage} />
       <Route path={ROUTES.ACCOUNT} component={AccountPage} />
       <Route path={ROUTES.ADMIN} component={AdminPage} />
     </div>
