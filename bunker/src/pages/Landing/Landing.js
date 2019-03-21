@@ -1,6 +1,6 @@
 import React from 'react';
-import Background from '../../Image/LandingBackground.jpg';
-import BunkerImage from '../../Image/bunker.png';
+import Background from '../../images/LandingBackground.jpg';
+import BunkerImage from '../../images/bunkertransparent.png';
 import {Form} from 'semantic-ui-react';
 
 
