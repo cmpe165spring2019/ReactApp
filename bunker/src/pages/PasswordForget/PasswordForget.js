@@ -19,7 +19,8 @@ const PasswordForgetPage = () => (
   <div>
   <p></p>
     <h1>PasswordForget</h1>
-    <h3><i>Forgot password? No worry, please enter your registered email</i></h3>
+    <Grid.Row></Grid.Row>
+    <div><h3><i>No worry, please enter your registered email</i></h3></div>
     <PasswordForgetForm />
     </div>
     </Grid.Row>
@@ -63,7 +64,10 @@ class PasswordForgetFormBase extends Component {
     const isInvalid = email === '';
 
     return (
-         <Grid centered columns={2}>
+         <Grid.Row columns={5}>
+         <Grid.Column></Grid.Column>
+         <Grid.Column></Grid.Column>
+         <Grid.Column>
       <Form onSubmit={this.onSubmit}>
       <p></p>
 
@@ -79,9 +83,16 @@ class PasswordForgetFormBase extends Component {
           Reset My Password
         </Button>
 
-        {error && <font size="+1"><i><p>****{error.message}****</p></i></font>}
+
       </Form>
-</Grid>
+      {error && <font size="+1"><i><p>****{error.message}****</p></i></font>}
+
+      </Grid.Column>
+
+      <Grid.Column></Grid.Column>
+      <Grid.Column></Grid.Column>
+</Grid.Row>
+
     );
   }
 }
