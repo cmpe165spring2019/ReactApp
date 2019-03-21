@@ -1,3 +1,6 @@
+//This page can accessed by any registered user, but not guests
+//You can change your password, email, etc here
+
 import React, { Component } from 'react';
 import { compose } from 'recompose';
 
