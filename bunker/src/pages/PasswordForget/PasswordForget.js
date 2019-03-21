@@ -14,14 +14,16 @@ import {
 } from 'semantic-ui-react';
 
 const PasswordForgetPage = () => (
-    <Grid centered columns={4}>
+    <Grid centered columns={2}>
+    <Grid.Row>
   <div>
   <p></p>
     <h1>PasswordForget</h1>
     <h3><i>Forgot password? No worry, please enter your registered email</i></h3>
     <PasswordForgetForm />
-  </div>
-  </Grid>
+    </div>
+    </Grid.Row>
+</Grid>
 );
 
 const INITIAL_STATE = {
@@ -62,7 +64,7 @@ class PasswordForgetFormBase extends Component {
 
     return (
          <Grid centered columns={2}>
-      <Form size="large" onSubmit={this.onSubmit}>
+      <Form onSubmit={this.onSubmit}>
       <p></p>
 
         <Form.Input
@@ -77,7 +79,7 @@ class PasswordForgetFormBase extends Component {
           Reset My Password
         </Button>
 
-        {error && <p>{error.message}</p>}
+        {error && <font size="+1"><i><p>****{error.message}****</p></i></font>}
       </Form>
 </Grid>
     );

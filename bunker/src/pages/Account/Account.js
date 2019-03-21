@@ -8,6 +8,17 @@ import {
 } from '../../server/Session';
 import { withFirebase } from '../../server/Firebase';
 import PasswordChangeForm from '../PasswordChange/PasswordChange';
+import {
+  Button,
+  Form,
+  Grid,
+  Header,
+  Segment,
+  Message,
+  Icon,
+  Input,
+} from 'semantic-ui-react';
+
 
 const SIGN_IN_METHODS = [
   {
@@ -31,11 +42,15 @@ const SIGN_IN_METHODS = [
 const AccountPage = () => (
   <AuthUserContext.Consumer>
     {authUser => (
-      <div>
-        <h1>Account: {authUser.email}</h1>
+      <Grid centered columns={2}>
+      <Grid.Row></Grid.Row>
+        <div><Icon name="user" size="huge"/><font size="+3.5">{authUser.username}</font></div>
+        <Grid.Row></Grid.Row>
+        <Icon name="mail" size="large"/><font size="+2.5">{authUser.email}</font>
+        <Grid.Row></Grid.Row>
         <PasswordChangeForm />
         <LoginManagement authUser={authUser} />
-      </div>
+      </Grid>
     )}
   </AuthUserContext.Consumer>
 );
@@ -93,6 +108,7 @@ class LoginManagementBase extends Component {
     const { activeSignInMethods, error } = this.state;
 
     return (
+
       <div>
         Sign In Methods:
         <ul>
@@ -127,6 +143,7 @@ class LoginManagementBase extends Component {
         </ul>
         {error && error.message}
       </div>
+
     );
   }
 }
@@ -187,6 +204,7 @@ class DefaultLoginToggle extends Component {
       passwordOne !== passwordTwo || passwordOne === '';
 
     return isEnabled ? (
+
       <button
         type="button"
         onClick={() => onUnlink(signInMethod.id)}
@@ -195,26 +213,31 @@ class DefaultLoginToggle extends Component {
         Deactivate {signInMethod.id}
       </button>
     ) : (
-      <form onSubmit={this.onSubmit}>
-        <input
+      <Grid centered columns={2}>
+      <Form size="large" onSubmit={this.onSubmit}>
+        <Grid>
+        <Grid.Row><Form.Input
+          fluid
           name="passwordOne"
           value={passwordOne}
           onChange={this.onChange}
           type="password"
           placeholder="New Password"
-        />
-        <input
+        /></Grid.Row>
+        <Form.Input
           name="passwordTwo"
           value={passwordTwo}
           onChange={this.onChange}
           type="password"
-          placeholder="Confirm New Password"
+          placeholder="Con New Password"
         />
 
         <button disabled={isInvalid} type="submit">
           Link {signInMethod.id}
         </button>
-      </form>
+        </Grid>
+      </Form>
+      </Grid>
     );
   }
 }
