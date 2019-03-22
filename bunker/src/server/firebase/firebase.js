@@ -50,7 +50,9 @@ class Firebase {
 		this.auth
 			.createUserWithEmailAndPassword(email, password)
 			.then(authUser => {
-				data.user_id = authUser.user.uid;
+        			data.user_id = authUser.user.uid;
+        			data.reservations = [];
+        			data.reward_points = 0;
 				this.database
 					.collection("users")
 					.doc(data.user_id)
@@ -79,6 +81,20 @@ class Firebase {
 				return false;
 			});
 	};
+
+    search = (location, callback) =>
+    {
+        this.database.collection('locations').doc(location).once('value')
+            .then( data => {
+                console.log('Successfully fetched rooms from ' + location);
+                callback(data);
+                return true;})
+
+            .catch( error => {
+                console.log("Failed to get hotels " + error);
+                return false;
+            })
+    };
 
 	//*****Reservation API*********
 	//add reservation data
