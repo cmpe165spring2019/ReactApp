@@ -1,10 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
+// Backend functionality
 import { AuthUserContext } from '../server/Session';
-import SignOutButton from '../pages/SignOut/SignOut';
 import * as ROUTES from '../constants/routes';
 import * as ROLES from '../constants/roles';
+
+// Components
+import { Link } from 'react-router-dom';
+import { Menu, Segment } from 'semantic-ui-react'
+import SignOutButton from '../pages/SignOut/SignOut';
 
 const Navigation = () => (
     <AuthUserContext.Consumer>
@@ -19,6 +23,7 @@ const Navigation = () => (
 );
 
 const NavigationAuth = ({ authUser }) => (
+
     <ul>
         <li>
             <Link to={ROUTES.LANDING}>Landing</Link>
