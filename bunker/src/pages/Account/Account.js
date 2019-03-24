@@ -1,6 +1,6 @@
 //This page can accessed by any registered user, but not guests
 //You can change your password, email, etc here
-//will push to Github 03/24/19
+
 import React, { Component } from 'react';
 import { compose } from 'recompose';
 
