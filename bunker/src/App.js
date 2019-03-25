@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-import Navigation from './commonComponents/Navigation';
+import Navigation from './commonComponents/Navigation/Navigation';
 
 import LandingPage from './pages/Landing/Landing';
 import SignUpPage from './pages/SignUp/SignUp';
@@ -15,22 +15,17 @@ import HotelPage from './pages/Hotel/Hotel'
 import * as ROUTES from './constants/routes';
 import { withAuthentication } from './server/Session';
 
+
 const App = () => (
   <Router>
     <div>
       <Navigation />
-
-      <hr />
-
       <Route exact path={ROUTES.LANDING} component={LandingPage} />
       <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
       <Route path={ROUTES.SIGN_IN} component={SignInPage} />
-      <Route
-        path={ROUTES.PASSWORD_FORGET}
-        component={PasswordForgetPage}
-      />
+      <Route path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage} />
       <Route path={ROUTES.HOME} component={HomePage} />
-        <Route path={ROUTES.HOTEL} component={HotelPage} />
+      <Route path={ROUTES.HOTEL} component={HotelPage} />
       <Route path={ROUTES.ACCOUNT} component={AccountPage} />
       <Route path={ROUTES.ADMIN} component={AdminPage} />
     </div>
