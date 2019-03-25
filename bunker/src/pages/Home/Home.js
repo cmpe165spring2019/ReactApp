@@ -1,46 +1,44 @@
 // This page can be accessed by anyone including guests
-// It contains commonComponent: Navigation bar and components: SearchFilterBar, ListingBase
 
 import React, { Component } from "react";
-import { compose } from "recompose";
-// import { withAuthorization, withEmailVerification } from "../../server/Session";
-// import { withFirebase } from "../../server/Firebase";
-// import Logo from "./logo_transparent.png";
-// import Map from "./gmapsf.jpg";
-// import { withRouter, Switch, Route, Link } from "react-router-dom";
+
+//Components
 import SearchFilterBar from './components/SearchFilterBar';
 import ListingBase from './components/ListingBase';
 
-// const condition = authUser => !!authUser;
+// Backend functionalities
+import { withFirebase } from '../../server/Firebase/index';
 
+class HomePage extends Component {
+    constructor(props){
+        super(props);
 
-const HomePage = () => (
-    <div>
-        <SearchFilterBar />
-        <div class="ui section divider" />
-        <div class="ui segment">
-            <div class="ui two column very relaxed grid">
-                <div class="column">
-                    <ListingBase />
-                </div>
-                <div class="column">
-                    {/*<Image src={Map} />*/}
+        this.state = {
+            
+        }
+    }
+
+    render() {
+
+        return (
+            <div>
+                <SearchFilterBar />
+                <div class="ui section divider" />
+                <div class="ui segment">
+                    <div class="ui two column very relaxed grid">
+                        <div class="column">
+                            <ListingBase />
+                        </div>
+                        <div class="column">
+                        {/* insert Maps component here */}
+                        </div>
+                    </div>
+                    <div class="ui vertical divider" />
                 </div>
             </div>
-            <div class="ui vertical divider" />
-        </div>
-    </div>
-);
-
-// const INITIAL_STATE = {
-//     email: "",
-//     password: "",
-//     error: null
-// };
+        );
+    }
+}
 
 
-export default compose(
-    // withFirebase,
-    // withEmailVerification,
-    // withAuthorization(condition)
-)(HomePage);
+export default withFirebase(HomePage)
