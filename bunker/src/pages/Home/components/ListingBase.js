@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import * as ROUTES from "../../../constants/routes";
-import { withRouter, Switch, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import  HotelCard from "./HotelCard";
+import { Divider, Grid, Segment } from 'semantic-ui-react'
+
 
 export default class ListingBase extends Component {
   constructor(props) {
@@ -97,8 +99,11 @@ export default class ListingBase extends Component {
 
     return (
       <div>
+        <Grid columns='equal'>
+          <Grid.Row>
         {
           hotels.map(hotel => (
+          <Grid.Column>
             <Link to = {{
               pathname: `${ROUTES.HOTEL}/${hotel.uid}`,
               state: { hotel }
@@ -112,8 +117,11 @@ export default class ListingBase extends Component {
             hotelRating="4"
             />
             </Link>
+          </Grid.Column>
           ))
         }
+          </Grid.Row>
+        </Grid>
       </div>
     );
   }
