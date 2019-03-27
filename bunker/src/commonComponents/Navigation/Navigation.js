@@ -13,7 +13,7 @@ import { Menu, Segment } from 'semantic-ui-react'
 class Navigation extends Component {
     constructor(props){
         super(props);
-        
+
         this.state = {
             firebase: null,
             location: "",
@@ -49,37 +49,45 @@ class Navigation extends Component {
             <div>
                 <Menu pointing secondary>
                 <Link to={ROUTES.LANDING}>
-                <Menu.Item 
-                    name='landing' 
-                    active={activeItem === 'landing'} 
-                    onClick={this.handleItemClick} 
+                <Menu.Item
+                    name='landing'
+                    active={activeItem === 'landing'}
+                    onClick={this.handleItemClick}
                 />
                 </Link>
                 <Link to={ROUTES.HOME}>
-                <Menu.Item 
-                    name='home' 
-                    active={activeItem === 'home'} 
-                    onClick={this.handleItemClick} 
+                <Menu.Item
+                    name='home'
+                    active={activeItem === 'home'}
+                    onClick={this.handleItemClick}
                 />
                 </Link>
                 <Link to={ROUTES.ACCOUNT}>
-                <Menu.Item 
-                    name='account' 
-                    active={activeItem === 'account'} 
-                    onClick={this.handleItemClick} 
+                <Menu.Item
+                    name='account'
+                    active={activeItem === 'account'}
+                    onClick={this.handleItemClick}
                 />
                 </Link>
                 { authUser.roles.includes(ROLES.ADMIN) && (
                     <Link to={ROUTES.ADMIN}>
-                    <Menu.Item 
-                        name='admin' 
-                        active={activeItem === 'admin'} 
-                        onClick={this.handleItemClick} 
+                    <Menu.Item
+                        name='admin'
+                        active={activeItem === 'admin'}
+                        onClick={this.handleItemClick}
                     />
                     </Link>
                 )}
 
                 <Menu.Menu position='right'>
+                <Link to={ROUTES.HOTEL_RESERVATION}>
+                <Menu.Item
+                name='myReservations'
+                active={this.state.activeItem === 'myReservations'}
+                onClick={this.handleItemClick}
+                />
+                </Link>
+
                     <Menu.Item
                     name='signout'
                     active={this.state.activeItem === 'signout'}
@@ -87,7 +95,7 @@ class Navigation extends Component {
                     />
                 </Menu.Menu>
                 </Menu>
-        
+
             </div>
         );
 
@@ -95,21 +103,21 @@ class Navigation extends Component {
             <div>
             <Menu pointing secondary>
             <Link to={ROUTES.LANDING}>
-            <Menu.Item 
-                name='landing' 
-                active={this.state.activeItem === 'landing'} 
-                onClick={this.handleItemClick} 
+            <Menu.Item
+                name='landing'
+                active={this.state.activeItem === 'landing'}
+                onClick={this.handleItemClick}
             />
             </Link>
             <Link to={ROUTES.HOME}>
-            <Menu.Item 
-                name='home' 
-                active={this.state.activeItem === 'home'} 
-                onClick={this.handleItemClick} 
+            <Menu.Item
+                name='home'
+                active={this.state.activeItem === 'home'}
+                onClick={this.handleItemClick}
             />
             </Link>
 
-            
+
             <Menu.Menu position='right'>
             <Link to={ROUTES.SIGN_IN}>
                 <Menu.Item
@@ -127,7 +135,7 @@ class Navigation extends Component {
             </Link>
             </Menu.Menu>
             </Menu>
-    
+
         </div>
         );
 
