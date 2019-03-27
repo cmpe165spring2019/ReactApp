@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import * as ROUTES from "../../../constants/routes";
-import { withRouter, Switch, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import  HotelCard from "./HotelCard";
+import { Divider, Grid, Segment } from 'semantic-ui-react'
+
 
 export default class ListingBase extends Component {
   constructor(props) {
@@ -93,34 +96,32 @@ export default class ListingBase extends Component {
 
   render() {
     const { hotels } = this.state;
+
     return (
       <div>
-        <div class="ui two stackable cards">
-          {hotels.map(hotel => (
-            <Link
-              to={{
-                pathname: `${ROUTES.HOTEL}/${hotel.uid}`,
-                state: { hotel }
-              }}
-              class="ui card"
+        <Grid columns='equal'>
+          <Grid.Row>
+        {
+          hotels.map(hotel => (
+          <Grid.Column>
+            <Link to = {{
+              pathname: `${ROUTES.HOTEL}/${hotel.uid}`,
+              state: { hotel }
+            }}
             >
-              <div class="image">
-                <img src={hotel.image1} />
-              </div>
-              <div class="content">
-                <a class="header">{hotel.name}</a>
-                <div class="meta">
-                  <span class="date">${hotel.price}</span>
-                </div>
-                <div class="description">{hotel.description}</div>
-              </div>
-              <div class="extra">
-                Rating:
-                <div class="ui star rating" data-rating="4" />
-              </div>
+            <HotelCard 
+            hotelImage={hotel.image1}
+            hotelName={hotel.name}
+            hotelPrice={hotel.price}
+            hotelDescription={hotel.description}
+            hotelRating="4"
+            />
             </Link>
-          ))}
-        </div>
+          </Grid.Column>
+          ))
+        }
+          </Grid.Row>
+        </Grid>
       </div>
     );
   }

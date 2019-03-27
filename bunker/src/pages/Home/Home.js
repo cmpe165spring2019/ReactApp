@@ -5,6 +5,7 @@ import React, { Component } from "react";
 //Components
 import SearchFilterBar from './components/SearchFilterBar';
 import ListingBase from './components/ListingBase';
+import { Divider, Grid, Segment } from 'semantic-ui-react'
 
 // Backend functionalities
 import { withFirebase } from '../../server/Firebase/index';
@@ -22,19 +23,18 @@ class HomePage extends Component {
 
         return (
             <div>
-                <SearchFilterBar />
-                <div class="ui section divider" />
-                <div class="ui segment">
-                    <div class="ui two column very relaxed grid">
-                        <div class="column">
+            <SearchFilterBar/>
+                <Segment>
+                    <Grid columns={2} relaxed='very'>
+                        <Grid.Column>
                             <ListingBase />
-                        </div>
-                        <div class="column">
-                        {/* insert Maps component here */}
-                        </div>
-                    </div>
-                    <div class="ui vertical divider" />
-                </div>
+                        </Grid.Column>
+                        <Grid.Column>
+                            insert maps here
+                        </Grid.Column>                    
+                    </Grid>
+                    <Divider vertical></Divider>
+                </Segment>
             </div>
         );
     }
