@@ -16,12 +16,13 @@ import {
 } from "semantic-ui-react";
 import {withFirebase} from '../../../server/Firebase/';
 import { DateInput } from "semantic-ui-calendar-react";
-import Logo from '../../../images/linkedin_banner_image_1.png';
-import * as moment from 'moment';
+import Logo from "../../../images/bunkertransparent.png";
+import * as moment from "moment";
 
-
-const today=moment().format('MM-DD-YYYY');
-const tommorrow=moment().add(1,'days').format('MM-DD-YYYY');
+const today = moment().format("MM-DD-YYYY");
+const tommorrow = moment()
+  .add(1, "days")
+  .format("MM-DD-YYYY");
 //const date3=moment().add(180,'days').format('MM-DD-YYYY');
 //const date4=moment().add(120,'days').format('MM-DD-YYYY');
 //const date5=moment().add(300,'days').format('MM-DD-YYYY');
@@ -92,33 +93,36 @@ class SearchFilterBar extends Component {
         let parts=value.split("-");
         let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
     //  if(value.length>=10 && dt<=new Date()){
-        //  window.alert("The Earliest CheckOutDate is tommorrow, please choose from calendar");
+    //  window.alert("The Earliest CheckOutDate is tommorrow, please choose from calendar");
     //  }
     //  else{
-        let date=moment(dt).subtract(1,'days').format('MM-DD-YYYY');
-        //let date1=today;
+    let date = moment(dt)
+      .subtract(1, "days")
+      .format("MM-DD-YYYY");
+    //let date1=today;
     //  if(moment(dt).subtract(120,'days')>moment()){
-        //date1=moment(dt).subtract(120,'days').format('MM-DD-YYYY');
+    //date1=moment(dt).subtract(120,'days').format('MM-DD-YYYY');
     //  }
-    if(this.state.hasOwnProperty(name)){
-    console.log("good3");
-    this.setState({[name]:value,maxCheckIn:date});
+    if (this.state.hasOwnProperty(name)) {
+      console.log("good3");
+      this.setState({ [name]: value, maxCheckIn: date });
     }
     //}
+  }
 
-    }
+    
 
     render() {
         const { email, password, locations, error} = this.state;
 
         const isInvalid = password === "" || email === "";
         const countryOptions = this.state.locations.map((location) =>
-        ({
-          key: location.data.city,
-          text: `${location.data.city} , ${location.data.country}`,
-          value: location.data.city,
-        })
-      );
+          ({
+            key: location.data.city,
+            text: `${location.data.city} , ${location.data.country}`,
+            value: location.data.city,
+          })
+        );
 
         return (
 
@@ -161,6 +165,7 @@ class SearchFilterBar extends Component {
             );
         }
     }
+  
 
 
 const GuestNum = () => {
@@ -178,21 +183,18 @@ const GuestNum = () => {
     );
 }
 
-
 const Stars = () => {
-    let Star = [];
-    for (var i = 0; i < 7; i++) {
-        let obj = {
-            key: i,
-            text: i,
-            value: i
-        };
-        Star.push(obj);
-    }
-    return (
-        <Select icon="star" iconPosition="left" options={Star} />
-    );
-}
+  let Star = [];
+  for (var i = 0; i < 7; i++) {
+    let obj = {
+      key: i,
+      text: i,
+      value: i
+    };
+    Star.push(obj);
+  }
+  return <Select icon="star" iconPosition="left" options={Star} />;
+};
 
 const PriceRange = () => {
     let PriceR=[];
@@ -210,4 +212,5 @@ return (
     <Select icon="dollar sign" iconPosition="left" options={PriceR} />
 );
 }
+
 export default withFirebase(SearchFilterBar);

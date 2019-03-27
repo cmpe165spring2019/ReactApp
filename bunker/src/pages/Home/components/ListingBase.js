@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import  HotelCard from "./HotelCard";
 import { Divider, Grid, Segment } from 'semantic-ui-react'
 
-
 export default class ListingBase extends Component {
   constructor(props) {
     super(props);
