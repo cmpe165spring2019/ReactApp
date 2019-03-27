@@ -1,6 +1,8 @@
+//will push to Github 03/26/2019
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
+import 'firebase/firestore';
 
 import Config from './config';
 
@@ -18,6 +20,7 @@ class Firebase {
 
     this.auth = app.auth();
     this.db = app.database();
+    this.firestore = app.firestore();
 
     /* Social Sign In Method Provider */
 
@@ -86,6 +89,8 @@ class Firebase {
       }
     });
 
+
+
   // *** User API ***
 
   user = uid => this.db.ref(`users/${uid}`);
@@ -97,6 +102,25 @@ class Firebase {
   message = uid => this.db.ref(`messages/${uid}`);
 
   messages = () => this.db.ref('messages');
+
+  //location
+  getCities = next =>
+        this.firestore
+            .collection("locations")
+            .get()
+            .then(snapshot => {
+                let cities = [];
+                snapshot.forEach(city => {
+                    const obj = {
+                        id: city.id,
+                        data: {...city.data()}
+                    };
+                    cities.push(obj);
+                });
+
+
+                return cities;
+            });
 }
 
 export default Firebase;
