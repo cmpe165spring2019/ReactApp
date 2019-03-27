@@ -1,24 +1,24 @@
 import React from 'react'
-import { Card, Icon, Image } from 'semantic-ui-react'
+import { Grid, Card, Icon, Image } from 'semantic-ui-react'
 
 const HotelCard = (props) => (
     <Card>
       <Image src= {props.hotelImage} />
       <Card.Content>
-        <Card.Header>{props.hotelTitle}</Card.Header>
+        <Card.Header>{props.hotelName}
+        </Card.Header>
         <Card.Meta>{props.hotelCity}</Card.Meta>
         <Card.Description>{props.hotelDescription}</Card.Description>
       </Card.Content>
       <Card.Content extra>
-        <a>
+        <Grid.Column floated='left'>
             <Icon name='dollar sign' />
-            {props.hotelPrice}
-        </a>
-         | 
-        <a>
+            {props.hotelPrice}   
+        </Grid.Column>
+        <Grid.Column floated='right'>
           <Icon name='star' />
           {props.hotelRating}
-        </a>
+        </Grid.Column>
       </Card.Content>
     </Card>
   )

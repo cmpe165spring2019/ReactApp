@@ -111,7 +111,7 @@ export default class ListingBase extends Component {
             >
             <HotelCard 
             hotelImage={hotel.image1}
-            hotelTitle={hotel.title}
+            hotelName={hotel.name}
             hotelPrice={hotel.price}
             hotelDescription={hotel.description}
             hotelRating="4"
