@@ -9,6 +9,7 @@ import {
     Button,
 } from 'semantic-ui-react';
 import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
+import * as moment from "moment";
 
 // const hotel = [{
 //     name: "1",
@@ -17,23 +18,72 @@ import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 //     address:"1111",
 //     price:"222"
 // }]
+const today = moment().format("MM-DD-YYYY");
+const tommorrow = moment()
+    .add(1, "days")
+    .format("MM-DD-YYYY");
 
 class HotelPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             ...props.location.state,
-            dateIn:'',
-            dateOut:'',
-            todayString: ''
+            dateIn: "",
+            dateOut: "",
+            maxCheckIn: "",
+            minCheckout: tommorrow
         }
     }
 
-    handleChange=(event,{name,value})=>{
-        if(this.state.hasOwnProperty(name)){
-            this.setState({[name]:value});
+    handleCheckInDate = (event, { name, value }) => {
+        let parts = value.split("-");
+        let dt = new Date(
+            parseInt(parts[2]),
+            parseInt(parts[0] - 1),
+            parseInt(parts[1])
+        );
+        //if(value.length>=10 && dt<new Date()){
+        //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
+        //  }
+        //  else{
+
+        let date = moment(dt)
+            .add(1, "days")
+            .format("MM-DD-YYYY");
+        console.log(date);
+        //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
+        if (this.state.hasOwnProperty(name)) {
+            console.log("good1");
+            this.setState({ [name]: value, minCheckout: date });
         }
-    }
+        //}
+    };
+
+    handleCheckOutDate = (event, { name, value }) => {
+        console.log("good2");
+        let parts = value.split("-");
+        let dt = new Date(
+            parseInt(parts[2]),
+            parseInt(parts[0] - 1),
+            parseInt(parts[1])
+        );
+        //  if(value.length>=10 && dt<=new Date()){
+        //  window.alert("The Earliest CheckOutDate is tommorrow, please choose from calendar");
+        //  }
+        //  else{
+        let date = moment(dt)
+            .subtract(1, "days")
+            .format("MM-DD-YYYY");
+        //let date1=today;
+        //  if(moment(dt).subtract(120,'days')>moment()){
+        //date1=moment(dt).subtract(120,'days').format('MM-DD-YYYY');
+        //  }
+        if (this.state.hasOwnProperty(name)) {
+            console.log("good3");
+            this.setState({ [name]: value, maxCheckIn: date });
+        }
+        //}
+    };
 
     render() {
         return (
@@ -66,11 +116,30 @@ class HotelPage extends React.Component {
                     <div style={rightDiv}>
                         <div style={checkIn}>
                             <div><h4>CheckInDate</h4></div>
-                            <DateInput  name="dateIn" minDate="03-16-2019" dateFormat="MM-DD-YYYY" onChange={this.handleChange} value={this.state.dateIn} icon="bullhorn" iconPosition="left" placeholder="MM/DD/YYYY"/>
+                            <DateInput
+                                name="dateIn"
+                                minDate={today}
+                                maxDate={this.state.maxCheckIn}
+                                dateFormat="MM-DD-YYYY"
+                                onChange={this.handleCheckInDate}
+                                value={this.state.dateIn}
+                                icon="bullhorn"
+                                iconPosition="left"
+                                placeholder="MM-DD-YYYY"
+                            />
                         </div>
                         <div style={checkOut}>
                             <div><h4>CheckOutDate</h4></div>
-                            <DateInput name="dateOut" minDate="03-17-2019" dateFormat="MM-DD-YYYY" onChange={this.handleChange} value={this.state.dateOut} icon="paper plane" iconPosition="left" placeholder="MM/DD/YYYY"/>
+                            <DateInput
+                                name="dateOut"
+                                minDate={this.state.minCheckout}
+                                dateFormat="MM-DD-YYYY"
+                                onChange={this.handleCheckOutDate}
+                                value={this.state.dateOut}
+                                icon="paper plane"
+                                iconPosition="left"
+                                placeholder="MM-DD-YYYY"
+                            />
                         </div>
                         <div style={bookDiv1}>
                             <h3>Book Now</h3>
