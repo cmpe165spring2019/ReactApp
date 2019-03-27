@@ -8,3 +8,5 @@ export const ADMIN = '/admin';
 export const ADMIN_DETAILS = '/admin/:id';
 export const HOTEL = '/hotel';
 export const HOTEL_DETAIL = "hotel/:id";
+export const HOTEL_RESERVATION='/reservation';
+//export const HOTEL_RESERVATION_DETAIL='/reservation/:id';
