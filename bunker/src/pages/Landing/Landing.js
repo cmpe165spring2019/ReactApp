@@ -1,19 +1,67 @@
 import React from 'react';
-import Background from '../../Image/LandingBackground.jpg';
-import BunkerImage from '../../Image/bunker.png';
-import {Form} from 'semantic-ui-react';
+import Background from '../../images/LandingBackground.jpg';
+import BunkerImage from '../../images/bunkertransparent.png';
+import {Form, Select} from 'semantic-ui-react';
 
 
 import * as ROUTES from '../../constants/routes';
+import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
+import * as moment from "moment";
+import { DateInput } from "semantic-ui-calendar-react";
 
+
+const today=moment().format('MM-DD-YYYY');
+const tommorrow=moment().add(1,'days').format('MM-DD-YYYY');
 
 class Landing extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            location: "",
+            dateIn:'',
+            dateOut:'',
+            maxCheckIn: '',
+            minCheckout:tommorrow,
         }
     }
+    handleCheckInDate=(event,{name,value})=>{
+
+        let parts=value.split("-");
+        let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
+        //if(value.length>=10 && dt<new Date()){
+        //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
+        //  }
+        //  else{
+
+        let date=moment(dt).add(1,'days').format('MM-DD-YYYY');
+        console.log(date);
+        //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
+        if(this.state.hasOwnProperty(name)){
+            console.log("good1")
+            this.setState({[name]:value,minCheckout:date});
+        }
+        //}
+    }
+    handleCheckOutDate=(event,{name,value})=>{
+        console.log("good2");
+        let parts=value.split("-");
+        let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
+        //  if(value.length>=10 && dt<=new Date()){
+        //  window.alert("The Earliest CheckOutDate is tommorrow, please choose from calendar");
+        //  }
+        //  else{
+        let date=moment(dt).subtract(1,'days').format('MM-DD-YYYY');
+        //let date1=today;
+        //  if(moment(dt).subtract(120,'days')>moment()){
+        //date1=moment(dt).subtract(120,'days').format('MM-DD-YYYY');
+        //  }
+        if(this.state.hasOwnProperty(name)){
+            console.log("good3");
+            this.setState({[name]:value,maxCheckIn:date});
+        }
+        //}
+
+    }
+
     onClick = () => {
         const hotel = [{
             name: "1",
@@ -111,30 +159,27 @@ class Landing extends React.Component{
 
               <div style={InOutDiv}>
                   <div style={CheckIn}>
-                      <Form.Field size = "medium">
-                          <label>CHECK IN</label>
-                          <input placeholder="Check In Date" />
-                      </Form.Field>
+                      {/*<Form.Field size = "medium">*/}
+                          {/*<label>CHECK IN</label>*/}
+                          {/*<input placeholder="Check In Date" />*/}
+                      {/*</Form.Field>*/}
+                      <div>CheckInDate</div><DateInput name="dateIn"  minDate={today} maxDate={this.state.maxCheckIn} dateFormat="MM-DD-YYYY" onChange={this.handleCheckInDate} value={this.state.dateIn} icon="bullhorn" iconPosition="left" placeholder="MM-DD-YYYY"/>
                   </div>
                   <div style={CheckOut}>
-                      <Form.Field size = "medium">
-                          <label>CHECK OUT</label>
-                          <input placeholder="Check Out Date" type="text"/>
-                      </Form.Field >
+                      <div>CheckOutDate</div>
+                      <DateInput name="dateOut"  minDate={this.state.minCheckout} dateFormat="MM-DD-YYYY" onChange={this.handleCheckOutDate} value={this.state.dateOut} icon="paper plane" iconPosition="left" placeholder="MM-DD-YYYY"/>
+                      {/*<Form.Field size = "medium">*/}
+                          {/*<label>CHECK OUT</label>*/}
+                          {/*<input placeholder="Check Out Date" type="text"/>*/}
+                      {/*</Form.Field >*/}
                   </div>
                 </div>
 
               <div style={Guests}>
                   <Form.Field size = "medium">
                       <label>GUESTS</label>
-                      <input placeholder="Guests" />
-                      {/*<select>*/}
-                          {/*<option value={1}>1</option>*/}
-                          {/*<option value={2}>2</option>*/}
-                          {/*<option value={3}>3</option>*/}
-                          {/*<option value={4}>4</option>*/}
-                          {/*<option value={5}>5</option>*/}
-                      {/*</select>*/}
+                      {/*<input placeholder="Guests" />*/}
+                      <GuestNum />
                   </Form.Field>
               </div>
               <div style={buttonDiv}>
@@ -145,11 +190,24 @@ class Landing extends React.Component{
   </div>
 );
 }}
+const GuestNum = () => {
+    let Guests = [];
+    for (var i = 1; i < 6; i++) {
+        let obj = {
+            key: i,
+            text: i,
+            value: i
+        };
+        Guests.push(obj);
+    }
+    return (
+        <Select icon="user" iconPosition="left" options={Guests} />
+    );
+}
 const bunkerStyle = {
     margin: "auto",
     width: "300px",
     height: "300px",
-    //Image: `url(${BunkerImage})`,
 };
 const introDiv = {
     margin:"20px auto 0 auto ",
@@ -201,10 +259,12 @@ const boxStyle = {
 };
 
 const backgroundStyle = {
-    width: "100%",
-    height: "100%",
+    // width: "100%",
+    // height: "100%",
     backgroundImage: `url(${Background})`,
     backgroundRepeat: "null",
+    backgroundSize: 'cover',
+    overflow: 'hidden',
 };
 
 export default Landing;
