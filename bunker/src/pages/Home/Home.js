@@ -5,6 +5,7 @@ import React, { Component } from "react";
 //Components
 import SearchFilterBar from "./components/SearchFilterBar";
 import ListingBase from "./components/ListingBase";
+import Maps from "./components/Maps";
 
 // Backend functionalities
 import { withFirebase } from "../../server/Firebase/index";
@@ -32,7 +33,8 @@ class HomePage extends Component {
             </div>
             <div class="column">
               {/* insert Maps component here */}
-              <Image src={Map} />
+              {/*<Image src={Map} /> */}
+              <Maps />
             </div>
           </div>
           <div class="ui vertical divider" />
