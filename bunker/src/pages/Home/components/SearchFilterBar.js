@@ -123,8 +123,7 @@ class SearchFilterBar extends Component {
         return (
 
             <Grid>
-                <Grid.Column width={3}>
-                    <Image src={Logo} width="250" height="150" />
+                <Grid.Column width={3} centered>
                     </Grid.Column>
 
                     <Grid.Column width={10}>
@@ -134,11 +133,11 @@ class SearchFilterBar extends Component {
                         <Grid.Row></Grid.Row>
                         <Grid.Row columns={5}>
                         <Grid.Column>
-                        <div>CheckInDate</div><DateInput name="dateIn"  minDate={today} maxDate={this.state.maxCheckIn} dateFormat="MM-DD-YYYY" onChange={this.handleCheckInDate} value={this.state.dateIn} icon="bullhorn" iconPosition="left" placeholder="MM-DD-YYYY"/>
+                        <div>Check-In</div><DateInput name="dateIn"  minDate={today} maxDate={this.state.maxCheckIn} dateFormat="MM-DD-YYYY" onChange={this.handleCheckInDate} value={this.state.dateIn} icon="bullhorn" iconPosition="left" placeholder="MM-DD-YYYY"/>
                             </Grid.Column>
                             <Grid.Column>
 
-                        <div>CheckOutDate</div><DateInput name="dateOut"  minDate={this.state.minCheckout} dateFormat="MM-DD-YYYY" onChange={this.handleCheckOutDate} value={this.state.dateOut} icon="paper plane" iconPosition="left" placeholder="MM-DD-YYYY"/>
+                        <div>Check-Out</div><DateInput name="dateOut"  minDate={this.state.minCheckout} dateFormat="MM-DD-YYYY" onChange={this.handleCheckOutDate} value={this.state.dateOut} icon="paper plane" iconPosition="left" placeholder="MM-DD-YYYY"/>
                         </Grid.Column>
 
                             <Grid.Column>

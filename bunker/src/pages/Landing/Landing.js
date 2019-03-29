@@ -163,10 +163,10 @@ class Landing extends React.Component{
                           {/*<label>CHECK IN</label>*/}
                           {/*<input placeholder="Check In Date" />*/}
                       {/*</Form.Field>*/}
-                      <div>CheckInDate</div><DateInput name="dateIn"  minDate={today} maxDate={this.state.maxCheckIn} dateFormat="MM-DD-YYYY" onChange={this.handleCheckInDate} value={this.state.dateIn} icon="bullhorn" iconPosition="left" placeholder="MM-DD-YYYY"/>
+                      <div>Check-In</div><DateInput name="dateIn"  minDate={today} maxDate={this.state.maxCheckIn} dateFormat="MM-DD-YYYY" onChange={this.handleCheckInDate} value={this.state.dateIn} icon="bullhorn" iconPosition="left" placeholder="MM-DD-YYYY"/>
                   </div>
                   <div style={CheckOut}>
-                      <div>CheckOutDate</div>
+                      <div>Check-Out</div>
                       <DateInput name="dateOut"  minDate={this.state.minCheckout} dateFormat="MM-DD-YYYY" onChange={this.handleCheckOutDate} value={this.state.dateOut} icon="paper plane" iconPosition="left" placeholder="MM-DD-YYYY"/>
                       {/*<Form.Field size = "medium">*/}
                           {/*<label>CHECK OUT</label>*/}
