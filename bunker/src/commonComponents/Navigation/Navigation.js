@@ -121,14 +121,14 @@ class Navigation extends Component {
             <Menu.Menu position='right'>
             <Link to={ROUTES.SIGN_IN}>
                 <Menu.Item
-                name='signin'
+                name='Sign In'
                 active={this.state.activeItem === 'signin'}
                 onClick={this.handleItemClick}
                 />
             </Link>
             <Link to={ROUTES.SIGN_UP}>
                 <Menu.Item
-                name='signup'
+                name='Sign Up'
                 active={this.state.activeItem === 'signup'}
                 onClick={this.handleItemClick}
                 />

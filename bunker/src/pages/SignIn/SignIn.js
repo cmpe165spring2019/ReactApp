@@ -80,7 +80,7 @@ class SignInFormBase extends Component {
       <Grid centered columns={2}>
        <Grid.Column>
           <Header as="h2" textAlign="center">
-            <h1>SignIn</h1>
+            <h1>Sign In</h1>
             </Header>
             <Segment>
 
