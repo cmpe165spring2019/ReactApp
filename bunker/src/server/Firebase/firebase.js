@@ -18,8 +18,8 @@ class Firebase {
     /* Firebase APIs */
 
     this.auth = app.auth();
-    this.db = app.database();
-    this.firestore = app.firestore();
+    //this.db = app.database();
+    this.database = app.firestore();
 
     /* Social Sign In Method Provider */
 
@@ -30,7 +30,7 @@ class Firebase {
 
   // *** Auth API ***
 
-  doCreateUserWithEmailAndPassword = (email, password) =>
+  doCreateUserWithEmailAndPassword = (email, password) => 
     this.auth.createUserWithEmailAndPassword(email, password);
 
   doSignInWithEmailAndPassword = (email, password) =>
@@ -49,10 +49,14 @@ class Firebase {
 
   doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
 
-  doSendEmailVerification = () =>
-    this.auth.currentUser.sendEmailVerification({
-      url: config.url,
-    });
+  doSendEmailVerification = (authUser) => {
+    authUser.user.sendEmailVerification()
+        .then(() => console.log("Verification email sent."))
+        .catch(error => error);
+  }
+    // this.auth.currentUser.sendEmailVerification({
+    //   url: config.url,
+    // });
 
   doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
@@ -88,21 +92,29 @@ class Firebase {
       }
     });
 
-  // *** User API ***
-
-  user = uid => this.db.ref(`users/${uid}`);
-
-  users = () => this.db.ref('users');
-
-  // *** Message API ***
-
-  message = uid => this.db.ref(`messages/${uid}`);
-
-  messages = () => this.db.ref('messages');
+    addUserToDB = (authUser, email, username, isAdmin) => {
+        let data = {
+            user_id: authUser.user.uid,
+            username: username,
+            email: email,
+            isAdmin: isAdmin,
+            reservations: [],
+            reward_points: 0
+        };
+    
+        this.database
+            .collection("users")
+            .doc(data.user_id)
+            .set(data)
+            .then(console.log("Successfully created account."))
+            .catch(error => error);
+        
+        return;
+    }
 
   //location
   getCities = next =>
-        this.firestore
+        this.database
             .collection("locations")
             .get()
             .then(snapshot => {
