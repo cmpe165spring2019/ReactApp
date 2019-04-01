@@ -104,14 +104,15 @@ class Firebase {
 			reward_points: 0
 		};
 
-		this.database
+		return this.database
 			.collection("users")
 			.doc(data.user_id)
 			.set(data)
-			.then(console.log("Successfully created account."))
+			.then(() => {
+				console.log("Successfully created account.");
+				return doSendEmailVerification();
+			})
 			.catch(error => error);
-
-		return;
 	};
 
 	editUserAccount = (user_id, data) => {
