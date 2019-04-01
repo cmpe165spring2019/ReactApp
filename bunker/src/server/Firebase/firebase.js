@@ -55,11 +55,7 @@ class Firebase {
 			.catch(error => error);
 	};
 
-	user = uid =>
-		this.database
-			.collection("users")
-			.doc(uid)
-			.get();
+	user = uid => this.database.collection("users").doc(uid);
 
 	doPasswordUpdate = password => this.auth.currentUser.updatePassword(password);
 
@@ -68,7 +64,7 @@ class Firebase {
 	onAuthUserListener = (next, fallback) =>
 		this.auth.onAuthStateChanged(authUser => {
 			if (authUser) {
-				this.user(authUser.uid).then(snapshot => {
+				this.user(authUser.uid).get().then(snapshot => {
 					const dbUser = snapshot.data();
 
 					// default empty roles
@@ -94,19 +90,16 @@ class Firebase {
 
 	// *** Database API *** //
 
-	addUserToDB = (authUser, email, username, isAdmin) => {
+	addUserToDB = (authUser, email, username) => {
 		let data = {
 			user_id: authUser.user.uid,
 			username: username,
 			email: email,
-			isAdmin: isAdmin,
 			reservations: [],
 			reward_points: 0
 		};
 
-		return this.database
-			.collection("users")
-			.doc(data.user_id)
+		return user(data.user_id)
 			.set(data)
 			.then(() => {
 				console.log("Successfully created account.");
