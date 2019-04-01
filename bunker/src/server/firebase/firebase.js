@@ -2,7 +2,7 @@ import app from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
 import "firebase/firestore";
-import _ from 'lodash';
+import _ from "lodash";
 
 import Config from "./config";
 
@@ -309,37 +309,34 @@ class Firebase {
 			.catch(error => console.log(error));
 	};
 
-	filterHotel = (hotels, field, compareFunction, compareValue) => {
-	return hotels.filter(hotel => {
-		return compareFunction(_.get(hotel, field), compareValue);
-	});
-};
-sortHotels = (hotels, field, isAscending = true) => {
-	let type = typeof _.get(hotels[0], field);
-	let compareFunction;
-	if (type == 'string') {
-		compareFunction = (a, b) => {
-			var stringA = _.get(a, field).toUpperCase(); // ignore upper and lowercase
-			var stringB = _.get(b, field).toUpperCase(); // ignore upper and lowercase
-			if (stringA < stringB) {
-				return -1;
-			}
-			if (stringA > stringB) {
-				return 1;
-			}
-			// names must be equal
-			return 0;
-		};
-	} else {
-		compareFunction = (a, b) => _.get(a, field) - _.get(b, field);
-	}
-	if (isAscending) {
-		return hotels.sort(compareFunction);
-	} else return hotels.sort(compareFunction).reverse();
-};
-
-
-
+	filterHotels = (hotels, field, compareFunction, compareValue) => {
+		return hotels.filter(hotel => {
+			return compareFunction(_.get(hotel, field), compareValue);
+		});
+	};
+	sortHotels = (hotels, field, isAscending = true) => {
+		let type = typeof _.get(hotels[0], field);
+		let compareFunction;
+		if (type === "string") {
+			compareFunction = (a, b) => {
+				var stringA = _.get(a, field).toUpperCase(); // ignore upper and lowercase
+				var stringB = _.get(b, field).toUpperCase(); // ignore upper and lowercase
+				if (stringA < stringB) {
+					return -1;
+				}
+				if (stringA > stringB) {
+					return 1;
+				}
+				// names must be equal
+				return 0;
+			};
+		} else {
+			compareFunction = (a, b) => _.get(a, field) - _.get(b, field);
+		}
+		if (isAscending) {
+			return hotels.sort(compareFunction);
+		} else return hotels.sort(compareFunction).reverse();
+	};
 }
 
 export default Firebase;
