@@ -50,9 +50,9 @@ class Firebase {
 		this.auth
 			.createUserWithEmailAndPassword(email, password)
 			.then(authUser => {
-        			data.user_id = authUser.user.uid;
-        			data.reservations = [];
-        			data.reward_points = 0;
+				data.user_id = authUser.user.uid;
+				data.reservations = [];
+				data.reward_points = 0;
 				this.database
 					.collection("users")
 					.doc(data.user_id)
@@ -82,24 +82,104 @@ class Firebase {
 			});
 	};
 
-    search = (location, callback) =>
-    {
-        this.database.collection('locations').doc(location).once('value')
-            .then( data => {
-                console.log('Successfully fetched rooms from ' + location);
-                callback(data);
-                return true;})
+	getCities = () =>
+		this.firestore
+			.collection("locations")
+			.get()
+			.then(snapshot => {
+				let cities = [];
+				snapshot.forEach(city => {
+					const obj = {
+						id: city.id,
+						data: {...city.data()}
+					};
+					cities.push(obj);
+				});
 
-            .catch( error => {
-                console.log("Failed to get hotels " + error);
-                return false;
-            })
-    };
+				return cities;
+			});
+	getLocationHotel = location => {
+		let hotels = [];
+		location.data.hotels.forEach(hotelRef => {
+			hotelRef.get().then(hotel => {
+				const obj = {
+					id: hotel.id,
+					data: {...hotel.data()}
+				};
+				hotels.push(obj);
+			});
+		});
+		return hotels;
+	};
+
+	getHotelsRoomTypeSearch = (hotels, room_types) => {
+		let result = [];
+		hotels.forEach(hotel => {
+			const check = room_types.every(room_type =>
+				hotel.data.room_types.includes(room_type)
+			);
+			if (check) result.push(hotel);
+		});
+		return result;
+	};
+
+	getHotelRoomAvailableDate = (hotels, date_start, date_end) => {
+		let result = [];
+		hotels.forEach(hotel => {
+			const isAvaliable = hotel.data.rooms.some(room =>
+				room.unavailable_dates.every(dateRange => {
+					const roomCheck =
+						date_end < dateRange.startDate || date_start > dateRange.endDate;
+					if (!roomCheck) hotel.data.rooms.pop(room);
+					return roomCheck;
+				})
+			);
+			if (isAvaliable) {
+				result.push(hotel);
+			}
+		});
+		return result;
+	};
+
+	updateUnavailableDatetoRoom = (hotel, date_start, date_end) => {
+		let availableRoom = hotel[0].data.rooms[0];
+		const hotelRef = this.database.collection("hotels").doc(hotel.id);
+		//remove the current available room
+		hotelRef
+			.update({
+				rooms: this.firebase.firestore.FieldValue.arrayRemove(availableRoom)
+			})
+			.then(() => console.log("Successfully Remove available room"))
+			.catch(error => console.log(error));
+		//Add edited available room
+		availableRoom.unavailable_dates.push({startDate: 8, endDate: 8});
+		this.database
+			.collection("hotels")
+			.doc(hotel.id)
+			.update({
+				rooms: this.firebase.firestore.FieldValue.arrayUnion(availableRoom)
+			})
+			.then(() => console.log("Successfully add edited available room"))
+			.catch(error => console.log(error));
+	};
 
 	//*****Reservation API*********
 	//add reservation data
 	addReservation = (user_id, data) => {
 		//Check that data has valid properties
+		//get user's document
+		let user;
+		this.database
+			.collection("users")
+			.doc(user_id)
+			.get()
+			.then(snapshot => {
+				user = {
+					id: snapshot.id,
+					data: snapshot.data()
+				};
+			})
+			.catch(error => error("Users not exits"));
 		if (
 			data.hasOwnProperty("user_id") &&
 			data.hasOwnProperty("hotel_id") &&
@@ -116,21 +196,9 @@ class Firebase {
 					//Add reservation_id to reservation document
 					data.reservation_id = res_doc.id;
 					this.editReservation(res_doc.id, data);
-					//get user's document
-					this.database
-						.collection("users")
-						.doc(user_id)
-						.get()
-						.then(user_doc => {
-							//add reservation to user's current reservation array
-							let new_res = user_doc.data().reservations; //Reference to reservation array
-							new_res.push(data.reservation_id); //Adding new reservation_id
-							this.editUser(user_id, {reservations: new_res});
-						})
-						.catch(err => {
-							console.log("Failed to get user document.");
-							return false;
-						});
+					let new_res = user.data.reservations;
+					new_res.push(data.reservation_id);
+					this.editUser(user_id, {reservation: new_res});
 				})
 				.catch(err => {
 					console.log("Failed to add new reservation. " + err);
