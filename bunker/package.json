@@ -6,6 +6,7 @@
     "firebase": "^5.8.5",
     "moment": "^2.24.0",
     "react": "^16.8.3",
+    "react-async-script-loader": "^0.3.0",
     "react-dom": "^16.8.2",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.5",
