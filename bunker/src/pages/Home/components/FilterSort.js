@@ -71,11 +71,15 @@ const SearchFilter = (props) => (
 
     <Grid centered>
         <Grid.Row>
-            <Grid.Column width={2}>
+            <Grid.Column width={3}>
             <div>
-                        Price:
+                        Price: ${props.price}
                     </div>
-                    <Slider axis="x" x={50} onChange={({x}) => this.setState(price=> ({price}))}>
+                    <Slider 
+                    name="slider"
+                    axis="x" 
+                    x={props.price} 
+                    onChange={props.handleSlider}>
                     </Slider>         
             </Grid.Column>
             <Grid.Column width={2}>
@@ -86,7 +90,8 @@ const SearchFilter = (props) => (
                         name="rating"
                         placeholder='' 
                         options={ratingOptions}
-                        onChange={props.handleFilter} />
+                        defaultValue={props.defaultRating}
+                        onChange={props.handleRating} />
             </Grid.Column>
             <Grid.Column width={2}>
             <div>

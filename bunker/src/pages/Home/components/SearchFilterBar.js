@@ -32,8 +32,8 @@ class SearchFilterBar extends Component {
         return (
             <Grid centered>
                 <Grid.Row/>
-                <Grid.Row>
-                    <Grid.Column width={3}>
+                <Grid.Row centered>
+                    <Grid.Column width={4}>
                     <div>
                         Location:
                     </div>
@@ -62,7 +62,7 @@ class SearchFilterBar extends Component {
                          placeholder="From - To"
                         />
                      </Grid.Column>
-                     <Grid.Column width={2}>
+                     <Grid.Column width={3}>
                      <div>Room Type:</div>
                         <Select 
                         name="roomType"                        
