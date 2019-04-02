@@ -21,10 +21,9 @@ class HomePage extends Component {
     constructor(props){
         super(props);
         this.state = {
-            searchLocations: [],
+            locationOptions: [],
             datesRange: '',
-            search: {
-                
+            search: {  
                 location: '',
                 checkInDate: null,
                 checkOutDate: null,
@@ -33,7 +32,8 @@ class HomePage extends Component {
             filter: {
                 price: null,
                 rating: null,
-            }
+            },
+            sort: ''
         }
     }
 
@@ -42,7 +42,7 @@ class HomePage extends Component {
         this._asyncRequest = this.props.firebase.getCities()
             .then(externalData => {
             this._asyncRequest = null;
-            this.setState({searchLocations: externalData});
+            this.setState({locationOptions: externalData});
         });
 
 
@@ -59,7 +59,7 @@ class HomePage extends Component {
     }
 
     handleCheckInOut=(event,{name,value})=>{
-        console.log("name: " + name + " value: " + value);
+      console.log("name: " + name + " value: " + value);
         if(this.state.hasOwnProperty(name)){
             this.setState({[name]:value});
         }
@@ -83,8 +83,9 @@ class HomePage extends Component {
             );
             this.setState({
                 search: {
+                    ...this.state.search,
                     checkInDate: checkInDate,
-                    checkOutDate: checkOutDate
+                    checkOutDate: checkOutDate,
                 }
             });
 
@@ -103,14 +104,44 @@ class HomePage extends Component {
         //Make pop up modal for guests
     }
 
+    handleLocation=(e, {name,value})=>{
+        console.log(name + value);
+        this.setState({
+            search: { 
+                ...this.state.search,
+                [name]: value 
+            }
+        });
+        //Make pop up modal for guests
+    }
+
+    handleSearch=(e)=>{
+        //push search data to fire base
+        console.log("searching hotels!")
+    }
+
+    handleSort=(e, {name, value})=>{
+        this.setState({
+            [name]: value
+        });
+    }
+
+    handleFilter=(e, {name, value})=>{
+        this.setState(
+            {
+                [name]: value
+            }
+        )
+    }
+
     render() {
 
-        const searchLocations = this.state.searchLocations.map(
+        const locationOptions = this.state.locationOptions.map(
             (location) =>
             ({
             key: location.data.city,
-            text: `${location.data.city} , ${location.data.country}`,
-            value: location.data.city,
+            text: `${location.data.city} , ${location.data.state}, ${location.data.country}`,
+            value: location.data.city + ", " + location.data.state
             })
         );
 
@@ -132,15 +163,21 @@ class HomePage extends Component {
           }
         ];
 
+
         return (
             <div>
             <SearchFilterBar 
             datesRange={this.state.datesRange}
-            searchLocations={searchLocations} 
+            locationOptions={locationOptions} 
             roomOptions={roomOptions} 
+            handleLocation={this.handleLocation.bind(this)}
             handleCheckInOut={this.handleCheckInOut.bind(this)}
-            handleRoomType={this.handleRoomType.bind(this)}/>
-            <FilterSort/>
+            handleRoomType={this.handleRoomType.bind(this)}
+            handleSearch={this.handleSearch.bind(this)}
+            />
+            <FilterSort
+            handleSortType={this.handleSort.bind(this)}
+            />
                 <Segment>
                     <Grid columns={2}>
                         <Grid.Column width={10}>

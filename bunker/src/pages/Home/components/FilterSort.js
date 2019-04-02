@@ -86,7 +86,11 @@ const SearchFilter = (props) => (
             <div>
                         Sort By:
                     </div>
-                        <Select placeholder='' options={sortOptions} />
+                        <Select 
+                        name="sort"
+                        placeholder='' 
+                        options={sortOptions}
+                        onChange={props.handleSortType} />
             </Grid.Column>
             <Grid.Column>
             </Grid.Column>

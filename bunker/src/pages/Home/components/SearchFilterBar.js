@@ -38,9 +38,10 @@ class SearchFilterBar extends Component {
                         Location:
                     </div>
                      <Dropdown search selection fluid 
-                     name="searchLocation"
-                     options={this.props.searchLocations} 
+                     name="location"
+                     options={this.props.locationOptions} 
                      placeholder="City, Adress, Zip code..."
+                     onChange={this.props.handleLocation}
                      onSearchChange={this.props.handleLocation}
                      onLabelClick={this.props.handleLocation}
                      />
@@ -51,7 +52,7 @@ class SearchFilterBar extends Component {
                          </div>
                          <DatesRangeInput 
                          name="datesRange"  
-                         minDate={today} 
+                         minDate={today}
                          defaultValue={tomorrow}
                          dateFormat="MM-DD-YYYY" 
                          onChange={this.props.handleCheckInOut} 
@@ -64,15 +65,17 @@ class SearchFilterBar extends Component {
                      <Grid.Column width={2}>
                      <div>Room Type:</div>
                         <Select 
+                        name="roomType"                        
                         placeholder='' 
                         options={this.props.roomOptions} 
                         onChange={this.props.handleRoomType}
-                        name="roomType"
                         />
                      </Grid.Column>
                      <Grid.Column>
                          <br></br>
-                        <Button>
+                        <Button
+                        onClick={this.props.handleSearch}
+                        >
                             Search
                         </Button>
                     </Grid.Column>
