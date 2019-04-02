@@ -127,9 +127,13 @@ class HomePage extends Component {
     }
 
     handleFilter=(e, {name, value})=>{
+        console.log("name: " + name + "value: " + value)
         this.setState(
             {
-                [name]: value
+                filter:{
+                    ...this.state.filter,
+                    [name]: value
+                }
             }
         )
     }
@@ -176,7 +180,8 @@ class HomePage extends Component {
             handleSearch={this.handleSearch.bind(this)}
             />
             <FilterSort
-            handleSortType={this.handleSort.bind(this)}
+            handleSort={this.handleSort.bind(this)}
+            handleFilter={this.handleFilter.bind(this)}
             />
                 <Segment>
                     <Grid columns={2}>

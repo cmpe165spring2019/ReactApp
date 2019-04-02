@@ -13,9 +13,11 @@ const RatingFilter = () => {
         starOptions.push(obj);
     }
     return (
-        <Select icon="star" iconPosition="left" options={starOptions} />
+       starOptions
     );
 }
+
+const ratingOptions = RatingFilter();
 
 const sortOptions = [
     {
@@ -80,7 +82,11 @@ const SearchFilter = (props) => (
             <div>
                         Rating:
                     </div>
-                    <RatingFilter/>
+                    <Select 
+                        name="rating"
+                        placeholder='' 
+                        options={ratingOptions}
+                        onChange={props.handleFilter} />
             </Grid.Column>
             <Grid.Column width={2}>
             <div>
@@ -90,7 +96,7 @@ const SearchFilter = (props) => (
                         name="sort"
                         placeholder='' 
                         options={sortOptions}
-                        onChange={props.handleSortType} />
+                        onChange={props.handleSort} />
             </Grid.Column>
             <Grid.Column>
             </Grid.Column>
