@@ -7,6 +7,7 @@
     "moment": "^2.24.0",
     "react": "^16.8.3",
     "react-dom": "^16.8.2",
+    "react-input-slider": "^5.0.6",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.5",
     "recompose": "^0.30.0",
