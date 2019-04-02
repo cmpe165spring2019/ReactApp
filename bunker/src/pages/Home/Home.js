@@ -217,9 +217,13 @@ class HomePage extends Component {
             filter:{
                 ...this.state.filter,
                 price: e.x
-            }
-        });
-        this.handleFilter();
+            },
+            
+        },
+        ()=>{
+            this.handleFilter();
+        }
+        );
     }
 
     handleRating=(e, {name, value})=>{
@@ -230,16 +234,19 @@ class HomePage extends Component {
                     ...this.state.filter,
                     rating: value
                 }
+            },
+            ()=>{
+                this.handleFilter();
             }
         );
-        this.handleFilter(value);
     }
 
-    handleFilter=(r)=>{
+    handleFilter=()=>{
         //update state for filteredHotels
         const hotels = this.state.hotels;
         const price = this.state.filter.price;
-        console.log("filtering by $" + price + " and rating " + r);
+        const rating = this.state.filter.rating;
+        console.log("filtering by $" + price + " and rating " + rating);
 
         let filteredHotels1 = hotels.filter(
             hotel => hotel.price <= price
