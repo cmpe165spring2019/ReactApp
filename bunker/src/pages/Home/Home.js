@@ -25,6 +25,7 @@ class HomePage extends Component {
         this.state = {
             hotels: [],
             filteredHotels: [],
+            searchedHotels: [],
             locationOptions: [],
             datesRange: '',
             search: {  
@@ -51,7 +52,9 @@ class HomePage extends Component {
 
         //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
         // load hotel data for both arrays
-        // hotels stays constant
+        // hotels[] stays constant
+        // set state of searchHotels[] to hotels[]
+        // call filter and sort methods
         // filteredHotels is what gets rendered after filtering/sorting hotels
         this.setState({  
         hotels: DUMMYHOTELS,
@@ -128,9 +131,11 @@ class HomePage extends Component {
 
     handleSearch=(e)=>{
         //*** */BACK-END IMPLEMENTATION:
-        //push search data to fire base
-        //retrieve hotel data, re-render hotel cards
-        //call methods to re-filter and re-sort hotel cards
+        // filter hotels[] by search criteria & store into searchedHotels[]
+        // set state of searchedHotels[]
+        // call methods to re-filter and re-sort hotel cards
+        // set state of filteredHotels[]
+        // page gets re-rendered & displays filteredHotels[]
         console.log("searching hotels!")
         this.handleFilter();
     }
