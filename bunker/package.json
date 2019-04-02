@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "firebase": "^5.8.5",
+    "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "react": "^16.8.3",
     "react-async-script-loader": "^0.3.0",
