@@ -15,7 +15,7 @@ import { DatesRangeInput } from "semantic-ui-calendar-react";
 
 
 const today=moment().format('MM-DD-YYYY');
-const tommorrow=moment().add(1,'days').format('MM-DD-YYYY');
+const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
 
 
 class SearchFilterBar extends Component {
@@ -38,8 +38,11 @@ class SearchFilterBar extends Component {
                         Location:
                     </div>
                      <Dropdown search selection fluid 
+                     name="searchLocation"
                      options={this.props.searchLocations} 
                      placeholder="City, Adress, Zip code..."
+                     onSearchChange={this.props.handleLocation}
+                     onLabelClick={this.props.handleLocation}
                      />
                      </Grid.Column>
                      <Grid.Column width={2}>
@@ -49,6 +52,7 @@ class SearchFilterBar extends Component {
                          <DatesRangeInput 
                          name="datesRange"  
                          minDate={today} 
+                         defaultValue={tomorrow}
                          dateFormat="MM-DD-YYYY" 
                          onChange={this.props.handleCheckInOut} 
                          value={this.props.datesRange} 
@@ -63,6 +67,7 @@ class SearchFilterBar extends Component {
                         placeholder='' 
                         options={this.props.roomOptions} 
                         onChange={this.props.handleRoomType}
+                        name="roomType"
                         />
                      </Grid.Column>
                      <Grid.Column>
