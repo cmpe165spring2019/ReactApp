@@ -28,8 +28,8 @@ class HomePage extends Component {
             searchedHotels: [],
             locationOptions: [],
             datesRange: '',
-            search: {  
-                location: '',
+            search: {
+                location: {},
                 checkInDate: null,
                 checkOutDate: null,
                 roomType: '',
@@ -65,9 +65,9 @@ class HomePage extends Component {
         // set state of searchHotels[] to hotels[]
         // call filter and sort methods
         // filteredHotels is what gets rendered after filtering/sorting hotels
-        this.setState({  
+        this.setState({
         hotels: DUMMYHOTELS,
-        filteredHotels: DUMMYHOTELS  }) 
+        filteredHotels: DUMMYHOTELS  })
 
     }
 
@@ -77,8 +77,10 @@ class HomePage extends Component {
         }
     }
 
-    componentDidUpdate() {
-        console.log("current State: " + util.inspect(this.state));
+    componentDidUpdate(prevState) {
+        if(this.state.hotels !== prevState.hotels){
+            console.log(this.state.hotels);
+        }
     }
 
     handleCheckInOut=(event,{name,value})=>{
@@ -119,27 +121,28 @@ class HomePage extends Component {
 
     handleRoomType=(e, {value})=>{
         this.setState({
-            search: { 
+            search: {
                 ...this.state.search,
-                roomType: value 
+                roomType: value
             }
         });
         //Make pop up modal for guests
     }
 
     handleLocation=(e, {name,value})=>{
-        console.log(name + value);
+        console.log(value);
         this.setState({
-            search: { 
+            search: {
                 ...this.state.search,
-                location: value 
+                location: value
             }
         },
         ()=>{
-            //this.firebase.getLocationHotel(value)
-            //this.setState({
-            //     hotels[] = result
-            // })
+            const result = this.props.firebase.getLocationHotel(value);
+            //Do not check this.state.hotels in here, they will not load correctly
+            this.setState({
+                hotels: result,
+            })
         });
     }
 
@@ -225,7 +228,7 @@ class HomePage extends Component {
             this.setState({
                 filteredHotels: sortedHotels
             })
-    
+
         }
 
     }
@@ -237,7 +240,7 @@ class HomePage extends Component {
                 ...this.state.filter,
                 price: e.x
             },
-            
+
         },
         ()=>{
             this.handleFilter();
@@ -292,7 +295,7 @@ class HomePage extends Component {
             ({
             key: location.data.city,
             text: `${location.data.city} , ${location.data.state}, ${location.data.country}`,
-            value: location.data.city + ", " + location.data.state
+            value: location
             })
         );
 
@@ -316,10 +319,10 @@ class HomePage extends Component {
 
         return (
             <div>
-            <SearchFilterBar 
+            <SearchFilterBar
             datesRange={this.state.datesRange}
-            locationOptions={locationOptions} 
-            roomOptions={roomOptions} 
+            locationOptions={locationOptions}
+            roomOptions={roomOptions}
             handleLocation={this.handleLocation.bind(this)}
             handleCheckInOut={this.handleCheckInOut.bind(this)}
             handleRoomType={this.handleRoomType.bind(this)}
@@ -336,19 +339,19 @@ class HomePage extends Component {
                 <Segment>
                     <Grid columns={2}>
                         <Grid.Column width={10}>
-                            <ListingBase 
+                            <ListingBase
                             hotels={this.state.filteredHotels}
                             />
                         </Grid.Column>
                         <Grid.Column width={6}>
                             insert maps here
-                        </Grid.Column>                    
+                        </Grid.Column>
                     </Grid>
                 </Segment>
             </div>
         );
         }
-    
+
     }
 
 export default withFirebase(HomePage)
