@@ -272,7 +272,7 @@ class Firebase {
 	getHotelRoomAvailableDate = (hotels, date_start, date_end) => {
 		let result = [];
 		hotels.forEach(hotel => {
-			const isAvaliable = hotel.data.rooms.some(room =>
+			const isAvailable = hotel.data.rooms.some(room =>
 				room.unavailable_dates.every(dateRange => {
 					const roomCheck =
 						date_end < dateRange.startDate || date_start > dateRange.endDate;
@@ -280,7 +280,7 @@ class Firebase {
 					return roomCheck;
 				})
 			);
-			if (isAvaliable) {
+			if (isAvailable) {
 				result.push(hotel);
 			}
 		});

@@ -43,12 +43,21 @@ class HomePage extends Component {
     }
 
     componentDidMount() {
-        // this.setState({loading: true});
+        this.setState({loading: true});
         this._asyncRequest = this.props.firebase.getCities()
             .then(externalData => {
             this._asyncRequest = null;
             this.setState({locationOptions: externalData});
         });
+
+        // this._asyncRequest = this.props.firebase.getLocationHotel('San Jose, CA')
+        //     .then(result => {
+        //         this._asyncRequest = null;
+        //         this.setState({
+        //             hotels: result
+        //         });
+        //     });
+
 
         //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
         // load hotel data for both arrays
@@ -63,9 +72,9 @@ class HomePage extends Component {
     }
 
     componentWillUnmount() {
-        // if (this._asyncRequest) {
-        //     this._asyncRequest.cancel();
-        // }
+        if (this._asyncRequest) {
+            this._asyncRequest.cancel();
+        }
     }
 
     componentDidUpdate() {
@@ -123,10 +132,15 @@ class HomePage extends Component {
         this.setState({
             search: { 
                 ...this.state.search,
-                [name]: value 
+                location: value 
             }
+        },
+        ()=>{
+            //this.firebase.getLocationHotel(value)
+            //this.setState({
+            //     hotels[] = result
+            // })
         });
-        //Make pop up modal for guests
     }
 
     handleSearch=(e)=>{
