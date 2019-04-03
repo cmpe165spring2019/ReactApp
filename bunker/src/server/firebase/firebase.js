@@ -247,10 +247,11 @@ class Firebase {
 	getLocationHotel = location => {
 		let hotels = [];
 		location.data.hotels.forEach(hotelRef => {
-			hotelRef.get().then(hotel => {
-				const obj = {
-					id: hotel.id,
-					data: {...hotel.data()}
+			let obj = {};
+			hotelRef.get().then(snapshot => {
+				obj = {
+					id: snapshot.id,
+					data: {...snapshot.data()}
 				};
 				hotels.push(obj);
 			});
