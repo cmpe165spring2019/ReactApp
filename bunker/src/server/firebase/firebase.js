@@ -98,15 +98,15 @@ class Firebase {
 	// *** Database API *** //
 
 	getAllHotels = () => this.database.collection("hotels").get().then(hotels => {
-		let hotels = [];
+		let result = [];
 		hotels.forEach(snapshot => {
 			const obj = {
 				id: snapshot.id,
 				data: {...snapshot.data()}
 			}
-			hotels.push(obj);
+			result.push(obj);
 		})
-		return hotels;
+		return result;
 	})
 
 	addUserToDB = (authUser, email, username) => {
