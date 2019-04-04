@@ -11,13 +11,7 @@ import {
 import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import * as moment from "moment";
 
-// const hotel = [{
-//     name: "1",
-//     location: "Dsadas",
-//     image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-//     address:"1111",
-//     price:"222"
-// }]
+
 const today = moment().format("MM-DD-YYYY");
 const tommorrow = moment()
     .add(1, "days")
@@ -31,11 +25,45 @@ class HotelPage extends React.Component {
             dateIn: "",
             dateOut: "",
             maxCheckIn: "",
-            minCheckout: tommorrow
+            minCheckout: tommorrow,
+            reservation: {
+                user_id: '',
+                hotel_id: '',
+                room_id: '',
+                price: 0,
+                start_date: 0,
+                end_date: 0,
+            }
         }
     }
+    // componentDidMount() {
+    //     let rooms, totalprice, room_ids;
+    //     const {hotel_id, start_date, end_date} = this.props
+    //     this.props.hotel.rooms(room => {
+    //         rooms.push(room);
+    //     })
+    //     totalprice = rooms.reduce(room => room.price);
+    //     this.props.hotel.rooms(room => {
+    //         room_ids.push(room.id);
+    //     })
+    //     this.setState({
+    //         reservation : {
+    //             hotel_id: hotel.id,
+    //             room_ids: room_ids,
+    //             price: price,
+    //             start_date: start_date,
+    //             end_date: end_date,
+    //         }
+    //     })
+    // }
 
+
+    makeReservation = ()=>{
+        const {reservation} = this.state;
+        this.props.firebase.addReservation(reservation);
+    }
     handleCheckInDate = (event, { name, value }) => {
+        const {hotel_id, room_ids} = this.state.reservation;
         let parts = value.split("-");
         let dt = new Date(
             parseInt(parts[2]),
@@ -46,43 +74,53 @@ class HotelPage extends React.Component {
         //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
         //  }
         //  else{
+        // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
+            let date = moment(dt)
+                .add(1, "days")
+                .format("MM-DD-YYYY");
 
-        let date = moment(dt)
-            .add(1, "days")
-            .format("MM-DD-YYYY");
-        console.log(date);
-        //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
-        if (this.state.hasOwnProperty(name)) {
-            console.log("good1");
-            this.setState({ [name]: value, minCheckout: date });
-        }
+            console.log(date);
+            //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
+            if (this.state.hasOwnProperty(name)) {
+                console.log("good1");
+                this.setState({ [name]: value, minCheckout: date });
+            }
+        // }
+        // else{
+            alert("That date is not available");
+        // }
+
         //}
     };
 
     handleCheckOutDate = (event, { name, value }) => {
-        console.log("good2");
+        const {hotel_id, room_ids} = this.state.reservation;
         let parts = value.split("-");
         let dt = new Date(
             parseInt(parts[2]),
             parseInt(parts[0] - 1),
             parseInt(parts[1])
         );
-        //  if(value.length>=10 && dt<=new Date()){
-        //  window.alert("The Earliest CheckOutDate is tommorrow, please choose from calendar");
+        //if(value.length>=10 && dt<new Date()){
+        //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
         //  }
         //  else{
-        let date = moment(dt)
-            .subtract(1, "days")
-            .format("MM-DD-YYYY");
-        //let date1=today;
-        //  if(moment(dt).subtract(120,'days')>moment()){
-        //date1=moment(dt).subtract(120,'days').format('MM-DD-YYYY');
-        //  }
-        if (this.state.hasOwnProperty(name)) {
-            console.log("good3");
-            this.setState({ [name]: value, maxCheckIn: date });
-        }
-        //}
+        // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
+
+            let date = moment(dt)
+                .subtract(1, "days")
+                .format("MM-DD-YYYY");
+
+            console.log(date);
+            //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
+            if (this.state.hasOwnProperty(name)) {
+                console.log("good1");
+                this.setState({ [name]: value, minCheckout: date });
+            }
+        // }
+        // else{
+            alert("That date is not available");
+        // }
     };
 
     render() {
@@ -143,7 +181,7 @@ class HotelPage extends React.Component {
                         </div>
                         <div style={bookDiv1}>
                             <h3>Book Now</h3>
-                            <Button color="green" size="small" width="70px">Book</Button>
+                            <Button onClick={this.makeReservation()}color="green" size="small" width="70px">Book</Button>
                         </div>
                     </div>
                     <div style={googleMapDiv}>
@@ -185,6 +223,7 @@ class HotelPage extends React.Component {
                         <tfoot className="">
                         </tfoot>
                     </table>
+
                 </div>
 
             </div>
