@@ -63,7 +63,6 @@ class Firebase {
 
 	reservationRef = uid => this.database.collection("reservations").doc(uid);
 
-
 	// *** Merge Auth and DB User API *** //
 
 	onAuthUserListener = (next, fallback) =>
@@ -97,17 +96,21 @@ class Firebase {
 
 	// *** Database API *** //
 
-	getAllHotels = () => this.database.collection("hotels").get().then(hotels => {
-		let result = [];
-		hotels.forEach(snapshot => {
-			const obj = {
-				id: snapshot.id,
-				data: {...snapshot.data()}
-			}
-			result.push(obj);
-		})
-		return result;
-	})
+	getAllHotels = () =>
+		this.database
+			.collection("hotels")
+			.get()
+			.then(hotels => {
+				let result = [];
+				hotels.forEach(snapshot => {
+					const obj = {
+						id: snapshot.id,
+						data: {...snapshot.data()}
+					};
+					result.push(obj);
+				});
+				return result;
+			});
 
 	addUserToDB = (authUser, email, username) => {
 		let data = {
@@ -313,12 +316,28 @@ class Firebase {
 			.then(() => console.log("Successfully add edited available room"))
 			.catch(error => console.log(error));
 	};
-
+	/**
+	 * filter hotels arrays
+	 * @param  {array} hotels          hotels object arrays
+	 * @param  {array string} field           the deep of the filter object. Ex: ['room', 'price'] will the{ hotel: { room: { price: 1}}}
+	 * 																																			Ex2: ['price'] will filter the {hotel: { price}}
+	 * @param  {function} compareFunction function to compare. Ex: (a,b) => a < b
+	 * @param  {any} compareValue    value that will be compare to: filter everything larger smaller than 2, compareFunction = (a, b) => a < b, compareValue = 2
+	 * @return {array}                 array of hotels
+	 */
 	filterHotels = (hotels, field, compareFunction, compareValue) => {
 		return hotels.filter(hotel => {
 			return compareFunction(_.get(hotel, field), compareValue);
 		});
 	};
+	/**
+	 * filter hotels arrays
+	 * @param  {array} hotels          hotels object arrays
+	 * @param  {array string} field           the deep of the filter object. Ex: ['room', 'price'] will the{ hotel: { room: { price: 1}}}
+	 * 																																			Ex2: ['price'] will filter the {hotel: { price}}
+	 * @param {boolean} isAscending if true, sort Asccending, if false sort descending
+	 * @return {array}                 array of sorted hotels
+	 */
 	sortHotels = (hotels, field, isAscending = true) => {
 		let type = typeof _.get(hotels[0], field);
 		let compareFunction;
