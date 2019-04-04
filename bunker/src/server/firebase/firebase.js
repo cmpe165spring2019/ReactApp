@@ -331,7 +331,7 @@ class Firebase {
 		});
 	};
 	/**
-	 * filter hotels arrays
+	 * sorted hotels arrays
 	 * @param  {array} hotels          hotels object arrays
 	 * @param  {array string} field           the deep of the filter object. Ex: ['room', 'price'] will the{ hotel: { room: { price: 1}}}
 	 * 																																			Ex2: ['price'] will filter the {hotel: { price}}
