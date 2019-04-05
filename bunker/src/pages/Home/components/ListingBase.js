@@ -27,7 +27,7 @@ export default class ListingBase extends Component {
                 }}
                 >
                 <HotelCard 
-                // hotelImage={hotel.image1}
+                hotelImage={hotel.data.image[0]}
                 hotelName={hotel.data.name}
                 // hotelPrice={hotel.price}
                 hotelDescription={hotel.data.details}

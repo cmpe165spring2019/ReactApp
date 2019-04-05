@@ -53,21 +53,23 @@ class HomePage extends Component {
                 this._asyncRequest = null;
                 this.setState({
                     allHotels: result,
+                    searchedHotels: result,
                     filteredHotels: result
                 },
                 ()=>{
                     
-                    console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
+                    // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
                     // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
                     // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
                 });
             });
+            console.log('sort: ' + this.state.sort);
 
     
         //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
         // load hotel data for both arrays
         // hotels[] stays constant
-        // set state of searchHotels[] to hotels[]
+        // set state of searchHotels[] to allHotels[]
         // call filter and sort methods
         // filteredHotels is what gets rendered after filtering/sorting hotels
 
@@ -149,56 +151,33 @@ class HomePage extends Component {
     handleSearch=(e)=>{
         //*** */BACK-END IMPLEMENTATION:
         // filter hotels[] by search criteria & store into searchedHotels[]
-        let searchedHotels = [];
-        
-        const { searchCity, searchState, searchCountry } = this.state.search.location.data;
-        // console.log('search for location: ' + city + state + country);
-        // searchedHotels = this.state.allHotels.filter(
-        //     hotel=>
-        //         hotel.data.address.city.toLowerCase().includes(searchCity)
-        //         &&hotel.data.address.state.toLowerCase().includes(searchState)
-        //         && hotel.data.address.country.toLowerCase().includes(searchCountry)
-            
-
-        // );
-
-        this.state.allHotels.forEach(hotel=>{
-            console.log(hotel.data.address);
-
-            if(typeof hotel.data.city== 'undefined'){
-                console.log("error with :" + hotel.data.name + " " + hotel.id);
-                // console.log(hotel.id);
+        let searchedHotels = this.state.searchedHotels;
+        // console.log(this.state.search.location);
+        if(this.state.search.location.hasOwnProperty('data')){
+            const { city, state, country } = this.state.search.location.data;
+            if( city && state && country ){
+                searchedHotels = this.state.allHotels.filter(
+                    hotel=>
+                        hotel.data.address.city.toLowerCase().includes(city.toLowerCase())
+                        &&hotel.data.address.state.toLowerCase().includes(state.toLowerCase())
+                        && hotel.data.address.country.toLowerCase().includes(country.toLowerCase())
+                    
+                );
             }
-            else{
-                console.log(hotel.data.address.city);
-            }
-            if(typeof hotel.data.name == 'undefined'){
-                console.log(hotel.id);
-            }
-       
-        });
+        }
 
-        // console.log('search print out ' + city.toLowerCase());
-            // console.log('city print out ' + (this.state.allHotels[0].data.address.city.toLowerCase()));
-            // console.log('compare ' + city.toLowerCase().includes(this.state.allHotels[0].data.address.city.toLowerCase()));
-       
-            // set state of searchedHotels[]
-        // clear values for search
+       if(searchedHotels!==this.state.searchedHotels){
+        // set state of searchedHotels[]
         this.setState({
             searchedHotels: searchedHotels,
             filteredHotels: searchedHotels,
-            // search: {
-            //     location: null,
-            //     checkInDate: null,
-            //     checkOutDate: null,
-            //     roomType: ''
-            // },
-            sort: '',
-            // filter: {
-            //     price: 100,
-            //     rating: 0,
-            // },
+        },
+        ()=>{
+            console.log('post-search sort: ' + this.state.sort);
+            this.sortHotels(this.state.sort);
         });
+       }
+
         // call methods to re-filter and re-sort hotel cards
         // set state of filteredHotels[]
         // page gets re-rendered & displays filteredHotels[]
@@ -208,23 +187,26 @@ class HomePage extends Component {
     handleSort=(e, {name, value})=>{
         //sets the state of sort
         this.setState({
-            [name]: value
+            sort: value
         });
+        this.sortHotels(value);
+    }
 
+    sortHotels=(value)=>{
         const filteredHotels = this.state.filteredHotels;
-        let sortedHotels = [];
-        console.log(name);
+        let sortedHotels = filteredHotels;
+
         if(value.includes("rating")){
             if(value.includes("LH")){
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return a.rating - b.rating
+                        return a.data.rating - b.data.rating
                     }
                 );            }
             else{
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return b.rating - a.rating
+                        return b.data.rating - a.data.rating
                     }
                 );            }
         }
@@ -232,14 +214,14 @@ class HomePage extends Component {
             if(value.includes("LH")){
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return a.price - b.price
+                        return a.data.price - b.data.price
                     }
                 );
             }
             else{
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return b.price - a.price
+                        return b.data.price - a.data.price
                     }
                 );
             }
@@ -248,9 +230,8 @@ class HomePage extends Component {
             if(value.includes("AZ")){
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        let x = a.name.toLowerCase();
-                        let y = b.name.toLowerCase();
-                        console.log(x + y);
+                        let x = a.data.name.toLowerCase();
+                        let y = b.data.name.toLowerCase();
                         if (x < y) return -1;
                         else if (x > y) return 1;
                         else return 0;
@@ -260,8 +241,8 @@ class HomePage extends Component {
             else{
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        let x = a.name.toLowerCase();
-                        let y = b.name.toLowerCase();
+                        let x = a.data.name.toLowerCase();
+                        let y = b.data.name.toLowerCase();
                         if (x < y) return 1;
                         else if (x > y) return -1;
                         else return 0;
@@ -269,13 +250,13 @@ class HomePage extends Component {
                 );
             }        }
 
-        if(sortedHotels.length>0){
+        if(sortedHotels !== filteredHotels){
             this.setState({
+                searchedHotels: sortedHotels,
                 filteredHotels: sortedHotels
             })
 
         }
-
     }
 
     handleSlider=(e)=>{
@@ -287,7 +268,7 @@ class HomePage extends Component {
 
         },
         ()=>{
-            this.handleFilter();
+            this.handleFilter('price');
         }
         );
     }
@@ -302,34 +283,42 @@ class HomePage extends Component {
                 }
             },
             ()=>{
-                this.handleFilter();
+                this.handleFilter('rating');
             }
         );
     }
 
-    handleFilter=()=>{
+    handleFilter=(type)=>{
         //update state for filteredHotels
         const searchedHotels = this.state.searchedHotels;
         const price = this.state.filter.price;
         const rating = this.state.filter.rating;
-        console.log("filtering by $" + price + " and rating " + rating);
 
-        let filteredHotels1 = searchedHotels.filter(
-            hotel => hotel.price <= price
-        );
+        let filteredHotels = this.state.filteredHotels;
 
-        console.log("filtered hotels by price: " + filteredHotels1);
+        if(type==='rating'){
+            filteredHotels = searchedHotels.filter(
+                hotel => hotel.data.rating >= rating
+            );
+        }
 
-        let filteredHotels2 = filteredHotels1.filter(
-            hotel => hotel.rating >= this.state.filter.rating
-        );
+        // *** CURRENTLY BROKEN UNTIL PRICE ATTRIBUTE GETS ADDED TO FIREBASE ***
+        // else if(type==='price'){
+        //     filteredHotels = searchedHotels.filter(
+        //         hotel => hotel.data.price <= price
+        //     );
+        // }
 
-        console.log("filtered hotels by rating: " + filteredHotels2);
+        else{
+            console.log('filtering both');
+        }
 
-        this.setState({
-            filteredHotels: filteredHotels2
-
-        });
+        if(filteredHotels!==this.state.filteredHotels){
+            this.setState({
+                filteredHotels: filteredHotels
+    
+            });
+        }
     }
 
     render() {
