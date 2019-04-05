@@ -23,7 +23,7 @@ class HomePage extends Component {
     constructor(props){
         super(props);
         this.state = {
-            hotels: [],
+            allHotels: [],
             filteredHotels: [],
             searchedHotels: [],
             locationOptions: [],
@@ -50,24 +50,30 @@ class HomePage extends Component {
             this.setState({locationOptions: externalData});
         });
 
-        // this._asyncRequest = this.props.firebase.getLocationHotel('San Jose, CA')
-        //     .then(result => {
-        //         this._asyncRequest = null;
-        //         this.setState({
-        //             hotels: result
-        //         });
-        //     });
+        this._asyncRequest = this.props.firebase.getAllHotels()
+            .then(result => {
+                this._asyncRequest = null;
+                this.setState({
+                    allHotels: result,
+                    filteredHotels: result
+                },
+                ()=>{
+                    console.log(this.state.allHotels);
+                    console.log(this.state.allHotels[0].data.image[0])
+                });
+            });
 
-
+    
         //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
         // load hotel data for both arrays
         // hotels[] stays constant
         // set state of searchHotels[] to hotels[]
         // call filter and sort methods
         // filteredHotels is what gets rendered after filtering/sorting hotels
-        this.setState({
-        hotels: DUMMYHOTELS,
-        filteredHotels: DUMMYHOTELS  })
+
+        // this.setState({
+        // hotels: DUMMYHOTELS,
+        // filteredHotels: DUMMYHOTELS  })
 
     }
 
@@ -149,7 +155,20 @@ class HomePage extends Component {
     handleSearch=(e)=>{
         //*** */BACK-END IMPLEMENTATION:
         // filter hotels[] by search criteria & store into searchedHotels[]
+        let searchedHotels = [];
+        // searchedHotels = this.state.hotels.filter(
+        //     (hotel)=>hotel.data.location
+        // )
         // set state of searchedHotels[]
+        // clear values for search
+        this.setState({
+            search: {
+                location: null,
+                checkInDate: null,
+                checkOutDate: null,
+                roomType: ''
+            }
+        })
         // call methods to re-filter and re-sort hotel cards
         // set state of filteredHotels[]
         // page gets re-rendered & displays filteredHotels[]
@@ -234,7 +253,6 @@ class HomePage extends Component {
     }
 
     handleSlider=(e)=>{
-        // console.log(e.x);
         this.setState({
             filter:{
                 ...this.state.filter,
@@ -337,7 +355,7 @@ class HomePage extends Component {
             defaultRating={this.state.filter.rating}
             />
                 <Segment>
-                    <Grid columns={2}>
+                    <Grid celled columns={2}>
                         <Grid.Column width={10}>
                             <ListingBase
                             hotels={this.state.filteredHotels}
