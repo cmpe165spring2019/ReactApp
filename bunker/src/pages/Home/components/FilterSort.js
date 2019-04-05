@@ -52,21 +52,6 @@ const sortOptions = [
      },
   ];
 
-  const GuestNum = () => {
-    let Guests = [];
-    for (var i = 1; i < 6; i++) {
-        let obj = {
-            key: i,
-            text: i,
-            value: i
-        };
-        Guests.push(obj);
-    }
-    return (
-        <Select icon="user" iconPosition="left" options={Guests} />
-    );
-  }
-
 const SearchFilter = (props) => (
 
     <Grid centered>

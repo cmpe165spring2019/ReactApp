@@ -10,7 +10,7 @@ import {
 
 import * as moment from 'moment';
 
-import {withFirebase} from '../../../server/Firebase/';
+import {withFirebase} from '../../../server/Firebase';
 import { DatesRangeInput } from "semantic-ui-calendar-react";
 
 
