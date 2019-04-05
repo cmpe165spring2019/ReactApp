@@ -43,9 +43,17 @@ class HomePage extends Component {
     componentDidMount() {
         this.setState({loading: true});
         this._asyncRequest = this.props.firebase.getCities()
-            .then(externalData => {
+            .then(locationData => {
             this._asyncRequest = null;
-            this.setState({locationOptions: externalData});
+            locationData.sort((a,b)=>{
+                if(a.data.city.toLowerCase() > b.data.city.toLowerCase()){
+                    return 1
+                }
+                else{
+                    return -1
+                }
+            })
+            this.setState({locationOptions: locationData});
         });
 
         this._asyncRequest = this.props.firebase.getAllHotels()
@@ -57,7 +65,7 @@ class HomePage extends Component {
                     filteredHotels: result
                 },
                 ()=>{
-                    //initial sort
+                    //apply default sort and then render it
                     this.sortHotels(this.state.allHotels, this.state.sort);
                     // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
                     // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
@@ -73,10 +81,6 @@ class HomePage extends Component {
         // set state of searchHotels[] to allHotels[]
         // call filter and sort methods
         // filteredHotels is what gets rendered after filtering/sorting hotels
-
-        // this.setState({
-        // hotels: DUMMYHOTELS,
-        // filteredHotels: DUMMYHOTELS  })
 
     }
 
