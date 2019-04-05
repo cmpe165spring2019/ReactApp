@@ -165,8 +165,9 @@ class HomePage extends Component {
                 );
             }
         }
+        let searchedSortedHotels = this.sortHotels(searchedHotels, this.state.sort);
 
-       if(searchedHotels!==this.state.searchedHotels){
+       if(searchedSortedHotels!==this.state.searchedHotels){
         // set state of searchedHotels[]
         this.setState({
             searchedHotels: searchedHotels,
@@ -174,7 +175,6 @@ class HomePage extends Component {
         },
         ()=>{
             console.log('post-search sort: ' + this.state.sort);
-            this.sortHotels(this.state.sort);
         });
        }
 
@@ -189,12 +189,13 @@ class HomePage extends Component {
         this.setState({
             sort: value
         });
-        this.sortHotels(value);
+        this.sortHotels(this.state.filteredHotels, value);
     }
 
-    sortHotels=(value)=>{
-        const filteredHotels = this.state.filteredHotels;
-        let sortedHotels = filteredHotels;
+    sortHotels=(hotels, value)=>{
+        // const filteredHotels = this.state.filteredHotels;
+        const filteredHotels = hotels;
+        let sortedHotels = hotels;
 
         if(value.includes("rating")){
             if(value.includes("LH")){
@@ -257,6 +258,8 @@ class HomePage extends Component {
             })
 
         }
+
+        return sortedHotels;
     }
 
     handleSlider=(e)=>{
