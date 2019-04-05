@@ -2,7 +2,7 @@ import React from 'react'
 import { Grid, Card, Icon, Image } from 'semantic-ui-react'
 
 const HotelCard = (props) => (
-    <Card>
+    <Card fluid>
       <Image src= {props.hotelImage} />
       <Card.Content>
         <Card.Header>{props.hotelName}
@@ -21,6 +21,6 @@ const HotelCard = (props) => (
         </Grid.Column>
       </Card.Content>
     </Card>
-  )
+)
 
   export default HotelCard;
