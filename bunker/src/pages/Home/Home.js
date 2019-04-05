@@ -3,7 +3,7 @@
 import React, { Component } from "react";
 
 //Components
-import SearchFilterBar from './components/SearchFilterBar';
+import SearchBar from './components/SearchBar';
 import ListingBase from './components/ListingBase';
 import FilterSort from './components/FilterSort';
 import { Divider, Grid, Segment } from 'semantic-ui-react';
@@ -23,7 +23,7 @@ class HomePage extends Component {
         this.state = {
             allHotels: [],
             filteredHotels: [],
-            searchedHotels: [],
+            searchedSortedHotels: [],
             locationOptions: [],
             datesRange: '',
             search: {
@@ -36,7 +36,7 @@ class HomePage extends Component {
                 price: 100,
                 rating: 0,
             },
-            sort: '',
+            sort: 'ratingHL',
         }
     }
 
@@ -53,11 +53,12 @@ class HomePage extends Component {
                 this._asyncRequest = null;
                 this.setState({
                     allHotels: result,
-                    searchedHotels: result,
+                    searchedSortedHotels: result,
                     filteredHotels: result
                 },
                 ()=>{
-                    
+                    //initial sort
+                    this.sortHotels(this.state.allHotels, this.state.sort);
                     // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
                     // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
                     // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
@@ -151,7 +152,7 @@ class HomePage extends Component {
     handleSearch=(e)=>{
         //*** */BACK-END IMPLEMENTATION:
         // filter hotels[] by search criteria & store into searchedHotels[]
-        let searchedHotels = this.state.searchedHotels;
+        let searchedHotels = this.state.searchedSortedHotels;
         // console.log(this.state.search.location);
         if(this.state.search.location.hasOwnProperty('data')){
             const { city, state, country } = this.state.search.location.data;
@@ -167,11 +168,11 @@ class HomePage extends Component {
         }
         let searchedSortedHotels = this.sortHotels(searchedHotels, this.state.sort);
 
-       if(searchedSortedHotels!==this.state.searchedHotels){
+       if(searchedSortedHotels!==this.state.searchedSortedHotels){
         // set state of searchedHotels[]
         this.setState({
-            searchedHotels: searchedHotels,
-            filteredHotels: searchedHotels,
+            searchedSortedHotels: searchedSortedHotels,
+            filteredHotels: searchedSortedHotels,
         },
         ()=>{
             console.log('post-search sort: ' + this.state.sort);
@@ -253,7 +254,7 @@ class HomePage extends Component {
 
         if(sortedHotels !== filteredHotels){
             this.setState({
-                searchedHotels: sortedHotels,
+                searchedSortedHotels: sortedHotels,
                 filteredHotels: sortedHotels
             })
 
@@ -293,14 +294,14 @@ class HomePage extends Component {
 
     handleFilter=(type)=>{
         //update state for filteredHotels
-        const searchedHotels = this.state.searchedHotels;
+        const searchedSortedHotels = this.state.searchedSortedHotels;
         const price = this.state.filter.price;
         const rating = this.state.filter.rating;
 
         let filteredHotels = this.state.filteredHotels;
 
         if(type==='rating'){
-            filteredHotels = searchedHotels.filter(
+            filteredHotels = searchedSortedHotels.filter(
                 hotel => hotel.data.rating >= rating
             );
         }
@@ -355,7 +356,7 @@ class HomePage extends Component {
 
         return (
             <div>
-            <SearchFilterBar
+            <SearchBar
             datesRange={this.state.datesRange}
             locationOptions={locationOptions}
             roomOptions={roomOptions}
@@ -371,6 +372,7 @@ class HomePage extends Component {
             handleSlider={this.handleSlider.bind(this)}
             price={this.state.filter.price}
             defaultRating={this.state.filter.rating}
+            defaultSort={this.state.sort}
             />
                 <Segment>
                     <Grid celled columns={2}>

@@ -99,6 +99,7 @@ const SearchFilter = (props) => (
                     </div>
                         <Select 
                         name="sort"
+                        defaultValue={props.defaultSort}
                         placeholder='' 
                         options={sortOptions}
                         onChange={props.handleSort} />

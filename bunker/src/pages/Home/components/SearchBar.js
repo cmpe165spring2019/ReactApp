@@ -18,7 +18,7 @@ const today=moment().format('MM-DD-YYYY');
 const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
 
 
-class SearchFilterBar extends Component {
+class SearchBar extends Component {
     constructor(props) {
         super(props);
           this.state={
@@ -85,4 +85,4 @@ class SearchFilterBar extends Component {
         }
     }
 
-export default withFirebase(SearchFilterBar);
+export default withFirebase(SearchBar);
