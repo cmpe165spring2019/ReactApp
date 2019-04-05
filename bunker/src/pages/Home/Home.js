@@ -15,8 +15,6 @@ import { withFirebase } from '../../server/Firebase/index';
 
 //Debugging purposes
 import * as util from 'util' // has no default export
-import { HOTEL_DETAIL } from "../../constants/routes";
-import {DUMMYHOTELS} from "./dummydata";
 
 class HomePage extends Component {
 
@@ -58,8 +56,10 @@ class HomePage extends Component {
                     filteredHotels: result
                 },
                 ()=>{
-                    console.log(this.state.allHotels);
-                    console.log(this.state.allHotels[0].data.image[0])
+                    
+                    console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
+                    // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
+                    // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
                 });
             });
 
@@ -84,13 +84,14 @@ class HomePage extends Component {
     }
 
     componentDidUpdate(prevState) {
-        if(this.state.hotels !== prevState.hotels){
-            console.log(this.state.hotels);
-        }
+        // console.log(this.state);
+        // console.log("allHotels: " + util.inspect(this.state.allHotels));
+        // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
+        // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
     }
 
     handleCheckInOut=(event,{name,value})=>{
-      console.log("name: " + name + " value: " + value);
+    //   console.log("name: " + name + " value: " + value);
         if(this.state.hasOwnProperty(name)){
             this.setState({[name]:value});
         }
@@ -136,19 +137,12 @@ class HomePage extends Component {
     }
 
     handleLocation=(e, {name,value})=>{
-        console.log(value);
+        // console.log(value);
         this.setState({
             search: {
                 ...this.state.search,
                 location: value
             }
-        },
-        ()=>{
-            const result = this.props.firebase.getLocationHotel(value);
-            //Do not check this.state.hotels in here, they will not load correctly
-            this.setState({
-                hotels: result,
-            })
         });
     }
 
@@ -156,24 +150,59 @@ class HomePage extends Component {
         //*** */BACK-END IMPLEMENTATION:
         // filter hotels[] by search criteria & store into searchedHotels[]
         let searchedHotels = [];
-        // searchedHotels = this.state.hotels.filter(
-        //     (hotel)=>hotel.data.location
-        // )
-        // set state of searchedHotels[]
+        
+        const { searchCity, searchState, searchCountry } = this.state.search.location.data;
+        // console.log('search for location: ' + city + state + country);
+        // searchedHotels = this.state.allHotels.filter(
+        //     hotel=>
+        //         hotel.data.address.city.toLowerCase().includes(searchCity)
+        //         &&hotel.data.address.state.toLowerCase().includes(searchState)
+        //         && hotel.data.address.country.toLowerCase().includes(searchCountry)
+            
+
+        // );
+
+        this.state.allHotels.forEach(hotel=>{
+            console.log(hotel.data.address);
+
+            if(typeof hotel.data.city== 'undefined'){
+                console.log("error with :" + hotel.data.name + " " + hotel.id);
+                // console.log(hotel.id);
+            }
+            else{
+                console.log(hotel.data.address.city);
+            }
+            if(typeof hotel.data.name == 'undefined'){
+                console.log(hotel.id);
+            }
+       
+        });
+
+        // console.log('search print out ' + city.toLowerCase());
+            // console.log('city print out ' + (this.state.allHotels[0].data.address.city.toLowerCase()));
+            // console.log('compare ' + city.toLowerCase().includes(this.state.allHotels[0].data.address.city.toLowerCase()));
+       
+            // set state of searchedHotels[]
         // clear values for search
         this.setState({
-            search: {
-                location: null,
-                checkInDate: null,
-                checkOutDate: null,
-                roomType: ''
-            }
-        })
+            searchedHotels: searchedHotels,
+            filteredHotels: searchedHotels,
+            // search: {
+            //     location: null,
+            //     checkInDate: null,
+            //     checkOutDate: null,
+            //     roomType: ''
+            // },
+            sort: '',
+            // filter: {
+            //     price: 100,
+            //     rating: 0,
+            // },
+        });
         // call methods to re-filter and re-sort hotel cards
         // set state of filteredHotels[]
         // page gets re-rendered & displays filteredHotels[]
-        console.log("searching hotels!")
-        this.handleFilter();
+        
     }
 
     handleSort=(e, {name, value})=>{
@@ -217,7 +246,6 @@ class HomePage extends Component {
         }
         else if (value.includes("name")){
             if(value.includes("AZ")){
-                console.log("a to z");
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
                         let x = a.name.toLowerCase();
@@ -230,12 +258,10 @@ class HomePage extends Component {
                 );
             }
             else{
-                console.log("z to a");
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
                         let x = a.name.toLowerCase();
                         let y = b.name.toLowerCase();
-                        console.log(x + y);
                         if (x < y) return 1;
                         else if (x > y) return -1;
                         else return 0;
@@ -283,12 +309,12 @@ class HomePage extends Component {
 
     handleFilter=()=>{
         //update state for filteredHotels
-        const hotels = this.state.hotels;
+        const searchedHotels = this.state.searchedHotels;
         const price = this.state.filter.price;
         const rating = this.state.filter.rating;
         console.log("filtering by $" + price + " and rating " + rating);
 
-        let filteredHotels1 = hotels.filter(
+        let filteredHotels1 = searchedHotels.filter(
             hotel => hotel.price <= price
         );
 
