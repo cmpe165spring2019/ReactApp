@@ -23,10 +23,9 @@ export default class ListingBase extends Component {
           <Grid.Row>
             {
               this.props.hotels.map(hotel => {
-                const roomTypeData = hotel.data.room_types.filter(roomType=> roomType.type === this.props.roomType);
-                const price = roomTypeData[0].price;
-                console.log(util.inspect(roomTypeData));
-                console.log(price);
+                // const roomTypeData = hotel.data.room_types.filter(roomType=> roomType.type === this.props.roomType);
+                // const price = roomTypeData[0].price;
+                const price = hotel.data.currentRoomPrice;
                 return(
                   <Grid.Column stretched padded="vertically">
                 <Link to = {{

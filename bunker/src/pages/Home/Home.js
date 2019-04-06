@@ -33,7 +33,7 @@ class HomePage extends Component {
                 roomType: 'single',
             },
             filter: {
-                price: 100,
+                price: 1000,
                 rating: 0,
             },
             sort: 'ratingHL',
@@ -42,6 +42,7 @@ class HomePage extends Component {
 
     componentDidMount() {
 
+        //set initial values of checkIn/Out calendar
         const today=moment().format('MM-DD-YYYY');
         const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
         const defaultDateRangeArray = [today, aWeekFromToday];
@@ -51,6 +52,8 @@ class HomePage extends Component {
         });
         
         // this.setState({loading: true});
+
+        //get the search location options from firebase, set locationOptions
         this._asyncRequest = this.props.firebase.getCities()
             .then(locationData => {
             this._asyncRequest = null;
@@ -65,6 +68,7 @@ class HomePage extends Component {
             this.setState({locationOptions: locationData});
         });
 
+        //get all the hotels from firebase, set allHotels
         this._asyncRequest = this.props.firebase.getAllHotels()
             .then(result => {
                 this._asyncRequest = null;
@@ -75,7 +79,7 @@ class HomePage extends Component {
                 },
                 ()=>{
                     //apply default sort and then render it
-                    this.sortHotels(this.state.allHotels, this.state.sort);
+                    this.handleSearch();
                     // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
                     // console.log(this.state.allHotels[0].data.room_types);
                     // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
@@ -83,6 +87,7 @@ class HomePage extends Component {
                 });
             });
     
+        
         //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
         // load hotel data for both arrays
         // hotels[] stays constant
@@ -186,10 +191,13 @@ class HomePage extends Component {
         if(this.state.search.roomType){
             searchedHotels = searchedHotels.filter(
                 hotel => {
-                    let hotelHasRoomType = hotel.data.room_types.filter(room_type => room_type.type === this.state.search.roomType);
-                    console.log("hotel has roomType: " + hotelHasRoomType);
+                    let hotelsOfRoomType = hotel.data.room_types.filter(room_type => room_type.type === this.state.search.roomType);
+                    let roomTypePrice = hotelsOfRoomType[0].price;
+                    console.log("roomTypePrice: " + roomTypePrice);
+                    console.log(searchedHotels);
+                    hotel.data.currentRoomPrice = roomTypePrice;
                     return(
-                        hotelHasRoomType
+                        hotelsOfRoomType
                     );
                 }
             )
@@ -206,6 +214,10 @@ class HomePage extends Component {
         this.setState({
             searchedSortedHotels: searchedSortedHotels,
             filteredHotels: searchedSortedHotels,
+            filter: {
+                price: 1000,
+                rating: 0
+            }
         },
         ()=>{
             console.log('post-search sort: ' + this.state.sort);
@@ -249,14 +261,14 @@ class HomePage extends Component {
             if(value.includes("LH")){
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return a.data.price - b.data.price
+                        return a.data.currentRoomPrice - b.data.currentRoomPrice
                     }
                 );
             }
             else{
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return b.data.price - a.data.price
+                        return b.data.currentRoomPrice - a.data.currentRoomPrice
                     }
                 );
             }
@@ -300,7 +312,7 @@ class HomePage extends Component {
         this.setState({
             filter:{
                 ...this.state.filter,
-                price: e.x
+                price: e.x*10
             },
 
         },
@@ -333,18 +345,26 @@ class HomePage extends Component {
 
         let filteredHotels = this.state.filteredHotels;
 
+        //filter by rating
         if(type==='rating'){
             filteredHotels = searchedSortedHotels.filter(
                 hotel => hotel.data.rating >= rating
             );
         }
 
-        // *** CURRENTLY BROKEN UNTIL PRICE ATTRIBUTE GETS ADDED TO FIREBASE ***
-        // else if(type==='price'){
-        //     filteredHotels = searchedHotels.filter(
-        //         hotel => hotel.data.price <= price
-        //     );
-        // }
+        //filter by price
+        else if(type==='price'){
+            filteredHotels = searchedSortedHotels.filter(
+                hotel => {
+                    const roomTypeData = hotel.data.room_types.filter(roomType=> roomType.type === this.state.search.roomType);
+                    const roomPrice = roomTypeData[0].price;
+                    hotel.data.currentRoomPrice = roomPrice;
+                    return(
+                        roomPrice <= price
+                    );
+                }
+            );
+        }
 
         else{
             console.log('filtering both');

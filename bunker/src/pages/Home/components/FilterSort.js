@@ -63,7 +63,7 @@ const SearchFilter = (props) => (
                     <Slider 
                     name="slider"
                     axis="x" 
-                    x={props.price} 
+                    x={props.price/10} 
                     onChange={props.handleSlider}>
                     </Slider>         
             </Grid.Column>
