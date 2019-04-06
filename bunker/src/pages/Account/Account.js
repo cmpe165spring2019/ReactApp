@@ -1,16 +1,16 @@
 //This page can accessed by any registered user, but not guests
 //You can change your password, email, etc here
 
-import React, { Component } from 'react';
-import { compose } from 'recompose';
+import React, { Component } from "react";
+import { compose } from "recompose";
 
 import {
   AuthUserContext,
   withAuthorization,
-  withEmailVerification,
-} from '../../server/Session';
-import { withFirebase } from '../../server/Firebase';
-import PasswordChangeForm from '../PasswordChange/PasswordChange';
+  withEmailVerification
+} from "../../server/Session";
+import { withFirebase } from "../../server/Firebase";
+import PasswordChangeForm from "../PasswordChange/PasswordChange";
 import {
   Button,
   Form,
@@ -19,38 +19,43 @@ import {
   Segment,
   Message,
   Icon,
-  Input,
-} from 'semantic-ui-react';
-
+  Input
+} from "semantic-ui-react";
 
 const SIGN_IN_METHODS = [
   {
-    id: 'password',
-    provider: null,
+    id: "password",
+    provider: null
   },
   {
-    id: 'google.com',
-    provider: 'googleProvider',
+    id: "google.com",
+    provider: "googleProvider"
   },
   {
-    id: 'facebook.com',
-    provider: 'facebookProvider',
+    id: "facebook.com",
+    provider: "facebookProvider"
   },
   {
-    id: 'twitter.com',
-    provider: 'twitterProvider',
-  },
+    id: "twitter.com",
+    provider: "twitterProvider"
+  }
 ];
 
 const AccountPage = () => (
   <AuthUserContext.Consumer>
     {authUser => (
       <Grid centered columns={2}>
-      <Grid.Row></Grid.Row>
-        <div><Icon name="user" size="huge"/><font size="+3.5">{authUser.username}</font></div>
-        <Grid.Row></Grid.Row>
-        <Icon name="mail" size="large"/><font size="+2.5">{authUser.email}</font>
-        <Grid.Row></Grid.Row>
+        <Grid.Row />
+        <div>
+          <Icon name="user" size="huge" />
+          <font size="+3.5">{authUser.username}</font>
+        </div>
+        <Grid.Row />
+        <Icon name="mail" size="large" />
+        <font size="+2.5">{authUser.email}</font>
+        <Grid.Row />
+        <h3>My Reward Points: $10</h3>
+        <Grid.Row />
         <PasswordChangeForm />
         <LoginManagement authUser={authUser} />
       </Grid>
@@ -64,7 +69,7 @@ class LoginManagementBase extends Component {
 
     this.state = {
       activeSignInMethods: [],
-      error: null,
+      error: null
     };
   }
 
@@ -76,7 +81,7 @@ class LoginManagementBase extends Component {
     this.props.firebase.auth
       .fetchSignInMethodsForEmail(this.props.authUser.email)
       .then(activeSignInMethods =>
-        this.setState({ activeSignInMethods, error: null }),
+        this.setState({ activeSignInMethods, error: null })
       )
       .catch(error => this.setState({ error }));
   };
@@ -91,7 +96,7 @@ class LoginManagementBase extends Component {
   onDefaultLoginLink = password => {
     const credential = this.props.firebase.emailAuthProvider.credential(
       this.props.authUser.email,
-      password,
+      password
     );
 
     this.props.firebase.auth.currentUser
@@ -111,50 +116,40 @@ class LoginManagementBase extends Component {
     const { activeSignInMethods, error } = this.state;
 
     return (
-        <Grid.Row>
-      <div>
-        Sign In Methods:
+      <Grid.Row>
+        <div>
+          Sign In Methods:
+          <ul>
+            {SIGN_IN_METHODS.map(signInMethod => {
+              const onlyOneLeft = activeSignInMethods.length === 1;
+              const isEnabled = activeSignInMethods.includes(signInMethod.id);
 
-        <ul>
-          {SIGN_IN_METHODS.map(signInMethod => {
-            const onlyOneLeft = activeSignInMethods.length === 1;
-            const isEnabled = activeSignInMethods.includes(
-              signInMethod.id,
-            );
-
-            return (
-
-              <li key={signInMethod.id}>
-                {signInMethod.id === 'password' ? (
-                  <DefaultLoginToggle
-                    onlyOneLeft={onlyOneLeft}
-                    isEnabled={isEnabled}
-                    signInMethod={signInMethod}
-                    onLink={this.onDefaultLoginLink}
-                    onUnlink={this.onUnlink}
-                  />
-                ) :
-                 (
-                  <SocialLoginToggle
-                    onlyOneLeft={onlyOneLeft}
-                    isEnabled={isEnabled}
-                    signInMethod={signInMethod}
-                    onLink={this.onSocialLoginLink}
-                    onUnlink={this.onUnlink}
-                  />
-                )
-
-              }
-              </li>
-
-            );
-  })}
-        </ul>
-
-        {error && error.message}
-      </div>
+              return (
+                <li key={signInMethod.id}>
+                  {signInMethod.id === "password" ? (
+                    <DefaultLoginToggle
+                      onlyOneLeft={onlyOneLeft}
+                      isEnabled={isEnabled}
+                      signInMethod={signInMethod}
+                      onLink={this.onDefaultLoginLink}
+                      onUnlink={this.onUnlink}
+                    />
+                  ) : (
+                    <SocialLoginToggle
+                      onlyOneLeft={onlyOneLeft}
+                      isEnabled={isEnabled}
+                      signInMethod={signInMethod}
+                      onLink={this.onSocialLoginLink}
+                      onUnlink={this.onUnlink}
+                    />
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          {error && error.message}
+        </div>
       </Grid.Row>
-
     );
   }
 }
@@ -164,7 +159,7 @@ const SocialLoginToggle = ({
   isEnabled,
   signInMethod,
   onLink,
-  onUnlink,
+  onUnlink
 }) =>
   isEnabled ? (
     <Button
@@ -175,10 +170,7 @@ const SocialLoginToggle = ({
       Deactivate {signInMethod.id}
     </Button>
   ) : (
-    <Button
-      type="button"
-      onClick={() => onLink(signInMethod.provider)}
-    >
+    <Button type="button" onClick={() => onLink(signInMethod.provider)}>
       Link {signInMethod.id}
     </Button>
   );
@@ -187,14 +179,14 @@ class DefaultLoginToggle extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { passwordOne: '', passwordTwo: '' };
+    this.state = { passwordOne: "", passwordTwo: "" };
   }
 
   onSubmit = event => {
     event.preventDefault();
 
     this.props.onLink(this.state.passwordOne);
-    this.setState({ passwordOne: '', passwordTwo: '' });
+    this.setState({ passwordOne: "", passwordTwo: "" });
   };
 
   onChange = event => {
@@ -202,20 +194,13 @@ class DefaultLoginToggle extends Component {
   };
 
   render() {
-    const {
-      onlyOneLeft,
-      isEnabled,
-      signInMethod,
-      onUnlink,
-    } = this.props;
+    const { onlyOneLeft, isEnabled, signInMethod, onUnlink } = this.props;
 
     const { passwordOne, passwordTwo } = this.state;
 
-    const isInvalid =
-      passwordOne !== passwordTwo || passwordOne === '';
+    const isInvalid = passwordOne !== passwordTwo || passwordOne === "";
 
     return isEnabled ? (
-
       <Button
         type="button"
         onClick={() => onUnlink(signInMethod.id)}
@@ -224,31 +209,31 @@ class DefaultLoginToggle extends Component {
         Deactivate {signInMethod.id}
       </Button>
     ) : (
-       <Grid>
-      <Form size="large" onSubmit={this.onSubmit}>
+      <Grid>
+        <Form size="large" onSubmit={this.onSubmit}>
+          <Grid.Row>
+            <Form.Input
+              fluid
+              name="passwordOne"
+              value={passwordOne}
+              onChange={this.onChange}
+              type="password"
+              placeholder="New Password"
+            />
+          </Grid.Row>
+          <Form.Input
+            name="passwordTwo"
+            value={passwordTwo}
+            onChange={this.onChange}
+            type="password"
+            placeholder="Con New Password"
+          />
 
-        <Grid.Row><Form.Input
-          fluid
-          name="passwordOne"
-          value={passwordOne}
-          onChange={this.onChange}
-          type="password"
-          placeholder="New Password"
-        /></Grid.Row>
-        <Form.Input
-          name="passwordTwo"
-          value={passwordTwo}
-          onChange={this.onChange}
-          type="password"
-          placeholder="Con New Password"
-        />
-
-        <Button disabled={isInvalid} type="submit">
-          Link {signInMethod.id}
-        </Button>
-
-      </Form>
-</Grid>
+          <Button disabled={isInvalid} type="submit">
+            Link {signInMethod.id}
+          </Button>
+        </Form>
+      </Grid>
     );
   }
 }
@@ -259,5 +244,5 @@ const condition = authUser => !!authUser;
 
 export default compose(
   withEmailVerification,
-  withAuthorization(condition),
+  withAuthorization(condition)
 )(AccountPage);
