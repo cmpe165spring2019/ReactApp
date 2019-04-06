@@ -30,7 +30,7 @@ class HomePage extends Component {
                 location: {},
                 checkInDate: null,
                 checkOutDate: null,
-                roomType: '',
+                roomType: 'single',
             },
             filter: {
                 price: 100,
@@ -41,7 +41,16 @@ class HomePage extends Component {
     }
 
     componentDidMount() {
-        this.setState({loading: true});
+
+        const today=moment().format('MM-DD-YYYY');
+        const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
+        const defaultDateRangeArray = [today, aWeekFromToday];
+        const defaultDateRange = defaultDateRangeArray.join(" - ");
+        this.setState({
+            datesRange: defaultDateRange
+        });
+        
+        // this.setState({loading: true});
         this._asyncRequest = this.props.firebase.getCities()
             .then(locationData => {
             this._asyncRequest = null;
@@ -68,12 +77,11 @@ class HomePage extends Component {
                     //apply default sort and then render it
                     this.sortHotels(this.state.allHotels, this.state.sort);
                     // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
+                    // console.log(this.state.allHotels[0].data.room_types);
                     // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
                     // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
                 });
             });
-            console.log('sort: ' + this.state.sort);
-
     
         //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
         // load hotel data for both arrays
@@ -157,19 +165,40 @@ class HomePage extends Component {
         //*** */BACK-END IMPLEMENTATION:
         // filter hotels[] by search criteria & store into searchedHotels[]
         let searchedHotels = this.state.searchedSortedHotels;
-        // console.log(this.state.search.location);
+
+        // filter by location
         if(this.state.search.location.hasOwnProperty('data')){
             const { city, state, country } = this.state.search.location.data;
-            if( city && state && country ){
+            const roomType = this.state.search;
+            if(city && state && country ){
                 searchedHotels = this.state.allHotels.filter(
                     hotel=>
                         hotel.data.address.city.toLowerCase().includes(city.toLowerCase())
                         &&hotel.data.address.state.toLowerCase().includes(state.toLowerCase())
-                        && hotel.data.address.country.toLowerCase().includes(country.toLowerCase())
-                    
+                        &&hotel.data.address.country.toLowerCase().includes(country.toLowerCase())                    
                 );
             }
         }
+
+        // filter by room type
+        // console.log("roomType is: " + this.state.search.roomType);
+        // console.log("hotel data room types: " + this.state.allHotels[0].data.room_types)
+        if(this.state.search.roomType){
+            searchedHotels = searchedHotels.filter(
+                hotel => {
+                    let hotelHasRoomType = hotel.data.room_types.filter(room_type => room_type.type === this.state.search.roomType);
+                    console.log("hotel has roomType: " + hotelHasRoomType);
+                    return(
+                        hotelHasRoomType
+                    );
+                }
+            )
+        }
+
+        //***filter by dateRanges***
+        // NEED TO IMPLEMENT
+
+        //sort the hotels
         let searchedSortedHotels = this.sortHotels(searchedHotels, this.state.sort);
 
        if(searchedSortedHotels!==this.state.searchedSortedHotels){
@@ -364,6 +393,7 @@ class HomePage extends Component {
             datesRange={this.state.datesRange}
             locationOptions={locationOptions}
             roomOptions={roomOptions}
+            defaultRoomType={this.state.search.roomType}
             handleLocation={this.handleLocation.bind(this)}
             handleCheckInOut={this.handleCheckInOut.bind(this)}
             handleRoomType={this.handleRoomType.bind(this)}
@@ -383,6 +413,7 @@ class HomePage extends Component {
                         <Grid.Column width={10}>
                             <ListingBase
                             hotels={this.state.filteredHotels}
+                            roomType={this.state.search.roomType}
                             />
                         </Grid.Column>
                         <Grid.Column width={6}>

@@ -13,7 +13,7 @@ const HotelCard = (props) => (
       <Card.Content extra>
         <Grid.Column floated='left'>
             <Icon name='dollar sign' />
-            {props.hotelPrice}   
+            {props.hotelPrice} / night 
         </Grid.Column>
         <Grid.Column floated='right'>
           <Icon name='star' />

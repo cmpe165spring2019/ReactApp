@@ -16,6 +16,9 @@ import { DatesRangeInput } from "semantic-ui-calendar-react";
 
 const today=moment().format('MM-DD-YYYY');
 const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
+const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
+const defaultDateRangeArray = [today, aWeekFromToday];
+const defaultDateRange = defaultDateRangeArray.join(" - ");
 
 
 class SearchBar extends Component {
@@ -28,6 +31,8 @@ class SearchBar extends Component {
     
 
     render() {
+
+        console.log("default date range : " + defaultDateRange);
 
         return (
             <Grid centered>
@@ -53,7 +58,7 @@ class SearchBar extends Component {
                          <DatesRangeInput 
                          name="datesRange"  
                          minDate={today}
-                         defaultValue={tomorrow}
+                         initialDate={defaultDateRange}
                          dateFormat="MM-DD-YYYY" 
                          onChange={this.props.handleCheckInOut} 
                          value={this.props.datesRange} 
@@ -69,6 +74,7 @@ class SearchBar extends Component {
                         placeholder='' 
                         options={this.props.roomOptions} 
                         onChange={this.props.handleRoomType}
+                        defaultValue={this.props.defaultRoomType}
                         />
                      </Grid.Column>
                      <Grid.Column>
