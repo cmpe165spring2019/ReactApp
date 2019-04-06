@@ -33,7 +33,10 @@ class HomePage extends Component {
                 roomType: 'single',
             },
             filter: {
+                x: 100,
                 price: 1000,
+                minPrice: 0,
+                maxPrice: 1000,
                 rating: 0,
             },
             sort: 'ratingHL',
@@ -78,7 +81,9 @@ class HomePage extends Component {
                     filteredHotels: result
                 },
                 ()=>{
-                    //apply default sort and then render it
+                    // call the search function at initial load
+                    // it sets the room prices of each hotel based off of roomType criteria,
+                    // then sets each hotel data.currentRoomPrice for easier access
                     this.handleSearch();
                     // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
                     // console.log(this.state.allHotels[0].data.room_types);
@@ -188,19 +193,43 @@ class HomePage extends Component {
         // filter by room type
         // console.log("roomType is: " + this.state.search.roomType);
         // console.log("hotel data room types: " + this.state.allHotels[0].data.room_types)
+        let maxRoomPrice, minRoomPrice;
         if(this.state.search.roomType){
+            let roomTypePrices = [];
             searchedHotels = searchedHotels.filter(
                 hotel => {
                     let hotelsOfRoomType = hotel.data.room_types.filter(room_type => room_type.type === this.state.search.roomType);
                     let roomTypePrice = hotelsOfRoomType[0].price;
-                    console.log("roomTypePrice: " + roomTypePrice);
-                    console.log(searchedHotels);
+
+                    // push price onto array to check for max/min at the end of if statement
+                    roomTypePrices.push(roomTypePrice);
+
+                    // set the price of rooms based on the current roomType search criteria to an easily accessible attribute (hotel.data.currentRoomPrice)
                     hotel.data.currentRoomPrice = roomTypePrice;
                     return(
                         hotelsOfRoomType
                     );
                 }
             )
+            // check for min and max to display range of slider for each roomType search
+            console.log(roomTypePrices);
+            maxRoomPrice = Math.max(...roomTypePrices);
+            console.log('maxRoomPrice: ' + typeof maxRoomPrice);
+            minRoomPrice = Math.min(...roomTypePrices);
+            // this.setState({
+            //     filter: {
+            //         ...this.state.filter,
+            //         maxPrice: maxRoomPrice,
+            //         minPrice: minRoomPrice,
+            //         price: maxRoomPrice
+            //     }
+            // },
+            // ()=>{
+            //     console.log('this.state.filter: ' + util.inspect(this.state.filter));
+            //     console.log('this.state.filter.maxPrice : ' + this.state.filter.maxPrice);
+            //     console.log('this.state.filter.minPrice : ' + this.state.filter.minPrice);
+
+            // })
         }
 
         //***filter by dateRanges***
@@ -214,10 +243,12 @@ class HomePage extends Component {
         this.setState({
             searchedSortedHotels: searchedSortedHotels,
             filteredHotels: searchedSortedHotels,
-            filter: {
-                price: 1000,
-                rating: 0
-            }
+                filter: {
+                    ...this.state.filter,
+                    maxPrice: maxRoomPrice,
+                    minPrice: minRoomPrice,
+                    price: maxRoomPrice
+                }
         },
         ()=>{
             console.log('post-search sort: ' + this.state.sort);
@@ -312,7 +343,8 @@ class HomePage extends Component {
         this.setState({
             filter:{
                 ...this.state.filter,
-                price: e.x*10
+                price: (this.state.filter.maxPrice - this.state.filter.minPrice)* e.x/100 + this.state.filter.minPrice,
+                x: e.x
             },
 
         },
@@ -424,9 +456,12 @@ class HomePage extends Component {
             handleRating={this.handleRating.bind(this)}
             handleFilter={this.handleFilter.bind(this)}
             handleSlider={this.handleSlider.bind(this)}
+            x={this.state.filter.x}
             price={this.state.filter.price}
             defaultRating={this.state.filter.rating}
             defaultSort={this.state.sort}
+            maxPrice={this.state.filter.maxPrice}
+            minPrice={this.state.filter.minPrice}
             />
                 <Segment>
                     <Grid celled columns={2}>

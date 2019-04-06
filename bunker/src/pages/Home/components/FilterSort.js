@@ -53,17 +53,16 @@ const sortOptions = [
   ];
 
 const SearchFilter = (props) => (
-
     <Grid centered>
         <Grid.Row>
             <Grid.Column width={3}>
             <div>
-                        Price: ${props.price}
+                        Price: ${props.minPrice} to ${Math.round(props.price)}
                     </div>
                     <Slider 
                     name="slider"
                     axis="x" 
-                    x={props.price/10} 
+                    x={props.x} 
                     onChange={props.handleSlider}>
                     </Slider>         
             </Grid.Column>
