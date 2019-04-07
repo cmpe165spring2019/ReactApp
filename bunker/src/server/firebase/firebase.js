@@ -64,7 +64,21 @@ class Firebase {
 	reservationRef = uid => this.database.collection("reservations").doc(uid);
 
 	// *** Merge Auth and DB User API *** //
-
+	test = () =>
+		this.database
+			.collection("hotels")
+			.get()
+			.then(snapshot => {
+				let hotels =[];
+				snapshot.forEach(hotel => {
+					const obj = {
+						id: hotel.id,
+						data: hotel.data()
+					}
+					hotels.push(obj);
+				});
+				return hotels;
+			});
 	onAuthUserListener = (next, fallback) =>
 		this.auth.onAuthStateChanged(authUser => {
 			if (authUser) {
