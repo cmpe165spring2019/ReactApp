@@ -100,17 +100,17 @@ class HotelPage extends React.Component {
                 <div style={hotelDiv}>
                     <div style={leftDiv}>
                         <div style={hotelNameDiv}>
-                            <h1 style={hotelName}>{this.state.hotel.name}</h1>
+                            <h1 style={hotelName}>{this.state.hotel.data.name}</h1>
                         </div>
                         <div style={locationDiv}>
-                            <h3 >{this.state.hotel.location}</h3>
+                            <h3 >{this.state.hotel.data.city}, {this.state.hotel.data.country}</h3>
                         </div>
 
                         <div style={priceDiv}>
                             <h2 >${this.state.hotel.price}/Night</h2>
                         </div>
                         <div style={detail}>
-                            <h2 >{this.state.hotel.detail}</h2>
+                            <h2 >{this.state.hotel.data.details}</h2>
                         </div>
                     </div>
                     <div style={rightDiv}>

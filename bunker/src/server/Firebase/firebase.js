@@ -55,17 +55,20 @@ class Firebase {
 			.then(() => console.log("Verification email sent."))
 			.catch(error => error);
 	};
-
-	user = uid => this.database.collection("users").doc(uid);
-
 	doPasswordUpdate = password => this.auth.currentUser.updatePassword(password);
+	//Base API call
+	userRef = uid => this.database.collection("users").doc(uid);
+
+	hotelRef = uid => this.database.collections("hotels").doc(uid);
+
+	reservationRef = uid => this.database.collection("reservations").doc(uid);
 
 	// *** Merge Auth and DB User API *** //
 
 	onAuthUserListener = (next, fallback) =>
 		this.auth.onAuthStateChanged(authUser => {
 			if (authUser) {
-				this.user(authUser.uid)
+				this.userRef(authUser.uid)
 					.get()
 					.then(snapshot => {
 						const dbUser = snapshot.data();
@@ -93,6 +96,22 @@ class Firebase {
 
 	// *** Database API *** //
 
+	getAllHotels = () =>
+		this.database
+			.collection("hotels")
+			.get()
+			.then(hotels => {
+				let result = [];
+				hotels.forEach(snapshot => {
+					const obj = {
+						id: snapshot.id,
+						data: {...snapshot.data()}
+					};
+					result.push(obj);
+				});
+				return result;
+			});
+
 	addUserToDB = (authUser, email, username) => {
 		const data = {
 			user_id: authUser.user.uid,
@@ -102,7 +121,7 @@ class Firebase {
 			reward_points: 0
 		};
 
-		return this.user(data.user_id)
+		return this.userRef(data.user_id)
 			.set(data)
 			.then(() => {
 				console.log("Successfully created account.");
@@ -141,7 +160,7 @@ class Firebase {
 										||(new_end>existing_start&&new_end<=existing_end)//new end date is between existing date range
 										||(new_start>=existing_start&&new_end<=existing_end)//new date range is within existing date range
 										||(new_start<=existing_start&&new_end>=existing_end))//new range encapsulate existing range
-									{	
+									{
 										return false;
 									}
 								});
@@ -182,9 +201,7 @@ class Firebase {
 
 	//edit reservation data
 	editReservationInfo = (reservation_id, data) => {
-		this.database
-			.collection("reservations")
-			.doc(reservation_id)
+		this.reservationRef(reservation_id)
 			.update(data)
 			.then(() => {
 				console.log("Reservation data was successfully changed");
@@ -198,10 +215,8 @@ class Firebase {
 
 	//Delete reservation
 	deleteReservationFromDB = (reservation_id, user_id) => {
-		//Delete reservation from user and reservation collection
-		this.database
-			.collection("reservations")
-			.doc(reservation_id)
+		//delete from reservations collection
+		this.reservationRef(reservation_id)
 			.delete()
 			.then(() => {
 				console.log(
@@ -256,10 +271,11 @@ class Firebase {
 	getLocationHotel = location => {
 		let hotels = [];
 		location.data.hotels.forEach(hotelRef => {
-			hotelRef.get().then(hotel => {
-				const obj = {
-					id: hotel.id,
-					data: {...hotel.data()}
+			let obj = {};
+			hotelRef.get().then(snapshot => {
+				obj = {
+					id: snapshot.id,
+					data: {...snapshot.data()}
 				};
 				hotels.push(obj);
 			});
@@ -281,7 +297,7 @@ class Firebase {
 	getHotelRoomAvailableDate = (hotels, date_start, date_end) => {
 		let result = [];
 		hotels.forEach(hotel => {
-			const isAvaliable = hotel.data.rooms.some(room =>
+			const isAvailable = hotel.data.rooms.some(room =>
 				room.unavailable_dates.every(dateRange => {
 					const roomCheck =
 						date_end < dateRange.startDate || date_start > dateRange.endDate;
@@ -289,7 +305,7 @@ class Firebase {
 					return roomCheck;
 				})
 			);
-			if (isAvaliable) {
+			if (isAvailable) {
 				result.push(hotel);
 			}
 		});
@@ -298,7 +314,7 @@ class Firebase {
 
 	updateUnavailableDatetoRoom = (hotel, date_start, date_end) => {
 		let availableRoom = hotel[0].data.rooms[0];
-		const hotelRef = this.database.collection("hotels").doc(hotel.id);
+		const hotelRef = this.hotelRef(hotel.id);
 		//remove the current available room
 		hotelRef
 			.update({
@@ -308,21 +324,35 @@ class Firebase {
 			.catch(error => console.log(error));
 		//Add edited available room
 		availableRoom.unavailable_dates.push({startDate: 8, endDate: 8});
-		this.database
-			.collection("hotels")
-			.doc(hotel.id)
+		this.hotelRef(hotel.id)
 			.update({
 				rooms: this.firebase.firestore.FieldValue.arrayUnion(availableRoom)
 			})
 			.then(() => console.log("Successfully add edited available room"))
 			.catch(error => console.log(error));
 	};
-
+	/**
+	 * filter hotels arrays
+	 * @param  {array} hotels          hotels object arrays
+	 * @param  {array string} field           the deep of the filter object. Ex: ['room', 'price'] will the{ hotel: { room: { price: 1}}}
+	 * 																																			Ex2: ['price'] will filter the {hotel: { price}}
+	 * @param  {function} compareFunction function to compare. Ex: (a,b) => a < b
+	 * @param  {any} compareValue    value that will be compare to: filter everything larger smaller than 2, compareFunction = (a, b) => a < b, compareValue = 2
+	 * @return {array}                 array of hotels
+	 */
 	filterHotels = (hotels, field, compareFunction, compareValue) => {
 		return hotels.filter(hotel => {
 			return compareFunction(_.get(hotel, field), compareValue);
 		});
 	};
+	/**
+	 * sorted hotels arrays
+	 * @param  {array} hotels          hotels object arrays
+	 * @param  {array string} field           the deep of the filter object. Ex: ['room', 'price'] will the{ hotel: { room: { price: 1}}}
+	 * 																																			Ex2: ['price'] will filter the {hotel: { price}}
+	 * @param {boolean} isAscending if true, sort Asccending, if false sort descending
+	 * @return {array}                 array of sorted hotels
+	 */
 	sortHotels = (hotels, field, isAscending = true) => {
 		let type = typeof _.get(hotels[0], field);
 		let compareFunction;
