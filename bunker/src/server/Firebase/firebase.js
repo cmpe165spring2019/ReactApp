@@ -57,7 +57,7 @@ class Firebase {
 	};
 	doPasswordUpdate = password => this.auth.currentUser.updatePassword(password);
 	//Base API call
-	userRef = uid => this.database.collection("users").doc(uid);
+	user = uid => this.database.collection("users").doc(uid);
 
 	hotelRef = uid => this.database.collections("hotels").doc(uid);
 
@@ -68,7 +68,7 @@ class Firebase {
 	onAuthUserListener = (next, fallback) =>
 		this.auth.onAuthStateChanged(authUser => {
 			if (authUser) {
-				this.userRef(authUser.uid)
+				this.user(authUser.uid)
 					.get()
 					.then(snapshot => {
 						const dbUser = snapshot.data();
@@ -121,7 +121,7 @@ class Firebase {
 			reward_points: 0
 		};
 
-		return this.userRef(data.user_id)
+		return this.user(data.user_id)
 			.set(data)
 			.then(() => {
 				console.log("Successfully created account.");
@@ -131,7 +131,7 @@ class Firebase {
 	};
 
 	editUserAccount = (user_id, data) => {
-		this.userRef(user_id)
+		this.user(user_id)
 			.update(data)
 			.then(() => {
 				console.log("User data was successfully changed");
@@ -162,7 +162,7 @@ class Firebase {
 					data.reservation_id = res_doc.id;
 					this.editReservation(res_doc.id, data);
 					//get user's document
-					this.userRef(user_id)
+					this.user(user_id)
 						.get()
 						.then(user_doc => {
 							//add reservation to user's current reservation array
@@ -207,7 +207,7 @@ class Firebase {
 					"Successfully deleted reservation from reservation collection."
 				);
 				//delete reservation from users reservations
-				this.userRef(user_id)
+				this.user(user_id)
 					.get()
 					.then(doc => {
 						let user_res = doc.data().reservations; //array of users reservation_id's
