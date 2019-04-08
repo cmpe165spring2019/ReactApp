@@ -111,7 +111,7 @@ Temporary Items
 package-lock.json
 .idea
 .env
-.DS_Store
-bunker/src/components/Firebase/config.js
-bunker/yarn.lock
+server/firebase/config.js
+yarn.lock
 bunker/src/server/firebase/config.js
+bunker/yarn.lock

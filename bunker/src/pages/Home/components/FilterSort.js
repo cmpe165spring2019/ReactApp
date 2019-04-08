@@ -52,33 +52,17 @@ const sortOptions = [
      },
   ];
 
-  const GuestNum = () => {
-    let Guests = [];
-    for (var i = 1; i < 6; i++) {
-        let obj = {
-            key: i,
-            text: i,
-            value: i
-        };
-        Guests.push(obj);
-    }
-    return (
-        <Select icon="user" iconPosition="left" options={Guests} />
-    );
-  }
-
 const SearchFilter = (props) => (
-
     <Grid centered>
         <Grid.Row>
             <Grid.Column width={3}>
             <div>
-                        Price: ${props.price}
+                        Price: ${props.minPrice} to ${Math.round(props.price)}
                     </div>
                     <Slider 
                     name="slider"
                     axis="x" 
-                    x={props.price} 
+                    x={props.x} 
                     onChange={props.handleSlider}>
                     </Slider>         
             </Grid.Column>
@@ -99,6 +83,7 @@ const SearchFilter = (props) => (
                     </div>
                         <Select 
                         name="sort"
+                        defaultValue={props.defaultSort}
                         placeholder='' 
                         options={sortOptions}
                         onChange={props.handleSort} />

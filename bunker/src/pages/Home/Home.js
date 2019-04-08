@@ -3,7 +3,7 @@
 import React, { Component } from "react";
 
 //Components
-import SearchFilterBar from './components/SearchFilterBar';
+import SearchBar from './components/SearchBar';
 import ListingBase from './components/ListingBase';
 import FilterSort from './components/FilterSort';
 import { Divider, Grid, Segment } from 'semantic-ui-react';
@@ -15,65 +15,108 @@ import { withFirebase } from '../../server/Firebase/index';
 
 //Debugging purposes
 import * as util from 'util' // has no default export
-import { HOTEL_DETAIL } from "../../constants/routes";
-import {DUMMYHOTELS} from "./dummydata";
 
 class HomePage extends Component {
 
     constructor(props){
         super(props);
         this.state = {
-            hotels: [],
+            allHotels: [],
             filteredHotels: [],
-            searchedHotels: [],
+            searchedSortedHotels: [],
             locationOptions: [],
             datesRange: '',
-            search: {  
-                location: '',
+            search: {
+                location: {},
                 checkInDate: null,
                 checkOutDate: null,
-                roomType: '',
+                roomType: 'single',
             },
             filter: {
-                price: 100,
+                x: 100,
+                price: 1000,
+                minPrice: 0,
+                maxPrice: 1000,
                 rating: 0,
             },
-            sort: '',
+            sort: 'ratingHL',
         }
     }
 
     componentDidMount() {
+
+        //set initial values of checkIn/Out calendar
+        const today=moment().format('MM-DD-YYYY');
+        const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
+        const defaultDateRangeArray = [today, aWeekFromToday];
+        const defaultDateRange = defaultDateRangeArray.join(" - ");
+        this.setState({
+            datesRange: defaultDateRange
+        });
+        
         // this.setState({loading: true});
+
+        //get the search location options from firebase, set locationOptions
         this._asyncRequest = this.props.firebase.getCities()
-            .then(externalData => {
+            .then(locationData => {
             this._asyncRequest = null;
-            this.setState({locationOptions: externalData});
+            locationData.sort((a,b)=>{
+                if(a.data.city.toLowerCase() > b.data.city.toLowerCase()){
+                    return 1
+                }
+                else{
+                    return -1
+                }
+            })
+            this.setState({locationOptions: locationData});
         });
 
+        //get all the hotels from firebase, set allHotels
+        this._asyncRequest = this.props.firebase.getAllHotels()
+            .then(result => {
+                this._asyncRequest = null;
+                this.setState({
+                    allHotels: result,
+                    searchedSortedHotels: result,
+                    filteredHotels: result
+                },
+                ()=>{
+                    // call the search function at initial load
+                    // it sets the room prices of each hotel based off of roomType criteria,
+                    // then sets each hotel data.currentRoomPrice for easier access
+                    this.handleSearch();
+                    // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
+                    // console.log(this.state.allHotels[0].data.room_types);
+                    // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
+                    // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
+                });
+            });
+    
+        
         //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
         // load hotel data for both arrays
         // hotels[] stays constant
-        // set state of searchHotels[] to hotels[]
+        // set state of searchHotels[] to allHotels[]
         // call filter and sort methods
         // filteredHotels is what gets rendered after filtering/sorting hotels
-        this.setState({  
-        hotels: DUMMYHOTELS,
-        filteredHotels: DUMMYHOTELS  }) 
 
     }
 
     componentWillUnmount() {
-        // if (this._asyncRequest) {
-        //     this._asyncRequest.cancel();
-        // }
+        if (this._asyncRequest) {
+            this._asyncRequest.cancel();
+        }
     }
 
-    componentDidUpdate() {
-        console.log("current State: " + util.inspect(this.state));
+    componentDidUpdate(prevState) {
+        // console.log(this.state);
+        // console.log("allHotels: " + util.inspect(this.state.allHotels));
+        // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
+        // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
     }
 
     handleCheckInOut=(event,{name,value})=>{
-      console.log("name: " + name + " value: " + value);
+    //   console.log("name: " + name + " value: " + value);
         if(this.state.hasOwnProperty(name)){
             this.setState({[name]:value});
         }
@@ -110,56 +153,138 @@ class HomePage extends Component {
 
     handleRoomType=(e, {value})=>{
         this.setState({
-            search: { 
+            search: {
                 ...this.state.search,
-                roomType: value 
+                roomType: value
             }
         });
         //Make pop up modal for guests
     }
 
     handleLocation=(e, {name,value})=>{
-        console.log(name + value);
+        // console.log(value);
         this.setState({
-            search: { 
+            search: {
                 ...this.state.search,
-                [name]: value 
+                location: value
             }
         });
-        //Make pop up modal for guests
     }
 
     handleSearch=(e)=>{
         //*** */BACK-END IMPLEMENTATION:
         // filter hotels[] by search criteria & store into searchedHotels[]
+        let searchedHotels = this.state.searchedSortedHotels;
+
+        // filter by location
+        if(this.state.search.location.hasOwnProperty('data')){
+            const { city, state, country } = this.state.search.location.data;
+            const roomType = this.state.search;
+            if(city && state && country ){
+                searchedHotels = this.state.allHotels.filter(
+                    hotel=>
+                        hotel.data.address.city.toLowerCase().includes(city.toLowerCase())
+                        &&hotel.data.address.state.toLowerCase().includes(state.toLowerCase())
+                        &&hotel.data.address.country.toLowerCase().includes(country.toLowerCase())                    
+                );
+            }
+        }
+
+        // filter by room type
+        // console.log("roomType is: " + this.state.search.roomType);
+        // console.log("hotel data room types: " + this.state.allHotels[0].data.room_types)
+        let maxRoomPrice, minRoomPrice;
+        if(this.state.search.roomType){
+            let roomTypePrices = [];
+            searchedHotels = searchedHotels.filter(
+                hotel => {
+                    let hotelsOfRoomType = hotel.data.room_types.filter(room_type => room_type.type === this.state.search.roomType);
+                    let roomTypePrice = hotelsOfRoomType[0].price;
+
+                    // push price onto array to check for max/min at the end of if statement
+                    roomTypePrices.push(roomTypePrice);
+
+                    // set the price of rooms based on the current roomType search criteria to an easily accessible attribute (hotel.data.currentRoomPrice)
+                    hotel.data.currentRoomPrice = roomTypePrice;
+                    return(
+                        hotelsOfRoomType
+                    );
+                }
+            )
+            // check for min and max to display range of slider for each roomType search
+            console.log(roomTypePrices);
+            maxRoomPrice = Math.max(...roomTypePrices);
+            console.log('maxRoomPrice: ' + typeof maxRoomPrice);
+            minRoomPrice = Math.min(...roomTypePrices);
+            // this.setState({
+            //     filter: {
+            //         ...this.state.filter,
+            //         maxPrice: maxRoomPrice,
+            //         minPrice: minRoomPrice,
+            //         price: maxRoomPrice
+            //     }
+            // },
+            // ()=>{
+            //     console.log('this.state.filter: ' + util.inspect(this.state.filter));
+            //     console.log('this.state.filter.maxPrice : ' + this.state.filter.maxPrice);
+            //     console.log('this.state.filter.minPrice : ' + this.state.filter.minPrice);
+
+            // })
+        }
+
+        //***filter by dateRanges***
+        // NEED TO IMPLEMENT
+
+        //sort the hotels
+        let searchedSortedHotels = this.sortHotels(searchedHotels, this.state.sort);
+
+       if(searchedSortedHotels!==this.state.searchedSortedHotels){
         // set state of searchedHotels[]
+        this.setState({
+            searchedSortedHotels: searchedSortedHotels,
+            filteredHotels: searchedSortedHotels,
+                filter: {
+                    ...this.state.filter,
+                    maxPrice: maxRoomPrice,
+                    minPrice: minRoomPrice,
+                    price: maxRoomPrice
+                }
+        },
+        ()=>{
+            console.log('post-search sort: ' + this.state.sort);
+        });
+       }
+
         // call methods to re-filter and re-sort hotel cards
         // set state of filteredHotels[]
         // page gets re-rendered & displays filteredHotels[]
-        console.log("searching hotels!")
-        this.handleFilter();
+        
     }
 
     handleSort=(e, {name, value})=>{
         //sets the state of sort
         this.setState({
-            [name]: value
+            sort: value
         });
+        this.sortHotels(this.state.filteredHotels, value);
+    }
 
-        const filteredHotels = this.state.filteredHotels;
-        let sortedHotels = [];
-        console.log(name);
+    sortHotels=(hotels, value)=>{
+        // const filteredHotels = this.state.filteredHotels;
+        const filteredHotels = hotels;
+        let sortedHotels = hotels;
+
         if(value.includes("rating")){
             if(value.includes("LH")){
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return a.rating - b.rating
+                        return a.data.rating - b.data.rating
                     }
                 );            }
             else{
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return b.rating - a.rating
+                        return b.data.rating - a.data.rating
                     }
                 );            }
         }
@@ -167,26 +292,24 @@ class HomePage extends Component {
             if(value.includes("LH")){
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return a.price - b.price
+                        return a.data.currentRoomPrice - b.data.currentRoomPrice
                     }
                 );
             }
             else{
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        return b.price - a.price
+                        return b.data.currentRoomPrice - a.data.currentRoomPrice
                     }
                 );
             }
         }
         else if (value.includes("name")){
             if(value.includes("AZ")){
-                console.log("a to z");
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        let x = a.name.toLowerCase();
-                        let y = b.name.toLowerCase();
-                        console.log(x + y);
+                        let x = a.data.name.toLowerCase();
+                        let y = b.data.name.toLowerCase();
                         if (x < y) return -1;
                         else if (x > y) return 1;
                         else return 0;
@@ -194,12 +317,10 @@ class HomePage extends Component {
                 );
             }
             else{
-                console.log("z to a");
                 sortedHotels = filteredHotels.sort(
                     (a,b) => {
-                        let x = a.name.toLowerCase();
-                        let y = b.name.toLowerCase();
-                        console.log(x + y);
+                        let x = a.data.name.toLowerCase();
+                        let y = b.data.name.toLowerCase();
                         if (x < y) return 1;
                         else if (x > y) return -1;
                         else return 0;
@@ -207,26 +328,28 @@ class HomePage extends Component {
                 );
             }        }
 
-        if(sortedHotels.length>0){
+        if(sortedHotels !== filteredHotels){
             this.setState({
+                searchedSortedHotels: sortedHotels,
                 filteredHotels: sortedHotels
             })
-    
+
         }
 
+        return sortedHotels;
     }
 
     handleSlider=(e)=>{
-        // console.log(e.x);
         this.setState({
             filter:{
                 ...this.state.filter,
-                price: e.x
+                price: (this.state.filter.maxPrice - this.state.filter.minPrice)* e.x/100 + this.state.filter.minPrice,
+                x: e.x
             },
-            
+
         },
         ()=>{
-            this.handleFilter();
+            this.handleFilter('price');
         }
         );
     }
@@ -241,34 +364,50 @@ class HomePage extends Component {
                 }
             },
             ()=>{
-                this.handleFilter();
+                this.handleFilter('rating');
             }
         );
     }
 
-    handleFilter=()=>{
+    handleFilter=(type)=>{
         //update state for filteredHotels
-        const hotels = this.state.hotels;
+        const searchedSortedHotels = this.state.searchedSortedHotels;
         const price = this.state.filter.price;
         const rating = this.state.filter.rating;
-        console.log("filtering by $" + price + " and rating " + rating);
 
-        let filteredHotels1 = hotels.filter(
-            hotel => hotel.price <= price
-        );
+        let filteredHotels = this.state.filteredHotels;
 
-        console.log("filtered hotels by price: " + filteredHotels1);
+        //filter by rating
+        if(type==='rating'){
+            filteredHotels = searchedSortedHotels.filter(
+                hotel => hotel.data.rating >= rating
+            );
+        }
 
-        let filteredHotels2 = filteredHotels1.filter(
-            hotel => hotel.rating >= this.state.filter.rating
-        );
+        //filter by price
+        else if(type==='price'){
+            filteredHotels = searchedSortedHotels.filter(
+                hotel => {
+                    const roomTypeData = hotel.data.room_types.filter(roomType=> roomType.type === this.state.search.roomType);
+                    const roomPrice = roomTypeData[0].price;
+                    hotel.data.currentRoomPrice = roomPrice;
+                    return(
+                        roomPrice <= price
+                    );
+                }
+            );
+        }
 
-        console.log("filtered hotels by rating: " + filteredHotels2);
+        else{
+            console.log('filtering both');
+        }
 
-        this.setState({
-            filteredHotels: filteredHotels2
-
-        });
+        if(filteredHotels!==this.state.filteredHotels){
+            this.setState({
+                filteredHotels: filteredHotels
+    
+            });
+        }
     }
 
     render() {
@@ -278,7 +417,7 @@ class HomePage extends Component {
             ({
             key: location.data.city,
             text: `${location.data.city} , ${location.data.state}, ${location.data.country}`,
-            value: location.data.city + ", " + location.data.state
+            value: location
             })
         );
 
@@ -302,10 +441,11 @@ class HomePage extends Component {
 
         return (
             <div>
-            <SearchFilterBar 
+            <SearchBar
             datesRange={this.state.datesRange}
-            locationOptions={locationOptions} 
-            roomOptions={roomOptions} 
+            locationOptions={locationOptions}
+            roomOptions={roomOptions}
+            defaultRoomType={this.state.search.roomType}
             handleLocation={this.handleLocation.bind(this)}
             handleCheckInOut={this.handleCheckInOut.bind(this)}
             handleRoomType={this.handleRoomType.bind(this)}
@@ -316,25 +456,30 @@ class HomePage extends Component {
             handleRating={this.handleRating.bind(this)}
             handleFilter={this.handleFilter.bind(this)}
             handleSlider={this.handleSlider.bind(this)}
+            x={this.state.filter.x}
             price={this.state.filter.price}
             defaultRating={this.state.filter.rating}
+            defaultSort={this.state.sort}
+            maxPrice={this.state.filter.maxPrice}
+            minPrice={this.state.filter.minPrice}
             />
                 <Segment>
-                    <Grid columns={2}>
+                    <Grid celled columns={2}>
                         <Grid.Column width={10}>
-                            <ListingBase 
+                            <ListingBase
                             hotels={this.state.filteredHotels}
+                            roomType={this.state.search.roomType}
                             />
                         </Grid.Column>
                         <Grid.Column width={6}>
                             insert maps here
-                        </Grid.Column>                    
+                        </Grid.Column>
                     </Grid>
                 </Segment>
             </div>
         );
         }
-    
+
     }
 
 export default withFirebase(HomePage)

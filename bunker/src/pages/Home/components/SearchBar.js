@@ -10,15 +10,18 @@ import {
 
 import * as moment from 'moment';
 
-import {withFirebase} from '../../../server/Firebase/';
+import {withFirebase} from '../../../server/Firebase';
 import { DatesRangeInput } from "semantic-ui-calendar-react";
 
 
 const today=moment().format('MM-DD-YYYY');
 const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
+const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
+const defaultDateRangeArray = [today, aWeekFromToday];
+const defaultDateRange = defaultDateRangeArray.join(" - ");
 
 
-class SearchFilterBar extends Component {
+class SearchBar extends Component {
     constructor(props) {
         super(props);
           this.state={
@@ -28,6 +31,8 @@ class SearchFilterBar extends Component {
     
 
     render() {
+
+        console.log("default date range : " + defaultDateRange);
 
         return (
             <Grid centered>
@@ -53,7 +58,7 @@ class SearchFilterBar extends Component {
                          <DatesRangeInput 
                          name="datesRange"  
                          minDate={today}
-                         defaultValue={tomorrow}
+                         initialDate={defaultDateRange}
                          dateFormat="MM-DD-YYYY" 
                          onChange={this.props.handleCheckInOut} 
                          value={this.props.datesRange} 
@@ -69,6 +74,7 @@ class SearchFilterBar extends Component {
                         placeholder='' 
                         options={this.props.roomOptions} 
                         onChange={this.props.handleRoomType}
+                        defaultValue={this.props.defaultRoomType}
                         />
                      </Grid.Column>
                      <Grid.Column>
@@ -85,4 +91,4 @@ class SearchFilterBar extends Component {
         }
     }
 
-export default withFirebase(SearchFilterBar);
+export default withFirebase(SearchBar);
