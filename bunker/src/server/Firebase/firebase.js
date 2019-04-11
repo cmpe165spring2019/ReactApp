@@ -211,41 +211,16 @@ class Firebase {
 			});
 	};
 
-	// //Delete reservation
-	// deleteReservationFromDB = (reservation_id, user_id) => {
-	// 	//delete from reservations collection
-	// 	this.reservationRef(reservation_id)
-	// 		.delete()
-	// 		.then(() => {
-	// 			console.log(
-	// 				"Successfully deleted reservation from reservation collection."
-	// 			);
-	// 			//delete reservation from users reservations
-	// 			this.user(user_id)
-	// 				.get()
-	// 				.then(user_doc => {
-	// 					let user_res = user_doc.data().reservations; //array of users reservation_id's
-	// 					//Update user's reservations
-	// 					if (user_res.indexOf(reservation_id) >= 0) {
-	// 						user_res.splice(user_res.indexOf(reservation_id), 1); //remove reservation_id from array
-	// 						this.editUserAccount(user_id, {reservations: user_res, reward_points: new_points});
-	// 						return true;
-	// 					} else {
-	// 						console.log("Reservation was not present.");
-	// 						return false;
-	// 					}
-	// 				})
-	// 				.catch(error => {
-	// 					console.log("Failed to delete reservation from user. " + error);
-	// 					return false;
-	// 				});
-	// 		})
-	// 		.catch(error => {
-	// 			console.log(
-	// 				"Failed to delete reservation from reservation collection. " + error);
-	// 			return false;
-	// 		});
-	// };
+	//Delete reservation
+	deleteReservationFromDB = (reservation_id, user_id) => {
+		this.user(user_id).update({
+			reservations: this.firebase.firestore.FieldValue.arrayRemove(reservation_id)
+		}).then(() => {
+			this.reservationRef(reservation_id).delete().then(() => {
+				console.log("Done delete reservation");
+			}).catch(err => {console.log("Error in delete reservation",err)})
+		}).catch(err => console.log("Error in delete reservation in user", err));
+	};
 
 	//location Search function
 	getCities = next =>
