@@ -240,18 +240,11 @@ class Firebase {
 				return cities;
 			});
 
-		getReservations = reservationIDs =>{
-			let reservations = [];
-			reservations.forEach(reservationID => {
-				this.reservationRef(reservationID).get().then(snapshot => {
-					const obj = {
-						id: snapshot.id,
-						data: snapshot.data()
-					}
-					reservations.push(obj);
-				})
-			})
-			return reservations;
+		getReservations = (reservationIDs,reservations) =>{
+			reservationIDs.forEach((reservationID) => {
+				this.reservationRef(reservationID).get().then(snapshot => ({id: snapshot.id, data: snapshot.data()}))
+				.then(result => reservations.push(result));
+			});
 		}
 
 	//Data Retrive and filter
