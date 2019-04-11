@@ -12,10 +12,21 @@ export default class ListingBase extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      datesRange:'',
     };
   }
+  componentDidUpdate(prevProps){
+        if(this.props.datesRange!== this.state.datesRange){
+            this.setState({
+                datesRange:this.props.datesRange,
+            })
+        }
+
+    }
 
   render() {
+
+    const {datesRange} = this.state;
 
     return (
       <div>
@@ -30,7 +41,7 @@ export default class ListingBase extends Component {
                   <Grid.Column stretched padded="vertically">
                 <Link to = {{
                   pathname: `${ROUTES.HOTEL}/${hotel.id}`,
-                  state: { hotel }
+                  state: { hotel, datesRange}
                 }}
                 >
                 <HotelCard 

@@ -469,6 +469,7 @@ class HomePage extends Component {
                             <ListingBase
                             hotels={this.state.filteredHotels}
                             roomType={this.state.search.roomType}
+                            datesRange={this.state.datesRange}
                             />
                         </Grid.Column>
                         <Grid.Column width={6}>

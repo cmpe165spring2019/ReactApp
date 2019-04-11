@@ -25,8 +25,19 @@ class Reservation extends Component{
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+        user: JSON.parse(localStorage.getItem('authUser')),
+        reservations: [],
+    };
   }
+
+  componentDidMount() {
+      // const reservations = this.props.firebase.getReservations(this.state.user.reservation);
+      // this.setState({
+      //     reservations: reservations
+      // })
+  }
+
 
   render(){
     return(

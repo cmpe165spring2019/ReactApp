@@ -96,6 +96,12 @@ class Firebase {
 
 	// *** Database API *** //
 
+    getReservations= (user_id)=>{
+        let reservations = [];
+        this.database.collection("user").doc(user_id).get().then(user_doc => reservations = user_doc.data().reservations);
+        return reservations;
+    };
+
 	getAllHotels = () =>
 		this.database
 			.collection("hotels")
@@ -118,7 +124,8 @@ class Firebase {
 			username: username,
 			email: email,
 			reservations: [],
-			reward_points: 0
+			reward_points: 0,
+			roles: [],
 		};
 
 		return this.user(data.user_id)
@@ -145,22 +152,26 @@ class Firebase {
 
 	addReservationToDB = (user_id, data) => {
 		//Check that data has valid properties
-		if (
-			data.hasOwnProperty("user_id") &&
-			data.hasOwnProperty("hotel_id") &&
-			data.hasOwnProperty("room_id") &&
-			data.hasOwnProperty("price") &&
-			data.hasOwnProperty("start_date") &&
-			data.hasOwnProperty("end_date")
-		) {
+		console.log('123');
+		// if (
+		// 	data.hasOwnProperty("user_id") &&
+		// 	data.hasOwnProperty("hotel_id") &&
+		// 	data.hasOwnProperty("room_id") &&
+		// 	data.hasOwnProperty("price") &&
+		// 	data.hasOwnProperty("start_date") &&
+		// 	data.hasOwnProperty("end_date")
+		// )
+		// {
 			//Create new reservation document
 			this.database
 				.collection("reservations")
 				.add(data)
 				.then(res_doc => {
+					console.log("Updating")
 					//Add reservation_id to reservation document
 					data.reservation_id = res_doc.id;
-					this.editReservation(res_doc.id, data);
+					this.editReservationInfo(res_doc.id, data);
+					console.log("Updated")
 					//get user's document
 					this.user(user_id)
 						.get()
@@ -168,7 +179,7 @@ class Firebase {
 							//add reservation to user's current reservation array
 							let new_res = user_doc.data().reservations; //Reference to reservation array
 							new_res.push(data.reservation_id); //Adding new reservation_id
-							this.editUser(user_id, {reservations: new_res});
+							this.editUserAccount(user_id, {reservations: new_res});
 						})
 						.catch(err => {
 							console.log("Failed to get user document.");
@@ -180,7 +191,7 @@ class Firebase {
 					return false;
 				});
 			return true;
-		} else return false;
+		//} else return false;
 	};
 
 	//edit reservation data
@@ -214,7 +225,7 @@ class Firebase {
 						//Update user's reservations
 						if (user_res.indexOf(reservation_id) >= 0) {
 							user_res.splice(user_res.indexOf(reservation_id), 1); //remove reservation_id from array
-							this.editUser(user_id, {reservations: user_res});
+							this.editUserAccount(user_id, {reservations: user_res});
 						} else {
 							console.log("Reservation was not present.");
 							return false;
