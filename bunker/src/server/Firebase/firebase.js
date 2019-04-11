@@ -62,6 +62,7 @@ class Firebase {
 	hotelRef = uid => this.database.collections("hotels").doc(uid);
 
 	reservationRef = uid => this.database.collection("reservations").doc(uid);
+	reservationsRef = () => this.database.collection("reservations");
 
 	// *** Merge Auth and DB User API *** //
 
@@ -173,20 +174,17 @@ class Firebase {
 	addReservationToDB = (user_id, data) => {
 		if(this.checkForConflictWithDates(data.start_date, data.end_date, user_id)){
 			//Create new reservation document
-			this.database
-				.collection("reservations")
+			this.reservationsRef
 				.add(data)
 				.then(res_doc => {
 					//Add reservation_id to reservation document
-					data.reservation_id = res_doc.id;
-					this.editReservationInfo(res_doc.id, data);
 					//get user's document
 					this.user(user_id)
 						.get()
 						.then(user_doc => {
 							//add reservation to user's current reservation array
 							let new_res = user_doc.data().reservations; //Reference to reservation array
-							new_res.push(data.reservation_id); //Adding new reservation_id
+							new_res.push(res_doc.id); //Adding new reservation_id
 							//Update rewards points
 							let new_points = user_doc.data().reward_points + Math.floor(data.price/10);
 							this.editUserAccount(user_id, {reservations: new_res, reward_points: new_points});
