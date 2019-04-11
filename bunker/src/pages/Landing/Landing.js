@@ -1,13 +1,22 @@
 import React from 'react';
+
+// Components
 import Background from '../../images/LandingBackground.jpg';
 import BunkerImage from '../../images/bunkertransparent.png';
-import {Form, Select} from 'semantic-ui-react';
+import {
+    Form,
+    Button,
+    Grid,
+    Select,
+    Dropdown
+} from "semantic-ui-react";
+import { DateInput, DatesRangeInput } from "semantic-ui-calendar-react";
 
 
+// Backend functionalities
+import { withFirebase } from '../../server/Firebase/index';
 import * as ROUTES from '../../constants/routes';
-import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import * as moment from "moment";
-import { DateInput } from "semantic-ui-calendar-react";
 
 
 const today=moment().format('MM-DD-YYYY');
@@ -17,129 +26,155 @@ class Landing extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            dateIn:'',
-            dateOut:'',
-            maxCheckIn: '',
-            minCheckout:tommorrow,
+            locationOptions: [],
+            datesRange: '',
+            search: {
+                location: {},
+                roomType: '',
+                roomQuantity: 0
+            }
         }
     }
-    handleCheckInDate=(event,{name,value})=>{
 
-        let parts=value.split("-");
-        let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
-        //if(value.length>=10 && dt<new Date()){
-        //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
-        //  }
-        //  else{
+    componentDidMount(){
+                //set initial values of checkIn/Out calendar
+                const today=moment().format('MM-DD-YYYY');
+                const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
+                const defaultDateRangeArray = [today, aWeekFromToday];
+                const defaultDateRange = defaultDateRangeArray.join(" - ");
+                this.setState({
+                    // datesRange: defaultDateRange
+                });
 
-        let date=moment(dt).add(1,'days').format('MM-DD-YYYY');
-        console.log(date);
-        //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
-        if(this.state.hasOwnProperty(name)){
-            console.log("good1")
-            this.setState({[name]:value,minCheckout:date});
-        }
-        //}
+        //get the search location options from firebase, set locationOptions
+        this._asyncRequest = this.props.firebase.getCities()
+            .then(locationData => {
+            this._asyncRequest = null;
+            locationData.sort((a,b)=>{
+                if(a.data.city.toLowerCase() > b.data.city.toLowerCase()){
+                    return 1
+                }
+                else{
+                    return -1
+                }
+            });
+
+            const locationOptions = locationData.map(
+                (location) =>
+                ({
+                key: location.id,
+                text: `${location.data.city} , ${location.data.state}, ${location.data.country}`,
+                value: location
+                })
+            );
+            this.setState({locationOptions: locationOptions});
+            console.log(this.state.locationOptions);
+        });
+
+        // set default room options
+
+        const roomOptions = [
+            {
+              key: 'single',
+              text: 'Single-Person',
+              value: 'single'
+            },
+            {
+              key: 'double',
+              text: 'Double-Person',
+              value: 'double'
+            },
+            {
+              key: 'multiple',
+              text: 'Multiple-Person',
+              value: 'multiple'
+            }
+          ];
+
+          const roomQuantity = [];
+
+          for(let i = 0; i < 16; i++){
+              let obj = {
+                  key: i,
+                  text: i,
+                  value: i
+              };
+              roomQuantity.push(obj);
+          }
+
+          this.setState({
+            roomOptions: roomOptions,
+            roomQuantity: roomQuantity
+        });
     }
-    handleCheckOutDate=(event,{name,value})=>{
-        console.log("good2");
-        let parts=value.split("-");
-        let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
-        //  if(value.length>=10 && dt<=new Date()){
-        //  window.alert("The Earliest CheckOutDate is tommorrow, please choose from calendar");
-        //  }
-        //  else{
-        let date=moment(dt).subtract(1,'days').format('MM-DD-YYYY');
-        //let date1=today;
-        //  if(moment(dt).subtract(120,'days')>moment()){
-        //date1=moment(dt).subtract(120,'days').format('MM-DD-YYYY');
-        //  }
-        if(this.state.hasOwnProperty(name)){
-            console.log("good3");
-            this.setState({[name]:value,maxCheckIn:date});
-        }
-        //}
 
-    }
+    handleCheckInOut=(event,{name,value})=>{
+        //   console.log("name: " + name + " value: " + value);
+            if(this.state.hasOwnProperty(name)){
+                this.setState({[name]:value});
+            }
+    
+            //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
+            if(value.length > 13){
+                let parsedValue = value.split(" ");
+                let checkInString = parsedValue[0];
+                let checkOutString = parsedValue[2];
+                let checkInArray = checkInString.split("-");
+                let checkOutArray = checkOutString.split("-");
+                let checkInDate = new Date(
+                    parseInt(checkInArray[2]),
+                    parseInt(checkInArray[0]-1),
+                    parseInt(checkInArray[1])
+                );
+                let checkOutDate = new Date(
+                    parseInt(checkOutArray[2]),
+                    parseInt(checkOutArray[0]-1),
+                    parseInt(checkOutArray[1])
+                );
+                this.setState({
+                    search: {
+                        ...this.state.search,
+                        checkInDate: checkInDate,
+                        checkOutDate: checkOutDate,
+                    }
+                });
+    
+                // console.log("check in :" + checkInDate + " check out: " + checkOutDate);
+            }
+          }
+
+          handleRoomType=(e, {name, value})=>{
+            this.setState({
+                search: {
+                    ...this.state.search,
+                    [name]: value
+                }
+            });
+            //Make pop up modal for guests
+        }
+
+        handleLocation=(e, {name,value})=>{
+            // console.log(value);
+            this.setState({
+                search: {
+                    ...this.state.search,
+                    [name]: value
+                }
+            });
+        }
 
     onClick = () => {
-        const hotel = [{
-            name: "1",
-            location: "Dsadas",
-            image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-            address:"1111",
-            price:"222"
-        },
-            {
-                name: "2",
-                location: "123",
-                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-                address:"1111",
-                price:"222"
-            },
-            {
-                name: "3",
-                location: "123",
-                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-                address:"1111",
-                price:"222"
-            },
-            {
-                name: "4",
-                location: "123",
-                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-                address:"1111",
-                price:"222"
-            },
-            {
-                name: "5",
-                location: "123",
-                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-                address:"1111",
-                price:"222"
-            },
-            {
-                name: "6",
-                location: "123",
-                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-                address:"1111",
-                price:"222"
-            },
-            {
-                name: "7",
-                location: "123",
-                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-                address:"1111",
-                price:"222"
-            },
-            {
-                name: "8",
-                location: "123",
-                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-                address:"1111",
-                price:"222"
-            },
-            {
-                name: "9",
-                location: "123",
-                image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-                address:"1111",
-                price:"222"
-            },
-            ]
-        // this.props.firebase.hotelFilter(this.state.location)
-    // .then( (hotels) =>{
         this.props.history.push({
             pathname: ROUTES.HOME,
              state: {
-                hotels: hotel,
-
+                ...this.state
              }
         })
-    // });
+        console.log("landingState: " + this.state);
     }
 
     render() {
+
         return(
   <div style={backgroundStyle}>
       <div style={bunkerStyle}>
@@ -151,37 +186,62 @@ class Landing extends React.Component{
           </div>
           <Form>
               <div style={Place}>
-                  <Form.Field>
-                      <label> WHERE</label>
-                      <input placeholder="Anywhere" />
-                  </Form.Field>
+              <label>
+                  LOCATION:
+              </label>
+              <Dropdown search selection fluid 
+                     name="location"
+                     options={this.state.locationOptions} 
+                     placeholder="City, Adress, Zip code..."
+                     onChange={this.handleLocation}
+                     onSearchChange={this.handleLocation}
+                     onLabelClick={this.handleLocation}
+                     />
+
               </div>
 
               <div style={InOutDiv}>
                   <div style={CheckIn}>
-                      {/*<Form.Field size = "medium">*/}
-                          {/*<label>CHECK IN</label>*/}
-                          {/*<input placeholder="Check In Date" />*/}
-                      {/*</Form.Field>*/}
-                      <div>Check-In</div><DateInput name="dateIn"  minDate={today} maxDate={this.state.maxCheckIn} dateFormat="MM-DD-YYYY" onChange={this.handleCheckInDate} value={this.state.dateIn} icon="bullhorn" iconPosition="left" placeholder="MM-DD-YYYY"/>
-                  </div>
-                  <div style={CheckOut}>
-                      <div>Check-Out</div>
-                      <DateInput name="dateOut"  minDate={this.state.minCheckout} dateFormat="MM-DD-YYYY" onChange={this.handleCheckOutDate} value={this.state.dateOut} icon="paper plane" iconPosition="left" placeholder="MM-DD-YYYY"/>
-                      {/*<Form.Field size = "medium">*/}
-                          {/*<label>CHECK OUT</label>*/}
-                          {/*<input placeholder="Check Out Date" type="text"/>*/}
-                      {/*</Form.Field >*/}
-                  </div>
+                      <label>
+                             CHECK IN/OUT:
+                         </label>
+                         <DatesRangeInput 
+                         name="datesRange"  
+                         minDate={today}
+                        //  initialDate={this.state.defaultDateRange}
+                         dateFormat="MM-DD-YYYY" 
+                         onChange={this.handleCheckInOut} 
+                         value={this.state.datesRange} 
+                         icon="bullhorn" 
+                         iconPosition="left" 
+                         placeholder="From - To"
+                        />                  </div>
                 </div>
+                <div style={InOutDiv}>
 
-              <div style={Guests}>
-                  <Form.Field size = "medium">
-                      <label>GUESTS</label>
-                      {/*<input placeholder="Guests" />*/}
-                      <GuestNum />
-                  </Form.Field>
+              <div style={RoomType}>
+                      <label>
+                          ROOM TYPE: 
+                          <br></br>
+                      </label>
+                      <Select 
+                        name="roomType"                        
+                        placeholder='Single, Double, Multiple...' 
+                        options={this.state.roomOptions} 
+                        onChange={this.handleRoomType}
+                        />
+                        <div style={RoomQuantity}>
+                                              <Select 
+                        name="roomQuantity"                        
+                        placeholder='Select' 
+                        options={this.state.roomQuantity} 
+                        onChange={this.handleRoomType}
+                        />
+                        </div>
+
               </div>
+              </div>
+
               <div style={buttonDiv}>
                   <Form.Button onClick={this.onClick}>Submit</Form.Button>
               </div>
@@ -190,20 +250,7 @@ class Landing extends React.Component{
   </div>
 );
 }}
-const GuestNum = () => {
-    let Guests = [];
-    for (var i = 1; i < 6; i++) {
-        let obj = {
-            key: i,
-            text: i,
-            value: i
-        };
-        Guests.push(obj);
-    }
-    return (
-        <Select icon="user" iconPosition="left" options={Guests} />
-    );
-}
+
 const bunkerStyle = {
     margin: "auto",
     width: "300px",
@@ -230,15 +277,15 @@ const InOutDiv = {
 }
 const CheckIn = {
     float:'left',
-    width:"180px",
+    width:"360px",
 };
-const CheckOut = {
+const RoomQuantity = {
     float:'left',
     width:"180px",
 };
-const Guests = {
+const RoomType = {
     margin:"20px auto 0 auto ",
-    width:"360px",
+    width:"180px",
 };
 const buttonDiv = {
     margin:"20px auto 0 auto ",
@@ -267,4 +314,4 @@ const backgroundStyle = {
     overflow: 'hidden',
 };
 
-export default Landing;
+export default withFirebase(Landing)
