@@ -174,6 +174,7 @@ class Firebase {
 	addReservationToDB = (user_id, data, isUseReward) => {
 		if(this.checkForConflictWithDates(data.start_date, data.end_date, user_id)){
 			//Create new reservation document
+			data.isUseReward = isUseReward;
 			this.reservationsRef
 				.add(data)
 				.then(res_doc => {
