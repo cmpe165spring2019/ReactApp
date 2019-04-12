@@ -171,7 +171,7 @@ class Firebase {
 		return true;
 	}
 
-	addReservationToDB = (user_id, data) => {
+	addReservationToDB = (user_id, data, isUseReward) => {
 		if(this.checkForConflictWithDates(data.start_date, data.end_date, user_id)){
 			//Create new reservation document
 			this.reservationsRef
@@ -186,8 +186,14 @@ class Firebase {
 							let new_res = user_doc.data().reservations; //Reference to reservation array
 							new_res.push(res_doc.id); //Adding new reservation_id
 							//Update rewards points
-							let new_points = user_doc.data().reward_points + Math.floor(data.price/10);
-							this.editUserAccount(user_id, {reservations: new_res, reward_points: new_points});
+							if(!isUseReward){
+								let new_points = user_doc.data().reward_points + Math.floor(data.price/10);
+								this.editUserAccount(user_id, {reservations: new_res, reward_points: new_points});
+							}
+							else{
+								let new_points = 0;
+								this.editUserAccount(user_id, {reservation: new_res, reward_points: new_points})
+							}
 							return true;
 						})
 						.catch(error => console.log("Failed to add to user " +error));
