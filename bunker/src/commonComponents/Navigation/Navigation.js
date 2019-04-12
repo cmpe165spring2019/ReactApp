@@ -1,156 +1,143 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 
 // Backend functionality
-import { AuthUserContext } from '../../server/Session';
-import * as ROUTES from '../../constants/routes';
-import * as ROLES from '../../constants/roles';
-import { withFirebase } from '../../server/Firebase/index';
+import {AuthUserContext} from "../../server/Session";
+import * as ROUTES from "../../constants/routes";
+import * as ROLES from "../../constants/roles";
+import {withFirebase} from "../../server/Firebase/index";
 
 // Components
-import { Link } from 'react-router-dom';
-import { Menu, Segment } from 'semantic-ui-react'
+import {Link} from "react-router-dom";
+import {Menu} from "semantic-ui-react";
 
 class Navigation extends Component {
-    constructor(props){
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this.state = {
-            firebase: null,
-            location: "",
-            activeItem: '',
-        }
-    }
+		this.state = {
+			location: "",
+			activeItem: ""
+		};
+	}
 
-    componentDidMount(){
-        this.setState(
-            {
-                firebase: this.props.firebase
-            }
-        )
-    }
+	handleItemClick = (e, {name}) => {
+		this.setState({activeItem: name});
+		if (name === "signout") {
+			this.signOut();
+		}
+	};
 
-    handleItemClick = (e, {name}) => {
-        this.setState ({ activeItem: name });
-        if ( name === "signout") {
-            this.signOut();
-        }
-    }
+	signOut = () => this.props.firebase.doSignOut();
 
-    signOut = () => {
-        const { firebase } = this.state;
-        firebase.doSignOut();
-    }
+	render() {
+		const {activeItem} = this.state;
 
-    render() {
-        const { activeItem } = this.state.activeItem;
+		const NavigationAuth = ({authUser}) => (
+			<div>
+				<Menu pointing secondary>
+					<Menu.Item
+						as={Link}
+						to={ROUTES.LANDING}
+						name="landing"
+						active={activeItem === "landing"}
+						onClick={this.handleItemClick}
+					/>
+					<Menu.Item
+						as={Link}
+						to={ROUTES.HOME}
+						name="home"
+						active={activeItem === "home"}
+						onClick={this.handleItemClick}
+					/>
 
-        const NavigationAuth = ({ authUser }) => (
+					<Menu.Item
+						as={Link}
+						to={ROUTES.ACCOUNT}
+						name="account"
+						active={activeItem === "account"}
+						onClick={this.handleItemClick}
+					/>
+					{authUser.roles.includes(ROLES.ADMIN) && (
+						<Menu.Item
+							as={Link}
+							to={ROUTES.ADMIN}
+							name="admin"
+							active={activeItem === "admin"}
+							onClick={this.handleItemClick}
+						/>
+					)}
 
-            <div>
-                <Menu pointing secondary>
-                <Link to={ROUTES.LANDING}>
-                <Menu.Item
-                    name='landing'
-                    active={activeItem === 'landing'}
-                    onClick={this.handleItemClick}
-                />
-                </Link>
-                <Link to={ROUTES.HOME}>
-                <Menu.Item
-                    name='home'
-                    active={activeItem === 'home'}
-                    onClick={this.handleItemClick}
-                />
-                </Link>
-                <Link to={ROUTES.ACCOUNT}>
-                <Menu.Item
-                    name='account'
-                    active={activeItem === 'account'}
-                    onClick={this.handleItemClick}
-                />
-                </Link>
-                { authUser.roles.includes(ROLES.ADMIN) && (
-                    <Link to={ROUTES.ADMIN}>
-                    <Menu.Item
-                        name='admin'
-                        active={activeItem === 'admin'}
-                        onClick={this.handleItemClick}
-                    />
-                    </Link>
-                )}
+					<Menu.Menu position="right">
+						<Menu.Item
+							as={Link}
+							to={ROUTES.HOTEL_RESERVATION}
+							name="myReservations"
+							active={activeItem === "myReservations"}
+							onClick={this.handleItemClick}
+						/>
+						<Menu.Item
+							as={Link}
+							to={ROUTES.LANDING}
+							name="signout"
+							active={activeItem === "signout"}
+							onClick={this.handleItemClick}
+						/>
+					</Menu.Menu>
+				</Menu>
+			</div>
+		);
 
-                <Menu.Menu position='right'>
-                <Link to={ROUTES.HOTEL_RESERVATION}>
-                <Menu.Item
-                name='myReservations'
-                active={this.state.activeItem === 'myReservations'}
-                onClick={this.handleItemClick}
-                />
-                </Link>
+		const NavigationNonAuth = () => (
+			<div>
+				<Menu pointing secondary>
+					<Menu.Item
+						as={Link}
+						to={ROUTES.LANDING}
+						name="landing"
+						active={activeItem === "landing"}
+						onClick={this.handleItemClick}
+					/>
 
-                    <Menu.Item
-                    name='signout'
-                    active={this.state.activeItem === 'signout'}
-                    onClick={this.handleItemClick}
-                    />
-                </Menu.Menu>
-                </Menu>
+					<Menu.Item
+						as={Link}
+						to={ROUTES.HOME}
+						name="home"
+						active={activeItem === "home"}
+						onClick={this.handleItemClick}
+					/>
 
-            </div>
-        );
+					<Menu.Menu position="right">
+						<Menu.Item
+							as={Link}
+							to={ROUTES.SIGN_IN}
+							name="Sign In"
+							active={activeItem === "signin"}
+							onClick={this.handleItemClick}
+						/>
+						<Menu.Item
+							as={Link}
+							to={ROUTES.SIGN_UP}
+							name="Sign Up"
+							active={activeItem === "signup"}
+							onClick={this.handleItemClick}
+						/>
+					</Menu.Menu>
+				</Menu>
+			</div>
+		);
 
-        const NavigationNonAuth = () => (
-            <div>
-            <Menu pointing secondary>
-            <Link to={ROUTES.LANDING}>
-            <Menu.Item
-                name='landing'
-                active={this.state.activeItem === 'landing'}
-                onClick={this.handleItemClick}
-            />
-            </Link>
-            <Link to={ROUTES.HOME}>
-            <Menu.Item
-                name='home'
-                active={this.state.activeItem === 'home'}
-                onClick={this.handleItemClick}
-            />
-            </Link>
-
-
-            <Menu.Menu position='right'>
-            <Link to={ROUTES.SIGN_IN}>
-                <Menu.Item
-                name='Sign In'
-                active={this.state.activeItem === 'signin'}
-                onClick={this.handleItemClick}
-                />
-            </Link>
-            <Link to={ROUTES.SIGN_UP}>
-                <Menu.Item
-                name='Sign Up'
-                active={this.state.activeItem === 'signup'}
-                onClick={this.handleItemClick}
-                />
-            </Link>
-            </Menu.Menu>
-            </Menu>
-
-        </div>
-        );
-
-        return (
-            <AuthUserContext.Consumer>
-                {authUser =>
-                    authUser ? (
-                        <NavigationAuth authUser={authUser} />
-                    ) : (
-                        <NavigationNonAuth />
-                    )
-                }
-            </AuthUserContext.Consumer>
-        )
-    }
+		return (
+			<AuthUserContext.Consumer>
+				{authUser =>
+					authUser ? (
+						<NavigationAuth authUser={authUser} />
+					) : (
+						<NavigationNonAuth />
+					)
+				}
+			</AuthUserContext.Consumer>
+		);
+	}
 }
 
 export default withFirebase(Navigation);
