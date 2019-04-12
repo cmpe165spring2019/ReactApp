@@ -10,6 +10,7 @@ import {
 } from 'semantic-ui-react';
 import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import * as moment from "moment";
+import CheckOut from '../CheckOut/CheckOut';
 
 // const hotel = [{
 //     name: "1",
@@ -31,7 +32,21 @@ class HotelPage extends React.Component {
             dateIn: "",
             dateOut: "",
             maxCheckIn: "",
-            minCheckout: tommorrow
+            minCheckout: tommorrow,
+            openPayment: false,
+            reservation:{
+                room_types: [
+                    {
+                        type:"single",
+                        number:3,
+                    },
+                    {
+                        type:"double",
+                        number:3,
+                    },
+                ],
+                price: 100,
+            }
         }
     }
 
@@ -143,7 +158,8 @@ class HotelPage extends React.Component {
                         </div>
                         <div style={bookDiv1}>
                             <h3>Book Now</h3>
-                            <Button color="green" size="small" width="70px">Book</Button>
+                            <Button color="green" size="small" width="70px" onClick={() => this.setState({openPayment: !this.state.openPayment})}>Book now</Button>
+                            <CheckOut open={this.state.openPayment} handleClose={() =>this.setState({openPayment: !this.state.openPayment})} hotel={this.state.hotel} reservation={this.state.reservation}/>
                         </div>
                     </div>
                     <div style={googleMapDiv}>
