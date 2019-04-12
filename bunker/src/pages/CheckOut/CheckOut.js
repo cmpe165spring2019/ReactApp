@@ -1,7 +1,8 @@
 import React from "react";
-import {TransitionablePortal} from "semantic-ui-react";
+import {TransitionablePortal, Button, Message, Container,Segment} from "semantic-ui-react";
 import {withFirebase} from "../../server/Firebase";
 import CheckOutForm from "./CheckOutForm";
+import PayPalButton from "../../server/Payment/PayPalButton";
 
 const CheckOut = props => {
 	const [isOpen, setIsOpen] = React.useState(false);
@@ -46,6 +47,10 @@ const CheckOut = props => {
 	return (
 		<div>
 			<TransitionablePortal onClose={props.handleClose} open={isOpen}>
+			<Segment
+				size={"massive"}
+				style={{left: "30%", position: "fixed", top: "0%", zIndex: 1000}}
+			>
 				<CheckOutForm
 					hotel={props.hotel}
 					reservation={props.reservation}
@@ -57,6 +62,29 @@ const CheckOut = props => {
 					user={user}
 					isUseReward={isUseReward}
 				/>
+				<Button
+					content={
+						isUseReward ? "Reward is used" : `Reward left: ${user.reward_points}`
+					}
+					negative={isUseReward}
+					positive={!isUseReward}
+					onClick={handleUseReward}
+				/>
+				<PayPalButton
+					total={reservation.price}
+					currency={"USD"}
+					commit={true}
+					onSuccess={onSuccess}
+					onError={onError}
+					onCancel={onCancel}
+				/>
+				{isError ? (
+					<Message negative>
+						<Message.Header>Opps!!!</Message.Header>
+						<p>Something when wrong</p>
+					</Message>
+				) : null}
+				</Segment>
 			</TransitionablePortal>
 		</div>
 	);
