@@ -158,8 +158,13 @@ class HotelPage extends React.Component {
                         </div>
                         <div style={bookDiv1}>
                             <h3>Book Now</h3>
-                            <Button color="green" size="small" width="70px" onClick={() => this.setState({openPayment: !this.state.openPayment})}>Book now</Button>
-                            <CheckOut open={this.state.openPayment} handleClose={() =>this.setState({openPayment: !this.state.openPayment})} hotel={this.state.hotel} reservation={this.state.reservation}/>
+                            <CheckOut
+                            	handleOpen={() => this.setState({openPayment: !this.state.openPayment})}
+                            	open={this.state.openPayment}
+                            	handleClose={() => this.setState({openPayment: !this.state.openPayment})}
+                            	hotel={this.state.hotel}
+                            	reservation={this.state.reservation}
+                            />
                         </div>
                     </div>
                     <div style={googleMapDiv}>
