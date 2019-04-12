@@ -1,5 +1,5 @@
 import React from "react";
-import {TransitionablePortal, Button, Message, Container,Segment} from "semantic-ui-react";
+import {TransitionablePortal, Button, Message,Segment} from "semantic-ui-react";
 import {withFirebase} from "../../server/Firebase";
 import CheckOutForm from "./CheckOutForm";
 import PayPalButton from "../../server/Payment/PayPalButton";
