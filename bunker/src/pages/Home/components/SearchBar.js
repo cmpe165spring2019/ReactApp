@@ -38,7 +38,7 @@ class SearchBar extends Component {
             <Grid centered>
                 <Grid.Row/>
                 <Grid.Row centered>
-                    <Grid.Column width={4}>
+                    <Grid.Column width={3}>
                     <div>
                         Location:
                     </div>
@@ -51,7 +51,7 @@ class SearchBar extends Component {
                      onLabelClick={this.props.handleLocation}
                      />
                      </Grid.Column>
-                     <Grid.Column width={2}>
+                     <Grid.Column width={3}>
                          <div>
                              Check In/Out:
                          </div>
@@ -67,17 +67,29 @@ class SearchBar extends Component {
                          placeholder="From - To"
                         />
                      </Grid.Column>
-                     <Grid.Column width={3}>
+                     <Grid.Column width={2}>
                      <div>Room Type:</div>
                         <Select 
                         name="roomType"                        
                         placeholder='' 
-                        options={this.props.roomOptions} 
+                        options={this.props.roomTypeOptions} 
                         onChange={this.props.handleRoomType}
                         defaultValue={this.props.defaultRoomType}
                         />
                      </Grid.Column>
-                     <Grid.Column>
+                     <Grid.Column width={1}>
+                     <div>Quantity:</div>
+                        <Dropdown
+                        compact
+                        selection 
+                        name="roomQuantity"                        
+                        placeholder='' 
+                        options={this.props.roomQuantityOptions} 
+                        onChange={this.props.handleRoomType}
+                        defaultValue={1}
+                        />
+                     </Grid.Column>
+                     <Grid.Column width={1}>
                          <br></br>
                         <Button
                         onClick={this.props.handleSearch}
