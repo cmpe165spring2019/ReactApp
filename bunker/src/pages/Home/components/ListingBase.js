@@ -30,7 +30,7 @@ export default class ListingBase extends Component {
                   <Grid.Column stretched padded="vertically">
                 <Link to = {{
                   pathname: `${ROUTES.HOTEL}/${hotel.id}`,
-                  state: { hotel }
+                  state: { hotel, roomType, roomQuantity }
                 }}
                 >
                 <HotelCard 

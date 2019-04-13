@@ -25,12 +25,15 @@ class HomePage extends Component {
             filteredHotels: [],
             searchedSortedHotels: [],
             locationOptions: [],
+            roomTypeOptions: [],
+            roomQuantityOptions: [],
             datesRange: '',
             search: {
                 location: {},
                 checkInDate: null,
                 checkOutDate: null,
                 roomType: 'single',
+                roomQuantity: '1'
             },
             filter: {
                 x: 100,
@@ -68,8 +71,20 @@ class HomePage extends Component {
                     return -1
                 }
             })
-            this.setState({locationOptions: locationData});
+
+            const locationOptions = locationData.map(
+                (location) =>
+                ({
+                key: location.data.city,
+                text: `${location.data.city} , ${location.data.state}, ${location.data.country}`,
+                value: location
+                })
+            );
+
+            this.setState({locationOptions: locationOptions});
         });
+
+        
 
         //get all the hotels from firebase, set allHotels
         this._asyncRequest = this.props.firebase.getAllHotels()
@@ -100,6 +115,43 @@ class HomePage extends Component {
         // call filter and sort methods
         // filteredHotels is what gets rendered after filtering/sorting hotels
 
+
+        // set default room options
+
+        const roomTypeOptions = [
+            {
+                key: 'single',
+                text: 'Single-Person',
+                value: 'single'
+            },
+            {
+                key: 'double',
+                text: 'Double-Person',
+                value: 'double'
+            },
+            {
+                key: 'multiple',
+                text: 'Multiple-Person',
+                value: 'multiple'
+            }
+        ];
+
+        const roomQuantityOptions = [];
+
+        for(let i = 0; i < 17; i++){
+            let obj = {
+                key: i,
+                text: i,
+                value: i
+            };
+            roomQuantityOptions.push(obj);
+        }
+
+        this.setState({
+        roomTypeOptions: roomTypeOptions,
+        roomQuantityOptions: roomQuantityOptions
+        });
+
     }
 
     componentWillUnmount() {
@@ -109,7 +161,7 @@ class HomePage extends Component {
     }
 
     componentDidUpdate(prevState) {
-        // console.log(this.state);
+        console.log(this.state);
         // console.log("allHotels: " + util.inspect(this.state.allHotels));
         // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
         // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
@@ -151,11 +203,11 @@ class HomePage extends Component {
       }
 
 
-    handleRoomType=(e, {value})=>{
+    handleRoomType=(e, {name, value})=>{
         this.setState({
             search: {
                 ...this.state.search,
-                roomType: value
+                [name]: value
             }
         });
         //Make pop up modal for guests
@@ -212,24 +264,9 @@ class HomePage extends Component {
                 }
             )
             // check for min and max to display range of slider for each roomType search
-            console.log(roomTypePrices);
             maxRoomPrice = Math.max(...roomTypePrices);
-            console.log('maxRoomPrice: ' + typeof maxRoomPrice);
             minRoomPrice = Math.min(...roomTypePrices);
-            // this.setState({
-            //     filter: {
-            //         ...this.state.filter,
-            //         maxPrice: maxRoomPrice,
-            //         minPrice: minRoomPrice,
-            //         price: maxRoomPrice
-            //     }
-            // },
-            // ()=>{
-            //     console.log('this.state.filter: ' + util.inspect(this.state.filter));
-            //     console.log('this.state.filter.maxPrice : ' + this.state.filter.maxPrice);
-            //     console.log('this.state.filter.minPrice : ' + this.state.filter.minPrice);
 
-            // })
         }
 
         //***filter by dateRanges***
@@ -402,6 +439,8 @@ class HomePage extends Component {
             console.log('filtering both');
         }
 
+        this.sortHotels(filteredHotels, this.state.sort)
+
         if(filteredHotels!==this.state.filteredHotels){
             this.setState({
                 filteredHotels: filteredHotels
@@ -412,39 +451,13 @@ class HomePage extends Component {
 
     render() {
 
-        const locationOptions = this.state.locationOptions.map(
-            (location) =>
-            ({
-            key: location.data.city,
-            text: `${location.data.city} , ${location.data.state}, ${location.data.country}`,
-            value: location
-            })
-        );
-
-      const roomOptions = [
-          {
-            key: 'single',
-            text: 'Single-Person',
-            value: 'single'
-          },
-          {
-            key: 'double',
-            text: 'Double-Person',
-            value: 'double'
-          },
-          {
-            key: 'multiple',
-            text: 'Multiple-Person',
-            value: 'multiple'
-          }
-        ];
-
         return (
             <div>
             <SearchBar
             datesRange={this.state.datesRange}
-            locationOptions={locationOptions}
-            roomOptions={roomOptions}
+            locationOptions={this.state.locationOptions}
+            roomTypeOptions={this.state.roomTypeOptions}
+            roomQuantityOptions={this.state.roomQuantityOptions}
             defaultRoomType={this.state.search.roomType}
             handleLocation={this.handleLocation.bind(this)}
             handleCheckInOut={this.handleCheckInOut.bind(this)}
@@ -468,7 +481,9 @@ class HomePage extends Component {
                         <Grid.Column width={10}>
                             <ListingBase
                             hotels={this.state.filteredHotels}
+                            datesRange={this.state.datesRange}
                             roomType={this.state.search.roomType}
+                            roomQuantity={this.state.search.roomQuantity}
                             />
                         </Grid.Column>
                         <Grid.Column width={6}>

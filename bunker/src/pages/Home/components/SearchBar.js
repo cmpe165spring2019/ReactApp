@@ -72,7 +72,7 @@ class SearchBar extends Component {
                         <Select 
                         name="roomType"                        
                         placeholder='' 
-                        options={this.props.roomOptions} 
+                        options={this.props.roomTypeOptions} 
                         onChange={this.props.handleRoomType}
                         defaultValue={this.props.defaultRoomType}
                         />
