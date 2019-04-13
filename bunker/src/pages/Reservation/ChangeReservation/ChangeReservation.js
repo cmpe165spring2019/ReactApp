@@ -57,7 +57,7 @@ const CancelReservation = props => {
 					style={{left: "30%", position: "fixed", top: "0%", zIndex: 1000}}
 				>
 					<ChangeReservationForm
-						oldreservation={oldReservation}
+						oldReservation={oldReservation}
 						setNewReservationData={setNewReservationData}
 						isError={isError}
 						user={user}

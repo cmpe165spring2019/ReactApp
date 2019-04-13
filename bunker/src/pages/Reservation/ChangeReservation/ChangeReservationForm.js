@@ -11,6 +11,7 @@ const CancelReservationForm = props => {
 	return (
 		<div>
 			<Header>Edit Reservation</Header>
+
 		</div>
 	);
 };
