@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import {withRouter} from 'react-router-dom';
 import{DateInput}from 'semantic-ui-calendar-react';
+import Carousel from 'nuka-carousel'
+import { DatesRangeInput } from "semantic-ui-calendar-react";
 import { compose } from 'recompose';
 import { withAuthorization, withEmailVerification } from '../../server/Session';
 import { withFirebase } from '../../server/Firebase';
 import * as ROUTES from "../../constants/routes";
 import {
+    Image,
     Button,
+    Table,
+    Grid,
+    Input,
 } from 'semantic-ui-react';
-import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import * as moment from "moment";
 
 
@@ -20,48 +25,78 @@ const tommorrow = moment()
 class HotelPage extends React.Component {
     constructor(props) {
         super(props);
+        this.makeReservation = this.makeReservation.bind(this);
         this.state = {
             ...props.location.state,
-            dateIn: "",
-            dateOut: "",
+            reservations:[],
             maxCheckIn: "",
             minCheckout: tommorrow,
             reservation: {
+                // totalPrice: 0,
+                // room_types: [{
+                //     type: 'single',
+                //     numb: 3,
+                //     price: 100,
+                // },
+                //     {
+                //         type: 'double',
+                //         numb: 2,
+                //         price: 200,
+                //     },
+                //     {
+                //         type: 'L',
+                //         numb: 0,
+                //         price: 300,
+                //     }],
+                price: 0,
                 user_id: '',
                 hotel_id: '',
-                room_id: '',
-                price: 0,
+                room_id:'',
+                room_type: '',
                 start_date: 0,
                 end_date: 0,
             }
         }
     }
-    // componentDidMount() {
-    //     let rooms, totalprice, room_ids;
-    //     const {hotel_id, start_date, end_date} = this.props
-    //     this.props.hotel.rooms(room => {
-    //         rooms.push(room);
-    //     })
-    //     totalprice = rooms.reduce(room => room.price);
-    //     this.props.hotel.rooms(room => {
-    //         room_ids.push(room.id);
-    //     })
-    //     this.setState({
-    //         reservation : {
-    //             hotel_id: hotel.id,
-    //             room_ids: room_ids,
-    //             price: price,
-    //             start_date: start_date,
-    //             end_date: end_date,
-    //         }
-    //     })
-    // }
+
+    componentDidMount() {
+        const {rooms} = this.props;
+        // const totalPrice = this.state.reservation.room_types.reduce((result, room) => result + (room.price*room.numb), 0);
+        const user_id = JSON.parse(localStorage.getItem('authUser')).uid;
+
+        const datesRange = this.state.datesRange;
+        let parts = datesRange.split("-");
+        let startDate = new Date(
+            parseInt(parts[2]),
+            parseInt(parts[0] - 1),
+            parseInt(parts[1])
+        );
+        let endDate = new Date(
+            parseInt(parts[5]),
+            parseInt(parts[3] - 1),
+            parseInt(parts[4]));
+
+            console.log('this is reservations');
 
 
-    makeReservation = ()=>{
-        const {reservation} = this.state;
-        this.props.firebase.addReservation(reservation);
+
+        this.setState({
+            reservation : {
+                hotel_id: this.state.hotel.id,
+                // totalPrice: totalPrice,
+                price:20,
+                rooms_id:77,
+                start_date: startDate.getTime(),
+                end_date: endDate.getTime(),
+                room_type: 'single',
+                // room_types: this.state.reservation.room_types,
+                user_id: user_id,
+
+            }
+        })
+
     }
+
     handleCheckInDate = (event, { name, value }) => {
         const {hotel_id, room_ids} = this.state.reservation;
         let parts = value.split("-");
@@ -122,188 +157,195 @@ class HotelPage extends React.Component {
             alert("That date is not available");
         // }
     };
+    makeReservation = ()=>{
+        alert('hello');
+        // const {reservation} = this.state.reservation;
+        //console.log(reservation);
+        this.props.firebase.addReservationToDB(this.state.reservation.user_id,this.state.reservation);
+        alert('hello123');
+
+    };
+    cancelReservation = ()=>{
+        alert('hello');
+        // const {reservation} = this.state.reservation;
+        //console.log(reservation);
+        const id = this.state.reservations[0];
+        this.props.firebase.deleteReservationFromDB("zlmBw64OxJUTgp0nxnyo",this.state.reservation.user_id);
+        alert('delete');
+
+    };
+
+    getRes=()=>{
+
+
+      const user = JSON.parse(localStorage.getItem('authUser'));
+    //  let reservations= [];
+
+      console.log(user);
+      this.props.firebase.getReservations(user.reservations).then(res=>{
+        this.setState({
+          reservations: res,
+        });
+
+      })  }
 
     render() {
+        const image0 = this.state.hotel.data.image[0];
+        const image1 = this.state.hotel.data.image[1];
+        const image2 = this.state.hotel.data.image[2];
+        const image3 = this.state.hotel.data.image[3];
+        const image4 = this.state.hotel.data.image[4];
+        const image5 = this.state.hotel.data.image[5];
+        const address = this.state.hotel.data.address;
         return (
 
-            <div>
-                {/*<div><SearchFilterBar /></div>*/}
-                <div style={imageDiv}>
-                    <img src={this.state.hotel.image1} style={imageStyle}/>
-                    <img src={this.state.hotel.image2} style={imageStyle1}/>
-                    <img src={this.state.hotel.image3} style={imageStyle1}/>
-                    <img src={this.state.hotel.image4} style={imageStyle1}/>
-                    <img src={this.state.hotel.image5} style={imageStyle1}/>
-                </div>
-                <div style={hotelDiv}>
-                    <div style={leftDiv}>
-                        <div style={hotelNameDiv}>
-                            <h1 style={hotelName}>{this.state.hotel.data.name}</h1>
-                        </div>
-                        <div style={locationDiv}>
-                            <h3 >{this.state.hotel.data.city}, {this.state.hotel.data.country}</h3>
-                        </div>
 
-                        <div style={priceDiv}>
-                            <h2 >${this.state.hotel.price}/Night</h2>
-                        </div>
-                        <div style={detail}>
-                            <h2 >{this.state.hotel.data.details}</h2>
-                        </div>
-                    </div>
-                    <div style={rightDiv}>
-                        <div style={checkIn}>
-                            <div><h4>CheckInDate</h4></div>
-                            <DateInput
-                                name="dateIn"
+            <Grid>
+                <Grid.Row centered>
+                    <Grid.Row><h1>Click "Me" for Pictures</h1></Grid.Row>
+                    <Carousel
+                        cellAlign="center"
+                        slideWidth={0.9}
+                        slideHeight={0.2}
+                        dragging={true}
+                        speed={5}
+                        easing="easeInOutElastic"
+                    >
+
+                        <Image src={image0} />
+                        <Image src={image1} />
+                        <Image src={image2} />
+                        <Image src={image3} />
+                        <Image src={image4} />
+                        <Image src={image5} />
+                    </Carousel>
+                </Grid.Row>
+
+                <Grid.Row columns={3}>
+                    <Grid.Column rows={4}>
+                        <Grid.Row>
+                            <h1>{this.state.hotel.data.name}</h1>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <h3 >Address: {this.state.hotel.data.address.street.toString()} {this.state.hotel.data.address.state.toString()} </h3>
+
+                        </Grid.Row>
+
+                        <Grid.Row>
+                            <h2 >${this.state.hotel.data.currentRoomPrice}/Night</h2>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <h5 >{this.state.hotel.data.details}</h5>
+                        </Grid.Row>
+                    </Grid.Column>
+
+                    <Grid.Column rows={4}>
+                        <Grid.Row>
+                            <h4>CheckInDate</h4>
+                        </Grid.Row>
+
+                        <Grid.Row>
+                            <DatesRangeInput
+                                name="datesRange"
                                 minDate={today}
-                                maxDate={this.state.maxCheckIn}
+                                initialDate={this.state.datesRange}
                                 dateFormat="MM-DD-YYYY"
-                                onChange={this.handleCheckInDate}
-                                value={this.state.dateIn}
+                                onChange={this.props.handleCheckInOut}
+                                value={this.props.datesRange}
                                 icon="bullhorn"
                                 iconPosition="left"
-                                placeholder="MM-DD-YYYY"
+                                placeholder="From - To"
                             />
-                        </div>
-                        <div style={checkOut}>
-                            <div><h4>CheckOutDate</h4></div>
-                            <DateInput
-                                name="dateOut"
-                                minDate={this.state.minCheckout}
-                                dateFormat="MM-DD-YYYY"
-                                onChange={this.handleCheckOutDate}
-                                value={this.state.dateOut}
-                                icon="paper plane"
-                                iconPosition="left"
-                                placeholder="MM-DD-YYYY"
-                            />
-                        </div>
-                        <div style={bookDiv1}>
+                        </Grid.Row>
+
+
+                        {/*<Grid.Row>*/}
+                            {/*<h4>CheckOutDate</h4>*/}
+                            {/*<DateInput*/}
+                                {/*name="dateOut"*/}
+                                {/*minDate={this.state.minCheckout}*/}
+                                {/*dateFormat="MM-DD-YYYY"*/}
+                                {/*onChange={this.handleCheckOutDate}*/}
+                                {/*value={this.state.dateOut}*/}
+                                {/*icon="paper plane"*/}
+                                {/*iconPosition="left"*/}
+                                {/*placeholder="MM-DD-YYYY"*/}
+                            {/*/>*/}
+                        {/*</Grid.Row>*/}
+
+                        <Grid.Row>
                             <h3>Book Now</h3>
-                            <Button onClick={this.makeReservation()}color="green" size="small" width="70px">Book</Button>
-                        </div>
-                    </div>
-                    <div style={googleMapDiv}>
-                        <img src={"https://beta.techcrunch.com/wp-content/uploads/2013/05/sf-search-results.png"} style={googleMap}/>
-                    </div>
-                </div>
+                            <Button color="green" size="small" width="70px">Book</Button>
+                        </Grid.Row>
+                    </Grid.Column>
 
-                <div style={bookDiv2}>
-                    <table className="ui celled table">
-                        <thead className="">
-                        <tr className="">
-                            <th className="">Room Type</th>
-                            <th className="">Guest Capacity</th>
-                            <th className="">Total Price</th>
-                            <th className="">Book Now</th>
 
-                        </tr>
-                        </thead>
-                        <tbody className="">
-                        <tr className="">
-                            <td className="">One bed Room</td>
-                            <td className="">{this.state.hotel.oneBedCap}</td>
-                            <td className="">${this.state.hotel.oneBedPrice}/Night</td>
-                            <td className=""><Button color="green" size="small" >Book</Button></td>
-                        </tr>
-                        <tr className="">
-                            <td className="">Two Bed Room</td>
-                            <td className="">{this.state.hotel.twoBesCap}</td>
-                            <td className="">${this.state.hotel.twoBedPrice}/Night</td>
-                            <td className=""><Button color="green" size="small" >Book</Button></td>
-                        </tr>
-                        <tr className="">
-                            <td className="">Luxury Room</td>
-                            <td className="">{this.state.hotel.LuxuryCap}</td>
-                            <td className="">${this.state.hotel.LuxuryPrice}/Night</td>
-                            <td className=""><Button color="green" size="small" >Book</Button></td>
-                        </tr>
-                        </tbody>
-                        <tfoot className="">
-                        </tfoot>
-                    </table>
+                    <Grid.Column>
 
-                </div>
+                        <Image src="https://beta.techcrunch.com/wp-content/uploads/2013/05/sf-search-results.png"/>
+                    </Grid.Column>
+                </Grid.Row>
 
-            </div>
+                <Grid.Row>
+                    <Table celled>
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell>RoomType</Table.HeaderCell>
+                                <Table.HeaderCell>Number of Room</Table.HeaderCell>
+                                <Table.HeaderCell>Price</Table.HeaderCell>
+                                <Table.HeaderCell>Total price</Table.HeaderCell>
+                            </Table.Row>
+                        </Table.Header>
+
+                        <Table.Body>
+                            <Table.Row>
+                                <Table.Cell>One bed Room</Table.Cell>
+                                {/*<Table.Cell>{this.state.reservation.rooms[0].numb}</Table.Cell>*/}
+                                {/*<Table.Cell><Input defaultValue={this.state.reservation.room_types[0].numb} /></Table.Cell>*/}
+                                {/*<Table.Cell>${this.state.reservation.room_types[0].price}/Night</Table.Cell>*/}
+                                {/*<Table.Cell>${this.state.reservation.room_types[0].price * this.state.reservation.room_types[0].numb}</Table.Cell>*/}
+                                {/*<Table.Cell><Button color="green" size="small" >Book</Button></Table.Cell>*/}
+                            </Table.Row>
+
+                            <Table.Row>
+                                <Table.Cell>Two bed Room</Table.Cell>
+                                {/*<Table.Cell><Input defaultValue={this.state.reservation.room_types[1].numb} /></Table.Cell>*/}
+                                {/*<Table.Cell>{this.state.reservation.rooms[1].numb}</Table.Cell>*/}
+                                {/*<Table.Cell>${this.state.reservation.room_types[1].price}/Night</Table.Cell>*/}
+                                {/*<Table.Cell>${this.state.reservation.room_types[1].price * this.state.reservation.room_types[1].numb}</Table.Cell>*/}
+                            </Table.Row>
+
+                            <Table.Row>
+                                <Table.Cell>Luxury Room</Table.Cell>
+                                {/*<Table.Cell><Input defaultValue={this.state.reservation.room_types[2].numb} /></Table.Cell>*/}
+                                {/*<Table.Cell>{this.state.reservation.rooms[2].numb}</Table.Cell>*/}
+                                {/*<Table.Cell>${this.state.reservation.room_types[2].price}/Night</Table.Cell>*/}
+                                {/*<Table.Cell>${this.state.reservation.room_types[2].price * this.state.reservation.room_types[2].numb}</Table.Cell>*/}
+                            </Table.Row>
+                        </Table.Body>
+                    </Table>
+                </Grid.Row>
+                <Grid.Row columns={2}>
+                    <Grid.Column width={13}>
+
+                    </Grid.Column>
+                    <Grid.Column width={3}>
+                        <Grid.Row>
+                            Total Price : {this.state.reservation.totalPrice}
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Button primary onClick={()=> this.makeReservation()}>Book</Button>
+                            <Button primary onClick={()=> this.cancelReservation()}>Delete</Button>
+                            <Button onClick={()=> this.getRes()}>GetRes</Button>
+                            {/*<Button primary onClick={()=> this.props.firebase.addReservationToDB(this.state.reservation.user_id,this.state.reservation).then(alert('123'))}>Book</Button>*/}
+
+                        </Grid.Row>
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
         )
     }
 }
-const imageDiv = {
-    width:"100%",
-    height:"400px",
-    margin:"0 auto"
-};
 
-const imageStyle = {
-    width:"50%",
-    height:"400px",
-    float:"left",
-    border: '1px solid black'
-};
-const imageStyle1 = {
-    width:"25%",
-    height:"200px",
-    float:"left",
-    border: '1px solid black'
-};
-const hotelDiv = {
-    width:"100%",
-    height:"300px"
-}
-const leftDiv={
-    margin:"20px 0 0 100px",
-    float:"left",
-    width:"25%",
-    height:"300px"
-};
-const rightDiv={
-    margin:"20px 0 0 100px",
-    float:"left",
-    width:"20%",
-    height:"300px"
-}
-const googleMapDiv={
-    margin:"20px 0 0 0",
-    float:"left",
-    width:"30%",
-    height:"300px"
-}
-const googleMap={
-    width:"100%",
-    height:"300px",
-}
-const hotelName = {
 
-    clear:"both"
-}
-const hotelNameDiv={
-    clear:"both",
-}
-const locationDiv={
-    margin: "20px 0 0 0",
-}
-const priceDiv={
-    margin: "20px 0 0 0",
-}
-const detail={
-    margin: "20px 0 0 0",
-}
-const checkIn={
-    margin:"20px 0 0 0"
-}
-const checkOut={
-    margin:"20px 0 0 0"
-}
-const bookDiv1={
-    margin: "20px 0 0 0",
-}
-const bookDiv2={
-    clear:"both",
-    margin: "50px 0 0 0",
-    width:"100%",
-    height:"300px"
-}
-
-export default withRouter(HotelPage);
+export default withFirebase (HotelPage);

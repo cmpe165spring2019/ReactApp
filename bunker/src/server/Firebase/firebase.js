@@ -59,10 +59,9 @@ class Firebase {
 	//Base API call
 	user = uid => this.database.collection("users").doc(uid);
 
-	hotelRef = uid => this.database.collections("hotels").doc(uid);
+	hotelRef = uid => this.database.collection("hotels").doc(uid);
 
 	reservationRef = uid => this.database.collection("reservations").doc(uid);
-	reservationsRef = () => this.database.collection("reservations");
 
 	// *** Merge Auth and DB User API *** //
 
@@ -97,6 +96,75 @@ class Firebase {
 
 	// *** Database API *** //
 
+/*getReservations=(user_id)=>
+     this.database
+         .collection("users")
+         .get()
+         .then(users =>{
+           let results=[];
+           users.forEach(snapshot=>{
+              if(snapshot.id == user_id){
+                 results=snapshot.data().reservations;
+
+              }
+           });
+           console.log(results[0]);
+           return results;
+         });*/
+
+  /*getReservations = (reservationIDs,reservations) => {
+ 			reservationIDs.forEach((reservationID) => {
+ 				this.reservationRef(reservationID).get().then(snapshot => ({id: snapshot.id, data: snapshot.data()}))
+ 				.then(result => reservations.push(result));
+ 			});
+ 		}*/
+
+    getReservations = (reservationIDs) =>{
+			let result = [];
+			let promise = [];
+			reservationIDs.forEach(reservationID => promise.push(this.reservationRef(reservationID).get()));
+			return Promise.all(promise)
+			.then(snapshots => {
+				snapshots.forEach(snapshot => {
+					const obj = {
+						id: snapshot.id,
+						data: snapshot.data(),
+					}
+					result.push(obj);
+				})
+				return result;
+			});
+		}
+
+
+    /*getHotels = (hotelIDs,hotels) => {
+      hotelIDs.forEach((hotelID) => {
+        this.hotelRef(hotelID).get().then(snapshot => ({id: snapshot.id, data: snapshot.data()}))
+        .then(result => hotels.push(result))
+      });
+    }*/
+
+    getHotels = (hotelIDs) => {
+			let result = [];
+			let promise = [];
+			hotelIDs.forEach(hotelID => promise.push(this.hotelRef(hotelID).get()));
+			return Promise.all(promise)
+			.then(snapshots => {
+				snapshots.forEach(snapshot => {
+					const obj = {
+						id: snapshot.id,
+						data: snapshot.data(),
+					}
+					result.push(obj);
+				})
+				return result;
+			});
+		}
+
+
+
+
+
 	getAllHotels = () =>
 		this.database
 			.collection("hotels")
@@ -114,12 +182,13 @@ class Firebase {
 			});
 
 	addUserToDB = (authUser, email, username) => {
-		const data = {
+		let data = {
 			user_id: authUser.user.uid,
 			username: username,
 			email: email,
 			reservations: [],
-			reward_points: 0
+			reward_points: 0,
+			roles: [],
 		};
 
 		return this.user(data.user_id)
@@ -138,63 +207,54 @@ class Firebase {
 				console.log("User data was successfully changed");
 				return true;
 			})
-			.catch(error => error);
+			.catch(error => {
+				console.error("Error editing document: ", error);
+				return false;
+			});
 	};
 
-	checkForConflictWithDates = (new_start, new_end, user_id) => {
-		this.user(user_id)
-			.get()
-			.then(user_doc => {
-				const current_reservations = user_doc.data().reservations;
-				//If reservations exist check for date confilcts
-				if(current_reservations.length >= 1){
-					current_reservations
-						.forEach(res_id => {
-							this.database
-								.collection("reservations")
-								.doc(res_id)
-								.get()
-								.then(res_doc => {
-									const existing_start = res_doc.data().start_date;
-									const existing_end = res_doc.data().end_date;
-									if((new_start>=existing_start&&new_start<existing_end)//new start date is between existing date range
-										||(new_end>existing_start&&new_end<=existing_end)//new end date is between existing date range
-										||(new_start>=existing_start&&new_end<=existing_end)//new date range is within existing date range
-										||(new_start<=existing_start&&new_end>=existing_end))//new range encapsulate existing range
-									{
-										return false;
-									}
-								});
-						});
-				}
-			});
-		return true;
-	}
-
 	addReservationToDB = (user_id, data) => {
-		if(this.checkForConflictWithDates(data.start_date, data.end_date, user_id)){
+		//Check that data has valid properties
+		console.log('123');
+		// if (
+		// 	data.hasOwnProperty("user_id") &&
+		// 	data.hasOwnProperty("hotel_id") &&
+		// 	data.hasOwnProperty("room_id") &&
+		// 	data.hasOwnProperty("price") &&
+		// 	data.hasOwnProperty("start_date") &&
+		// 	data.hasOwnProperty("end_date")
+		// )
+		// {
 			//Create new reservation document
-			this.reservationsRef
+			this.database
+				.collection("reservations")
 				.add(data)
 				.then(res_doc => {
+					console.log("Updating")
 					//Add reservation_id to reservation document
+					data.reservation_id = res_doc.id;
+					this.editReservationInfo(res_doc.id, data);
+					console.log("Updated")
 					//get user's document
 					this.user(user_id)
 						.get()
 						.then(user_doc => {
 							//add reservation to user's current reservation array
 							let new_res = user_doc.data().reservations; //Reference to reservation array
-							new_res.push(res_doc.id); //Adding new reservation_id
-							//Update rewards points
-							let new_points = user_doc.data().reward_points + Math.floor(data.price/10);
-							this.editUserAccount(user_id, {reservations: new_res, reward_points: new_points});
-							return true;
+							new_res.push(data.reservation_id); //Adding new reservation_id
+							this.editUserAccount(user_id, {reservations: new_res});
 						})
-						.catch(error => console.log("Failed to add to user " +error));
+						.catch(err => {
+							console.log("Failed to get user document.");
+							return false;
+						});
 				})
-				.catch(error => console.log("Failed to add res " +error));
-		}
-		return false;
+				.catch(err => {
+					console.log("Failed to add new reservation. " + err);
+					return false;
+				});
+			return true;
+		//} else return false;
 	};
 
 	//edit reservation data
@@ -213,13 +273,39 @@ class Firebase {
 
 	//Delete reservation
 	deleteReservationFromDB = (reservation_id, user_id) => {
-		this.user(user_id).update({
-			reservations: this.firebase.firestore.FieldValue.arrayRemove(reservation_id)
-		}).then(() => {
-			this.reservationRef(reservation_id).delete().then(() => {
-				console.log("Done delete reservation");
-			}).catch(err => {console.log("Error in delete reservation",err)})
-		}).catch(err => console.log("Error in delete reservation in user", err));
+		//delete from reservations collection
+		this.reservationRef(reservation_id)
+			.delete()
+			.then(() => {
+				console.log(
+					"Successfully deleted reservation from reservation collection."
+				);
+				//delete reservation from users reservations
+				this.user(user_id)
+					.get()
+					.then(doc => {
+						let user_res = doc.data().reservations; //array of users reservation_id's
+						//Update user's reservations
+						if (user_res.indexOf(reservation_id) >= 0) {
+							user_res.splice(user_res.indexOf(reservation_id), 1); //remove reservation_id from array
+							this.editUserAccount(user_id, {reservations: user_res});
+						} else {
+							console.log("Reservation was not present.");
+							return false;
+						}
+					})
+					.catch(err => {
+						console.log("Failed to delete reservation from user. " + err);
+						return false;
+					});
+			})
+			.catch(err => {
+				console.log(
+					"Failed to delete reservation from reservation collection. " + err
+				);
+				return false;
+			});
+		return true;
 	};
 
 	//location Search function
@@ -239,20 +325,6 @@ class Firebase {
 
 				return cities;
 			});
-
-		getReservations = reservationIDs =>{
-			let reservations = [];
-			reservations.forEach(reservationID => {
-				this.reservationRef(reservationID).get().then(snapshot => {
-					const obj = {
-						id: snapshot.id,
-						data: snapshot.data()
-					}
-					reservations.push(obj);
-				})
-			})
-			return reservations;
-		}
 
 	//Data Retrive and filter
 	getLocationHotel = location => {
