@@ -12,6 +12,8 @@ import {
     Message,
     Image
 } from 'semantic-ui-react';
+import ChangeReservation from "./ChangeReservation/ChangeReservation";
+import CancelReservation from "./CancelReservation/CancelReservation"
 
 const ReservationPage= () => (
     <div>
@@ -88,6 +90,7 @@ class Reservation extends Component{
                                     <p></p>
                                     <Grid.Row>
                                         <Button color='red' size="large">Cancel  Reservation </Button>
+
                                     </Grid.Row>
                                 </Grid.Column>
 
