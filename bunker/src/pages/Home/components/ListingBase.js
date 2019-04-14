@@ -13,6 +13,7 @@ export default class ListingBase extends Component {
     super(props);
     this.state = {
       datesRange:'',
+      roomtype:'',
     };
   }
   componentDidUpdate(prevProps){
@@ -44,7 +45,7 @@ export default class ListingBase extends Component {
                   state: { hotel, datesRange}
                 }}
                 >
-                <HotelCard 
+                <HotelCard
                 hotelImage={hotel.data.image[0]}
                 hotelName={hotel.data.name}
                 hotelPrice={price}

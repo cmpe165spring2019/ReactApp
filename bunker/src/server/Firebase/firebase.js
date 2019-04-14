@@ -96,11 +96,74 @@ class Firebase {
 
 	// *** Database API *** //
 
-    getReservations= (user_id)=>{
-        let reservations = [];
-        this.database.collection("user").doc(user_id).get().then(user_doc => reservations = user_doc.data().reservations);
-        return reservations;
-    };
+/*getReservations=(user_id)=>
+     this.database
+         .collection("users")
+         .get()
+         .then(users =>{
+           let results=[];
+           users.forEach(snapshot=>{
+              if(snapshot.id == user_id){
+                 results=snapshot.data().reservations;
+
+              }
+           });
+           console.log(results[0]);
+           return results;
+         });*/
+
+  /*getReservations = (reservationIDs,reservations) => {
+ 			reservationIDs.forEach((reservationID) => {
+ 				this.reservationRef(reservationID).get().then(snapshot => ({id: snapshot.id, data: snapshot.data()}))
+ 				.then(result => reservations.push(result));
+ 			});
+ 		}*/
+
+    getReservations = (reservationIDs) =>{
+			let result = [];
+			let promise = [];
+			reservationIDs.forEach(reservationID => promise.push(this.reservationRef(reservationID).get()));
+			return Promise.all(promise)
+			.then(snapshots => {
+				snapshots.forEach(snapshot => {
+					const obj = {
+						id: snapshot.id,
+						data: snapshot.data(),
+					}
+					result.push(obj);
+				})
+				return result;
+			});
+		}
+
+
+    /*getHotels = (hotelIDs,hotels) => {
+      hotelIDs.forEach((hotelID) => {
+        this.hotelRef(hotelID).get().then(snapshot => ({id: snapshot.id, data: snapshot.data()}))
+        .then(result => hotels.push(result))
+      });
+    }*/
+
+    getHotels = async (hotelIDs) => {
+			let result = [];
+			let promise = [];
+			hotelIDs.forEach(hotelID => promise.push(this.hotelRef(hotelID).get()));
+			return Promise.all(promise)
+			.then(snapshots => {
+				snapshots.forEach(snapshot => {
+					const obj = {
+						id: snapshot.id,
+						data: snapshot.data(),
+					}
+					result.push(obj);
+				})
+				return result;
+			});
+		}
+
+
+
+
 
 	getAllHotels = () =>
 		this.database

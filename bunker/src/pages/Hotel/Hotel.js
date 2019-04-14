@@ -6,8 +6,6 @@ import { DatesRangeInput } from "semantic-ui-calendar-react";
 import { compose } from 'recompose';
 import { withAuthorization, withEmailVerification } from '../../server/Session';
 import { withFirebase } from '../../server/Firebase';
-import "firebase/database";
-import "firebase/firestore";
 import * as ROUTES from "../../constants/routes";
 import {
     Image,
@@ -30,8 +28,7 @@ class HotelPage extends React.Component {
         this.makeReservation = this.makeReservation.bind(this);
         this.state = {
             ...props.location.state,
-            // dateIn: "",
-            // dateOut: "",
+            reservations:[],
             maxCheckIn: "",
             minCheckout: tommorrow,
             reservation: {
@@ -54,7 +51,8 @@ class HotelPage extends React.Component {
                 price: 0,
                 user_id: '',
                 hotel_id: '',
-                room_id: '',
+                room_id:'',
+                room_type: '',
                 start_date: 0,
                 end_date: 0,
             }
@@ -78,31 +76,11 @@ class HotelPage extends React.Component {
             parseInt(parts[3] - 1),
             parseInt(parts[4]));
 
+            console.log('this is reservations');
 
-        let reservations = [];
-        // this.props.firebase.user(user_id).get()
-        //     .then((user_doc) => {
-        //         reservations = user_doc.reservations
-        //     });
-
-        // this.database.collection('users').get(user_id)
-        //     .then((user_doc) => {
-        //         reservations = user_doc.reservations
-        //     });
-        // this.database.collection("user").doc(user_id).get().then(user_doc => reservations = user_doc.data().reservations);
-
-        reservations = this.props.firebase.getReservations(user_id);
-
-
-
-
-        console.log('this is reservations');
-        console.log(reservations);
 
 
         this.setState({
-            // reservations: reservations,
-            // res_id: res_id,
             reservation : {
                 hotel_id: this.state.hotel.id,
                 // totalPrice: totalPrice,
@@ -110,6 +88,7 @@ class HotelPage extends React.Component {
                 rooms_id:77,
                 start_date: startDate.getTime(),
                 end_date: endDate.getTime(),
+                room_type: 'single',
                 // room_types: this.state.reservation.room_types,
                 user_id: user_id,
 
@@ -191,10 +170,24 @@ class HotelPage extends React.Component {
         // const {reservation} = this.state.reservation;
         //console.log(reservation);
         const id = this.state.reservations[0];
-        this.props.firebase.deleteReservationFromDB(id,this.state.reservation.user_id);
+        this.props.firebase.deleteReservationFromDB("zlmBw64OxJUTgp0nxnyo",this.state.reservation.user_id);
         alert('delete');
 
     };
+
+    getRes=()=>{
+
+
+      const user = JSON.parse(localStorage.getItem('authUser'));
+    //  let reservations= [];
+
+      console.log(user);
+      this.props.firebase.getReservations(user.reservations).then(res=>{
+        this.setState({
+          reservations: res,
+        });
+
+      })  }
 
     render() {
         const image0 = this.state.hotel.data.image[0];
@@ -343,6 +336,7 @@ class HotelPage extends React.Component {
                         <Grid.Row>
                             <Button primary onClick={()=> this.makeReservation()}>Book</Button>
                             <Button primary onClick={()=> this.cancelReservation()}>Delete</Button>
+                            <Button onClick={()=> this.getRes()}>GetRes</Button>
                             {/*<Button primary onClick={()=> this.props.firebase.addReservationToDB(this.state.reservation.user_id,this.state.reservation).then(alert('123'))}>Book</Button>*/}
 
                         </Grid.Row>
