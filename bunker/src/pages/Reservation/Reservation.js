@@ -41,8 +41,9 @@ this.state = {
     const user = JSON.parse(localStorage.getItem('authUser'));
 
     this.props.firebase.getReservations(user.reservations).then(reservations => {
-      const hotelIDs = reservations.map(reservation => reservation.data.hotel_id);
-      console.log(reservations);
+      let hotelIDs = [];
+      reservations.forEach(reservation => hotelIDs.push(reservation.data.hotel_id));
+      console.log(hotelIDs);
       this.props.firebase.getHotels(hotelIDs).then(hotels => {
         console.log(hotels);
         this.setState({

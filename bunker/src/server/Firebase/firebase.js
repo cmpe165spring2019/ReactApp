@@ -59,7 +59,7 @@ class Firebase {
 	//Base API call
 	user = uid => this.database.collection("users").doc(uid);
 
-	hotelRef = uid => this.database.collections("hotels").doc(uid);
+	hotelRef = uid => this.database.collection("hotels").doc(uid);
 
 	reservationRef = uid => this.database.collection("reservations").doc(uid);
 
@@ -144,7 +144,7 @@ class Firebase {
       });
     }*/
 
-    getHotels = async (hotelIDs) => {
+    getHotels = (hotelIDs) => {
 			let result = [];
 			let promise = [];
 			hotelIDs.forEach(hotelID => promise.push(this.hotelRef(hotelID).get()));
