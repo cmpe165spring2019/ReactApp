@@ -32,32 +32,36 @@ class HotelPage extends React.Component {
             maxCheckIn: "",
             minCheckout: tommorrow,
             reservation: {
-                // totalPrice: 0,
-                // room_types: [{
-                //     type: 'single',
-                //     numb: 3,
-                //     price: 100,
-                // },
-                //     {
-                //         type: 'double',
-                //         numb: 2,
-                //         price: 200,
-                //     },
-                //     {
-                //         type: 'L',
-                //         numb: 0,
-                //         price: 300,
-                //     }],
-                price: 0,
                 user_id: '',
                 hotel_id: '',
-                room_id:'',
-                room_type: '',
+                room_id: '',
+                price: 0,
                 start_date: 0,
                 end_date: 0,
             }
         }
     }
+    // componentDidMount() {
+    //     let rooms, totalprice, room_ids;
+    //     const {hotel_id, start_date, end_date} = this.props
+    //     this.props.hotel.rooms(room => {
+    //         rooms.push(room);
+    //     })
+    //     totalprice = rooms.reduce(room => room.price);
+    //     this.props.hotel.rooms(room => {
+    //         room_ids.push(room.id);
+    //     })
+    //     this.setState({
+    //         reservation : {
+    //             hotel_id: hotel.id,
+    //             room_ids: room_ids,
+    //             price: price,
+    //             start_date: start_date,
+    //             end_date: end_date,
+    //         }
+    //     })
+    // }
+
 
     componentDidMount() {
         const {rooms} = this.props;
@@ -156,14 +160,6 @@ class HotelPage extends React.Component {
         // else{
             alert("That date is not available");
         // }
-    };
-    makeReservation = ()=>{
-        alert('hello');
-        // const {reservation} = this.state.reservation;
-        //console.log(reservation);
-        this.props.firebase.addReservationToDB(this.state.reservation.user_id,this.state.reservation);
-        alert('hello123');
-
     };
     cancelReservation = ()=>{
         alert('hello');

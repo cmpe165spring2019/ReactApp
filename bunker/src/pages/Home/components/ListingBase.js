@@ -43,6 +43,7 @@ export default class ListingBase extends Component {
                 <Link to = {{
                   pathname: `${ROUTES.HOTEL}/${hotel.id}`,
                   state: { hotel, datesRange}
+
                 }}
                 >
                 <HotelCard
