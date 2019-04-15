@@ -59,24 +59,33 @@ this.state = {
   render(){
     return(
       <Grid divided='vertically'>
+{
+
+     this.state.reservations.map((reservation,i)=>{
+       const hotel=this.state.hotels[i];
+       const startDate = new Date(reservation.data.start_date);
+       const endDate = new Date(reservation.data.end_date);
 
 
+       return(
 
-      <Grid.Row columns={3}>
+     <Grid.Row columns={3}>
       <Grid.Column width={1}>
       </Grid.Column>
           <Grid.Column>
                <Image
-                src="https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg"
+                src= {hotel.data.image[0]}
                 //size='medium'
                 width="250px"
                 height="150px"
                 />
-                <h3>  Hilton San Jose</h3>
+                <h3>  {hotel.data.name}</h3>
           </Grid.Column>
 
           <Grid.Column>
-            <h2>April 11th, 2019 - May 11th,2019</h2>
+
+
+            <h2>{startDate.toDateString()} - {endDate.toDateString()}</h2>
              <Grid.Row>
             <Button color='yellow' size='large'>Change Reservation</Button>
             </Grid.Row>
@@ -86,8 +95,11 @@ this.state = {
             </Grid.Row>
           </Grid.Column>
 
-</Grid.Row>
+        </Grid.Row>
+);
+      })
 
+}
 
       </Grid>
     );

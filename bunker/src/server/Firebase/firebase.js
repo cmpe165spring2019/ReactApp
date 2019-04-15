@@ -137,6 +137,7 @@ class Firebase {
 		}
 
 
+
     /*getHotels = (hotelIDs,hotels) => {
       hotelIDs.forEach((hotelID) => {
         this.hotelRef(hotelID).get().then(snapshot => ({id: snapshot.id, data: snapshot.data()}))
