@@ -30,8 +30,6 @@ class Reservation extends Component {
 			hotels: [],
 			user: user,
 			reservations: [],
-			openCancle: [],
-			openChange: [],
 			stupidway: 1
 		};
 	}
@@ -46,19 +44,11 @@ class Reservation extends Component {
 				reservations.forEach(reservation =>
 					hotelIDs.push(reservation.data.hotel_id)
 				);
-				let openCancle = [];
-				let openChange = [];
-				reservations.forEach(() => {
-					openCancle.push(false);
-					openChange.push(false);
-				});
 				this.props.firebase.getHotels(hotelIDs).then(hotels => {
 					console.log(hotels);
 					this.setState({
 						reservations: reservations,
 						hotels: hotels,
-						openCancle: openCancle,
-						openChange: openChange
 					});
 				});
 			});
@@ -71,9 +61,6 @@ class Reservation extends Component {
 					const hotel = this.state.hotels[i];
 					const startDate = new Date(reservation.data.start_date);
 					const endDate = new Date(reservation.data.end_date);
-					const openCancle = this.state.openCancle[i];
-					const openChange = this.state.openChange[i];
-
 					return (
 						<Grid.Row columns={3}>
 							<Grid.Column width={1} />
@@ -96,21 +83,6 @@ class Reservation extends Component {
 									<CancelReservation
 										hotel={hotel}
 										reservation={reservation}
-										open={openCancle}
-										handleOpen={() => {
-											const newOpenCancle = this.state.openCancle;
-											newOpenCancle[i] = true;
-											this.setState({
-												openCancle: newOpenCancle
-											});
-										}}
-										handleClose={() => {
-											const newOpenCancle = this.state.openCancle;
-											newOpenCancle[i] = false;
-											this.setState({
-												openCancle: newOpenCancle
-											});
-										}}
 									/>
 								</Grid.Row>
 								<p />
@@ -118,21 +90,6 @@ class Reservation extends Component {
 									<ChangeReservation
 										hotel={hotel}
 										reservation={reservation}
-										open={openChange}
-										handleOpen={() => {
-											const newOpenChange = this.state.openChange;
-											newOpenChange[i] = true;
-											this.setState({
-												openChange: newOpenChange
-											});
-										}}
-										handleClose={() => {
-											const newOpenChange = this.state.openChange;
-											newOpenChange[i] = false;
-											this.setState({
-												openChange: newOpenChange
-											});
-										}}
 									/>
 								</Grid.Row>
 							</Grid.Column>
