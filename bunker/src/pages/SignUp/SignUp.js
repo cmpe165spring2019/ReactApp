@@ -178,17 +178,11 @@ class SignUpFormBase extends Component {
 						</h2>
 					</Button>
 				</form>
-				{error && (
-					<font size="+1">
-						<i>
-							<p>
-								********{error.message} Please use a registered email(a new one
-								if already taken) such as Gmail, Yahoo Email or School Email if
-								you want to continue to sign up********
-							</p>
-						</i>
-					</font>
-				)}
+				{error &&
+                   <Message negative>
+                     <Message.Header>Oh snap! You got an error!</Message.Header>
+                     <p>{error.message}</p>
+                   </Message>}
 			</Grid>
 		);
 	}
