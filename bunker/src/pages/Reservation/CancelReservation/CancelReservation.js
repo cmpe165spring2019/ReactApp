@@ -14,11 +14,15 @@ const CancelReservation = props => {
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
 
+	//fake data
+
 	const {reservation, hotel} = props;
 	const user = JSON.parse(localStorage.getItem("authUser"));
 
+	reservation.data.room_types = [];
+
 	const handleDeleteReservation = () => {
-		this.props.firebase
+		props.firebase
 			.deleteReservationFromDB(reservation.id, user.uid)
 			.catch(error => {
 				setIsError(true);

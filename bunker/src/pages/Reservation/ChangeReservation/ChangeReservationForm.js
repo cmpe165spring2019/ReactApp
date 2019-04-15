@@ -1,5 +1,5 @@
 import React from "react";
-import { Header} from "semantic-ui-react";
+import { Header, Button} from "semantic-ui-react";
 const CancelReservationForm = props => {
 	const {
 		oldReservation,
@@ -11,7 +11,7 @@ const CancelReservationForm = props => {
 	return (
 		<div>
 			<Header>Edit Reservation</Header>
-
+			<Button onClick={(event) => {const newdat = Date.now(); setNewReservationData({end_date : Number(newdat)})}}/>
 		</div>
 	);
 };
