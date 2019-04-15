@@ -22,6 +22,8 @@ class Firebase {
 		//this.db = app.database();
 		this.database = app.firestore();
 
+		this.FieldValue = app.firestore.FieldValue;
+
 		/* Social Sign In Method Provider */
 
 		this.googleProvider = new app.auth.GoogleAuthProvider();
@@ -222,7 +224,7 @@ class Firebase {
 	deleteReservationFromDB = (reservation_id, user_id) => {
 		this.user(user_id)
 			.update({
-				reservations: this.firebase.firestore.FieldValue.arrayRemove(
+				reservations: this.FieldValue.arrayRemove(
 					reservation_id
 				)
 			})
