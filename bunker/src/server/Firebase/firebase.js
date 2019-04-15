@@ -59,7 +59,7 @@ class Firebase {
 	//Base API call
 	user = uid => this.database.collection("users").doc(uid);
 
-	hotelRef = uid => this.database.collections("hotels").doc(uid);
+	hotelRef = uid => this.database.collection("hotels").doc(uid);
 
 	reservationRef = uid => this.database.collection("reservations").doc(uid);
 	reservationsRef = () => this.database.collection("reservations");
@@ -147,34 +147,37 @@ class Firebase {
 			.then(user_doc => {
 				const current_reservations = user_doc.data().reservations;
 				//If reservations exist check for date confilcts
-				if(current_reservations.length >= 1){
-					current_reservations
-						.forEach(res_id => {
-							this.database
-								.collection("reservations")
-								.doc(res_id)
-								.get()
-								.then(res_doc => {
-									const existing_start = res_doc.data().start_date;
-									const existing_end = res_doc.data().end_date;
-									if((new_start>=existing_start&&new_start<existing_end)//new start date is between existing date range
-										||(new_end>existing_start&&new_end<=existing_end)//new end date is between existing date range
-										||(new_start>=existing_start&&new_end<=existing_end)//new date range is within existing date range
-										||(new_start<=existing_start&&new_end>=existing_end))//new range encapsulate existing range
-									{
-										return false;
-									}
-								});
-						});
+				if (current_reservations.length >= 1) {
+					current_reservations.forEach(res_id => {
+						this.database
+							.collection("reservations")
+							.doc(res_id)
+							.get()
+							.then(res_doc => {
+								const existing_start = res_doc.data().start_date;
+								const existing_end = res_doc.data().end_date;
+								if (
+									(new_start >= existing_start && new_start < existing_end) || //new start date is between existing date range
+									(new_end > existing_start && new_end <= existing_end) || //new end date is between existing date range
+									(new_start >= existing_start && new_end <= existing_end) || //new date range is within existing date range
+									(new_start <= existing_start && new_end >= existing_end)
+								) {
+									//new range encapsulate existing range
+									return false;
+								}
+							});
+					});
 				}
 			});
 		return true;
-	}
+	};
 
 	addReservationToDB = (user_id, data) => {
-		if(this.checkForConflictWithDates(data.start_date, data.end_date, user_id)){
+		if (
+			this.checkForConflictWithDates(data.start_date, data.end_date, user_id)
+		) {
 			//Create new reservation document
-			this.reservationsRef
+			this.reservationsRef()
 				.add(data)
 				.then(res_doc => {
 					//Add reservation_id to reservation document
@@ -186,13 +189,17 @@ class Firebase {
 							let new_res = user_doc.data().reservations; //Reference to reservation array
 							new_res.push(res_doc.id); //Adding new reservation_id
 							//Update rewards points
-							let new_points = user_doc.data().reward_points + Math.floor(data.price/10);
-							this.editUserAccount(user_id, {reservations: new_res, reward_points: new_points});
+							let new_points =
+								user_doc.data().reward_points + Math.floor(data.price / 10);
+							this.editUserAccount(user_id, {
+								reservations: new_res,
+								reward_points: new_points
+							});
 							return true;
 						})
-						.catch(error => console.log("Failed to add to user " +error));
+						.catch(error => console.log("Failed to add to user " + error));
 				})
-				.catch(error => console.log("Failed to add res " +error));
+				.catch(error => console.log("Failed to add res " + error));
 		}
 		return false;
 	};
@@ -213,13 +220,23 @@ class Firebase {
 
 	//Delete reservation
 	deleteReservationFromDB = (reservation_id, user_id) => {
-		this.user(user_id).update({
-			reservations: this.firebase.firestore.FieldValue.arrayRemove(reservation_id)
-		}).then(() => {
-			this.reservationRef(reservation_id).delete().then(() => {
-				console.log("Done delete reservation");
-			}).catch(err => {console.log("Error in delete reservation",err)})
-		}).catch(err => console.log("Error in delete reservation in user", err));
+		this.user(user_id)
+			.update({
+				reservations: this.firebase.firestore.FieldValue.arrayRemove(
+					reservation_id
+				)
+			})
+			.then(() => {
+				this.reservationRef(reservation_id)
+					.delete()
+					.then(() => {
+						console.log("Done delete reservation");
+					})
+					.catch(err => {
+						console.log("Error in delete reservation", err);
+					});
+			})
+			.catch(err => console.log("Error in delete reservation in user", err));
 	};
 
 	//location Search function
@@ -240,12 +257,39 @@ class Firebase {
 				return cities;
 			});
 
-		getReservations = (reservationIDs,reservations) =>{
-			reservationIDs.forEach((reservationID) => {
-				this.reservationRef(reservationID).get().then(snapshot => ({id: snapshot.id, data: snapshot.data()}))
-				.then(result => reservations.push(result));
+	getReservations = reservationIDs => {
+		let result = [];
+		let promise = [];
+		reservationIDs.forEach(reservationID =>
+			promise.push(this.reservationRef(reservationID).get())
+		);
+		return Promise.all(promise).then(snapshots => {
+			snapshots.forEach(snapshot => {
+				const obj = {
+					id: snapshot.id,
+					data: snapshot.data()
+				};
+				result.push(obj);
 			});
-		}
+			return result;
+		});
+	};
+
+	getHotels = async hotelIDs => {
+		let result = [];
+		let promise = [];
+		hotelIDs.forEach(hotelID => promise.push(this.hotelRef(hotelID).get()));
+		return Promise.all(promise).then(snapshots => {
+			snapshots.forEach(snapshot => {
+				const obj = {
+					id: snapshot.id,
+					data: snapshot.data()
+				};
+				result.push(obj);
+			});
+			return result;
+		});
+	};
 
 	//Data Retrive and filter
 	getLocationHotel = location => {

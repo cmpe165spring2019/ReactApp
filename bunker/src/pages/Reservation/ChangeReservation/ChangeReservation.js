@@ -9,18 +9,19 @@ import {
 import {withFirebase} from "../../../server/Firebase";
 import ChangeReservationForm from "./ChangeReservationForm";
 
-const CancelReservation = props => {
+const ChangeReservation = props => {
 	const [isOpen, setIsOpen] = React.useState(false);
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
-	const [newReservationData, setNewReservationData] = React.useState({});
+	const [newReservationData, setNewReservationData] = React.useState({start_data: 12345});
 
 	const {hotel} = props;
 	const oldReservation = props.reservation;
 	const user = JSON.parse(localStorage.getItem("authUser"));
 
 	const handleChangeReservation = () => {
-		this.props.firebase
+		console.log(newReservationData);
+		props.firebase
 			.editReservationInfo(oldReservation.id, newReservationData)
 			.catch(error => {
 				setIsError(true);
@@ -28,6 +29,8 @@ const CancelReservation = props => {
 			});
 		console.log("handle Edit");
 	};
+
+
 
 	React.useEffect(() => {
 		setIsOpen(false);
@@ -90,4 +93,4 @@ const CancelReservation = props => {
 	);
 };
 
-export default withFirebase(CancelReservation);
+export default withFirebase(ChangeReservation);
