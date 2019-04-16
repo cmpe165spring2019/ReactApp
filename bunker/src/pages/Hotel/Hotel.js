@@ -32,7 +32,6 @@ class HotelPage extends React.Component {
             maxCheckIn: "",
             minCheckout: tommorrow,
             reservation: {
-
                 price: 0,
                 user_id: '',
                 hotel_id: '',
@@ -83,66 +82,66 @@ class HotelPage extends React.Component {
 
     }
 
-    handleCheckInDate = (event, { name, value }) => {
-        const {hotel_id, room_ids} = this.state.reservation;
-        let parts = value.split("-");
-        let dt = new Date(
-            parseInt(parts[2]),
-            parseInt(parts[0] - 1),
-            parseInt(parts[1])
-        );
-        //if(value.length>=10 && dt<new Date()){
-        //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
-        //  }
-        //  else{
-        // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
-            let date = moment(dt)
-                .add(1, "days")
-                .format("MM-DD-YYYY");
-
-            console.log(date);
-            //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
-            if (this.state.hasOwnProperty(name)) {
-                console.log("good1");
-                this.setState({ [name]: value, minCheckout: date });
-            }
-        // }
-        // else{
-            alert("That date is not available");
-        // }
-
-        //}
-    };
-
-    handleCheckOutDate = (event, { name, value }) => {
-        const {hotel_id, room_ids} = this.state.reservation;
-        let parts = value.split("-");
-        let dt = new Date(
-            parseInt(parts[2]),
-            parseInt(parts[0] - 1),
-            parseInt(parts[1])
-        );
-        //if(value.length>=10 && dt<new Date()){
-        //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
-        //  }
-        //  else{
-        // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
-
-            let date = moment(dt)
-                .subtract(1, "days")
-                .format("MM-DD-YYYY");
-
-            console.log(date);
-            //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
-            if (this.state.hasOwnProperty(name)) {
-                console.log("good1");
-                this.setState({ [name]: value, minCheckout: date });
-            }
-        // }
-        // else{
-            alert("That date is not available");
-        // }
-    };
+    // handleCheckInDate = (event, { name, value }) => {
+    //     const {hotel_id, room_ids} = this.state.reservation;
+    //     let parts = value.split("-");
+    //     let dt = new Date(
+    //         parseInt(parts[2]),
+    //         parseInt(parts[0] - 1),
+    //         parseInt(parts[1])
+    //     );
+    //     //if(value.length>=10 && dt<new Date()){
+    //     //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
+    //     //  }
+    //     //  else{
+    //     // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
+    //         let date = moment(dt)
+    //             .add(1, "days")
+    //             .format("MM-DD-YYYY");
+    //
+    //         console.log(date);
+    //         //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
+    //         if (this.state.hasOwnProperty(name)) {
+    //             console.log("good1");
+    //             this.setState({ [name]: value, minCheckout: date });
+    //         }
+    //     // }
+    //     // else{
+    //         alert("That date is not available");
+    //     // }
+    //
+    //     //}
+    // };
+    //
+    // handleCheckOutDate = (event, { name, value }) => {
+    //     const {hotel_id, room_ids} = this.state.reservation;
+    //     let parts = value.split("-");
+    //     let dt = new Date(
+    //         parseInt(parts[2]),
+    //         parseInt(parts[0] - 1),
+    //         parseInt(parts[1])
+    //     );
+    //     //if(value.length>=10 && dt<new Date()){
+    //     //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
+    //     //  }
+    //     //  else{
+    //     // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
+    //
+    //         let date = moment(dt)
+    //             .subtract(1, "days")
+    //             .format("MM-DD-YYYY");
+    //
+    //         console.log(date);
+    //         //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
+    //         if (this.state.hasOwnProperty(name)) {
+    //             console.log("good1");
+    //             this.setState({ [name]: value, minCheckout: date });
+    //         }
+    //     // }
+    //     // else{
+    //         alert("That date is not available");
+    //     // }
+    // };
     makeReservation = ()=>{
         alert('hello');
         // const {reservation} = this.state.reservation;
@@ -151,15 +150,6 @@ class HotelPage extends React.Component {
         alert('hello123');
 
     };
-    // cancelReservation = ()=>{
-    //     alert('hello');
-    //     // const {reservation} = this.state.reservation;
-    //     //console.log(reservation);
-    //     const id = this.state.reservations[0];
-    //     this.props.firebase.deleteReservationFromDB("zlmBw64OxJUTgp0nxnyo",this.state.reservation.user_id);
-    //     alert('delete');
-    //
-    // };
 
     getRes=()=>{
 

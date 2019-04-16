@@ -134,7 +134,7 @@ class Firebase {
 	};
 
 	editUserAccount = (user_id, data) => {
-		this.user(user_id)
+		return this.user(user_id)
 			.update(data)
 			.then(() => {
 				console.log("User data was successfully changed");
@@ -179,7 +179,7 @@ class Firebase {
 			this.checkForConflictWithDates(data.start_date, data.end_date, user_id)
 		) {
 			//Create new reservation document
-			this.reservationsRef()
+			return this.reservationsRef()
 				.add(data)
 				.then(res_doc => {
 					//Add reservation_id to reservation document
@@ -199,16 +199,16 @@ class Firebase {
 							});
 							return true;
 						})
-						.catch(error => console.log("Failed to add to user " + error));
+						.catch(error => {console.log("Failed to add to user " + error); return error});
 				})
-				.catch(error => console.log("Failed to add res " + error));
+				.catch(error => {console.log("Failed to add res " + error); return error});
 		}
 		return false;
 	};
 
 	//edit reservation data
 	editReservationInfo = (reservation_id, data) => {
-		this.reservationRef(reservation_id)
+		return this.reservationRef(reservation_id)
 			.update(data)
 			.then(() => {
 				console.log("Reservation data was successfully changed");
@@ -216,29 +216,28 @@ class Firebase {
 			})
 			.catch(error => {
 				console.error("Error editing document: ", error);
-				return false;
+				return error;
 			});
 	};
 
 	//Delete reservation
 	deleteReservationFromDB = (reservation_id, user_id) => {
-		this.user(user_id)
+		return this.user(user_id)
 			.update({
 				reservations: this.FieldValue.arrayRemove(
 					reservation_id
 				)
 			})
 			.then(() => {
-				this.reservationRef(reservation_id)
+				return this.reservationRef(reservation_id)
 					.delete()
 					.then(() => {
 						console.log("Done delete reservation");
+						return true;
 					})
-					.catch(err => {
-						console.log("Error in delete reservation", err);
-					});
+					.catch(err => err);
 			})
-			.catch(err => console.log("Error in delete reservation in user", err));
+			.catch(err => err);
 	};
 
 	//location Search function

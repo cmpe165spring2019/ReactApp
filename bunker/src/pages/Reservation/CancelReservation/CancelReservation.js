@@ -19,7 +19,6 @@ const CancelReservation = props => {
 	const {reservation, hotel} = props;
 	const user = JSON.parse(localStorage.getItem("authUser"));
 
-	reservation.data.room_types = [];
 
 	const handleDeleteReservation = () => {
 		props.firebase
