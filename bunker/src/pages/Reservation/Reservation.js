@@ -3,13 +3,15 @@ import {compose} from "recompose";
 import {withFirebase} from "../../server/Firebase";
 import {withRouter} from "react-router-dom";
 import * as ROUTES from "../../constants/routes";
+import _ from 'lodash';
 import {
-	Button,
-	Form,
-	Grid,
+	Container,
 	Header,
+	Icon,
+	Dimmer,
+	Loader,
+	Grid,
 	Segment,
-	Message,
 	Image
 } from "semantic-ui-react";
 import ChangeReservation from "./ChangeReservation/ChangeReservation";
@@ -17,7 +19,6 @@ import CancelReservation from "./CancelReservation/CancelReservation";
 
 const ReservationPage = () => (
 	<div>
-		<h1 />
 		<Reservations />
 	</div>
 );
@@ -30,11 +31,16 @@ class Reservation extends Component {
 			hotels: [],
 			user: user,
 			reservations: [],
-			stupidway: 1
+			stupidway: 1,
+			isLoading: false
 		};
+
 	}
 
 	componentDidMount() {
+		this.setState({
+			isLoading: true
+		})
 		const user = JSON.parse(localStorage.getItem("authUser"));
 
 		this.props.firebase
@@ -50,21 +56,32 @@ class Reservation extends Component {
 						reservations: reservations,
 						hotels: hotels,
 					});
+					this.setState({
+						isLoading: false
+					})
 				});
 			});
 	}
 
+
 	render() {
+		const {reservations, isLoading} = this.state;
 		return (
-			<Grid divided="vertically">
+			<Segment>{reservations.length === 0 ? (<div>
+    <Header as='h2' icon textAlign='center'>
+      <Icon name='hotel' circular />
+      <Header.Content>No Reservation</Header.Content>
+    </Header>
+
+  </div>):(<div><Grid divided="vertically">
 				{this.state.reservations.map((reservation, i) => {
 					const hotel = this.state.hotels[i];
 					const startDate = new Date(reservation.data.start_date);
 					const endDate = new Date(reservation.data.end_date);
 					return (
-						<Grid.Row columns={3}>
+						<Grid.Row key={reservation.id} columns={3}>
 							<Grid.Column width={1} />
-							<Grid.Column>
+							<Grid.Column >
 								<Image
 									src={hotel.data.image[0]}
 									//size='medium'
@@ -83,6 +100,7 @@ class Reservation extends Component {
 									<CancelReservation
 										hotel={hotel}
 										reservation={reservation}
+										updateReservations={(value) => {_.remove(reservations, value); this.setState({reservations: reservations})}}
 									/>
 								</Grid.Row>
 								<p />
@@ -96,7 +114,8 @@ class Reservation extends Component {
 						</Grid.Row>
 					);
 				})}
-			</Grid>
+			</Grid><Loader inverted active={isLoading} size='small'/></div>)}
+</Segment>
 		);
 	}
 }
