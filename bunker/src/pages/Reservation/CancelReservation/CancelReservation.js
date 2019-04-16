@@ -16,13 +16,14 @@ const CancelReservation = props => {
 
 	//fake data
 
-	const {reservation, hotel} = props;
+	const {reservation, hotel, updateReservations} = props;
 	const user = JSON.parse(localStorage.getItem("authUser"));
 
 
 	const handleDeleteReservation = () => {
 		props.firebase
 			.deleteReservationFromDB(reservation.id, user.uid)
+			.then(() => updateReservations(reservation))
 			.catch(error => {
 				setIsError(true);
 				console.log(error);
@@ -30,29 +31,19 @@ const CancelReservation = props => {
 		console.log("handle Delete");
 	};
 
-	React.useEffect(() => {
-		setIsOpen(false);
-	}, []);
-	React.useEffect(
-		() => {
-			setIsOpen(props.open);
-		},
-		[props.open]
-	);
-
 	return (
-		<div>
-			<Button
-				size="small"
-				color="red"
-				width="70px"
-				onClick={props.handleOpen}
-				positie={!isOpen}
-				negative={isOpen}
-			>
-				Delete this Reservation
-			</Button>
-			<TransitionablePortal onClose={props.handleClose} open={isOpen}>
+
+			<TransitionablePortal closeOnTriggerClick openOnTriggerClick trigger={
+				<Button
+					size="small"
+					color="red"
+					width="70px"
+					positie={!isOpen}
+					negative={isOpen}
+				>
+					Delete this Reservation
+				</Button>
+			} onClose={() => setIsOpen(false)} onOpen={() => setIsOpen(true)} open={isOpen}>
 				<Segment
 					size={"massive"}
 					style={{left: "30%", position: "fixed", top: "0%", zIndex: 1000}}
@@ -85,7 +76,6 @@ const CancelReservation = props => {
 					) : null}
 				</Segment>
 			</TransitionablePortal>
-		</div>
 	);
 };
 //	111
