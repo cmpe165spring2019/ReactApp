@@ -164,12 +164,13 @@ class Landing extends React.Component{
         }
 
     onClick = () => {
+        const state = this.state;
+
         this.props.history.push({
             pathname: ROUTES.HOME,
-             state: {
-                ...this.state
-             }
-        })
+             state: {...state}
+        });
+
         console.log("landingState: " + this.state);
     }
 
