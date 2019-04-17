@@ -13,7 +13,7 @@ const ChangeReservation = props => {
 	const [isOpen, setIsOpen] = React.useState(false);
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
-	const [newReservationData, setNewReservationData] = React.useState({start_data: 12345});
+	const [newReservationData, setNewReservationData] = React.useState({});
 
 	const {hotel} = props;
 	const oldReservation = props.reservation;
@@ -30,31 +30,18 @@ const ChangeReservation = props => {
 		console.log("handle Edit");
 	};
 
-
-
-	React.useEffect(() => {
-		setIsOpen(false);
-	}, []);
-	React.useEffect(
-		() => {
-			setIsOpen(props.open);
-		},
-		[props.open]
-	);
-
 	return (
-		<div>
+		<TransitionablePortal closeOnTriggerClick openOnTriggerClick trigger={
 			<Button
 				size="small"
 				color="yellow"
 				width="70px"
-				onClick={props.handleOpen}
 				positie={!isOpen}
 				negative={isOpen}
 			>
-				Edit this Reservation
+				Change this reservation
 			</Button>
-			<TransitionablePortal onClose={props.handleClose} open={isOpen}>
+		} onClose={() => setIsOpen(false)} onOpen={() => setIsOpen(true)} open={isOpen}>
 				<Segment
 					size={"massive"}
 					style={{left: "30%", position: "fixed", top: "0%", zIndex: 1000}}
@@ -89,7 +76,6 @@ const ChangeReservation = props => {
 					) : null}
 				</Segment>
 			</TransitionablePortal>
-		</div>
 	);
 };
 

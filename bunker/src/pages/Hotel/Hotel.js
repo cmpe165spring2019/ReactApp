@@ -32,27 +32,12 @@ class HotelPage extends React.Component {
             maxCheckIn: "",
             minCheckout: tommorrow,
             reservation: {
-                // totalPrice: 0,
-                // room_types: [{
-                //     type: 'single',
-                //     numb: 3,
-                //     price: 100,
-                // },
-                //     {
-                //         type: 'double',
-                //         numb: 2,
-                //         price: 200,
-                //     },
-                //     {
-                //         type: 'L',
-                //         numb: 0,
-                //         price: 300,
-                //     }],
                 price: 0,
                 user_id: '',
                 hotel_id: '',
                 room_id:'',
-                room_type: '',
+                roomType: '',
+                roomQuantity:0,
                 start_date: 0,
                 end_date: 0,
             }
@@ -88,8 +73,8 @@ class HotelPage extends React.Component {
                 rooms_id:77,
                 start_date: startDate.getTime(),
                 end_date: endDate.getTime(),
-                room_type: 'single',
-                // room_types: this.state.reservation.room_types,
+                roomQuantity:this.state.roomQuantity,
+                room_types: this.state.roomType,
                 user_id: user_id,
 
             }
@@ -97,81 +82,72 @@ class HotelPage extends React.Component {
 
     }
 
-    handleCheckInDate = (event, { name, value }) => {
-        const {hotel_id, room_ids} = this.state.reservation;
-        let parts = value.split("-");
-        let dt = new Date(
-            parseInt(parts[2]),
-            parseInt(parts[0] - 1),
-            parseInt(parts[1])
-        );
-        //if(value.length>=10 && dt<new Date()){
-        //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
-        //  }
-        //  else{
-        // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
-            let date = moment(dt)
-                .add(1, "days")
-                .format("MM-DD-YYYY");
-
-            console.log(date);
-            //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
-            if (this.state.hasOwnProperty(name)) {
-                console.log("good1");
-                this.setState({ [name]: value, minCheckout: date });
-            }
-        // }
-        // else{
-            alert("That date is not available");
-        // }
-
-        //}
-    };
-
-    handleCheckOutDate = (event, { name, value }) => {
-        const {hotel_id, room_ids} = this.state.reservation;
-        let parts = value.split("-");
-        let dt = new Date(
-            parseInt(parts[2]),
-            parseInt(parts[0] - 1),
-            parseInt(parts[1])
-        );
-        //if(value.length>=10 && dt<new Date()){
-        //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
-        //  }
-        //  else{
-        // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
-
-            let date = moment(dt)
-                .subtract(1, "days")
-                .format("MM-DD-YYYY");
-
-            console.log(date);
-            //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
-            if (this.state.hasOwnProperty(name)) {
-                console.log("good1");
-                this.setState({ [name]: value, minCheckout: date });
-            }
-        // }
-        // else{
-            alert("That date is not available");
-        // }
-    };
+    // handleCheckInDate = (event, { name, value }) => {
+    //     const {hotel_id, room_ids} = this.state.reservation;
+    //     let parts = value.split("-");
+    //     let dt = new Date(
+    //         parseInt(parts[2]),
+    //         parseInt(parts[0] - 1),
+    //         parseInt(parts[1])
+    //     );
+    //     //if(value.length>=10 && dt<new Date()){
+    //     //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
+    //     //  }
+    //     //  else{
+    //     // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
+    //         let date = moment(dt)
+    //             .add(1, "days")
+    //             .format("MM-DD-YYYY");
+    //
+    //         console.log(date);
+    //         //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
+    //         if (this.state.hasOwnProperty(name)) {
+    //             console.log("good1");
+    //             this.setState({ [name]: value, minCheckout: date });
+    //         }
+    //     // }
+    //     // else{
+    //         alert("That date is not available");
+    //     // }
+    //
+    //     //}
+    // };
+    //
+    // handleCheckOutDate = (event, { name, value }) => {
+    //     const {hotel_id, room_ids} = this.state.reservation;
+    //     let parts = value.split("-");
+    //     let dt = new Date(
+    //         parseInt(parts[2]),
+    //         parseInt(parts[0] - 1),
+    //         parseInt(parts[1])
+    //     );
+    //     //if(value.length>=10 && dt<new Date()){
+    //     //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
+    //     //  }
+    //     //  else{
+    //     // if(this.props.firebase.isDateAvailable(hotel_id,room_ids,dt)){
+    //
+    //         let date = moment(dt)
+    //             .subtract(1, "days")
+    //             .format("MM-DD-YYYY");
+    //
+    //         console.log(date);
+    //         //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
+    //         if (this.state.hasOwnProperty(name)) {
+    //             console.log("good1");
+    //             this.setState({ [name]: value, minCheckout: date });
+    //         }
+    //     // }
+    //     // else{
+    //         alert("That date is not available");
+    //     // }
+    // };
     makeReservation = ()=>{
         alert('hello');
         // const {reservation} = this.state.reservation;
         //console.log(reservation);
         this.props.firebase.addReservationToDB(this.state.reservation.user_id,this.state.reservation);
         alert('hello123');
-
-    };
-    cancelReservation = ()=>{
-        alert('hello');
-        // const {reservation} = this.state.reservation;
-        //console.log(reservation);
-        const id = this.state.reservations[0];
-        this.props.firebase.deleteReservationFromDB("zlmBw64OxJUTgp0nxnyo",this.state.reservation.user_id);
-        alert('delete');
 
     };
 
@@ -287,43 +263,43 @@ class HotelPage extends React.Component {
                 </Grid.Row>
 
                 <Grid.Row>
-                    <Table celled>
-                        <Table.Header>
-                            <Table.Row>
-                                <Table.HeaderCell>RoomType</Table.HeaderCell>
-                                <Table.HeaderCell>Number of Room</Table.HeaderCell>
-                                <Table.HeaderCell>Price</Table.HeaderCell>
-                                <Table.HeaderCell>Total price</Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Header>
+                    {/*<Table celled>*/}
+                        {/*<Table.Header>*/}
+                            {/*<Table.Row>*/}
+                                {/*<Table.HeaderCell>RoomType</Table.HeaderCell>*/}
+                                {/*<Table.HeaderCell>Number of Room</Table.HeaderCell>*/}
+                                {/*<Table.HeaderCell>Price</Table.HeaderCell>*/}
+                                {/*<Table.HeaderCell>Total price</Table.HeaderCell>*/}
+                            {/*</Table.Row>*/}
+                        {/*</Table.Header>*/}
 
-                        <Table.Body>
-                            <Table.Row>
-                                <Table.Cell>One bed Room</Table.Cell>
-                                {/*<Table.Cell>{this.state.reservation.rooms[0].numb}</Table.Cell>*/}
-                                {/*<Table.Cell><Input defaultValue={this.state.reservation.room_types[0].numb} /></Table.Cell>*/}
-                                {/*<Table.Cell>${this.state.reservation.room_types[0].price}/Night</Table.Cell>*/}
-                                {/*<Table.Cell>${this.state.reservation.room_types[0].price * this.state.reservation.room_types[0].numb}</Table.Cell>*/}
-                                {/*<Table.Cell><Button color="green" size="small" >Book</Button></Table.Cell>*/}
-                            </Table.Row>
+                        {/*<Table.Body>*/}
+                            {/*<Table.Row>*/}
+                                {/*<Table.Cell>One bed Room</Table.Cell>*/}
+                                {/*/!*<Table.Cell>{this.state.reservation.rooms[0].numb}</Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell><Input defaultValue={this.state.reservation.room_types[0].numb} /></Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell>${this.state.reservation.room_types[0].price}/Night</Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell>${this.state.reservation.room_types[0].price * this.state.reservation.room_types[0].numb}</Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell><Button color="green" size="small" >Book</Button></Table.Cell>*!/*/}
+                            {/*</Table.Row>*/}
 
-                            <Table.Row>
-                                <Table.Cell>Two bed Room</Table.Cell>
-                                {/*<Table.Cell><Input defaultValue={this.state.reservation.room_types[1].numb} /></Table.Cell>*/}
-                                {/*<Table.Cell>{this.state.reservation.rooms[1].numb}</Table.Cell>*/}
-                                {/*<Table.Cell>${this.state.reservation.room_types[1].price}/Night</Table.Cell>*/}
-                                {/*<Table.Cell>${this.state.reservation.room_types[1].price * this.state.reservation.room_types[1].numb}</Table.Cell>*/}
-                            </Table.Row>
+                            {/*<Table.Row>*/}
+                                {/*<Table.Cell>Two bed Room</Table.Cell>*/}
+                                {/*/!*<Table.Cell><Input defaultValue={this.state.reservation.room_types[1].numb} /></Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell>{this.state.reservation.rooms[1].numb}</Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell>${this.state.reservation.room_types[1].price}/Night</Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell>${this.state.reservation.room_types[1].price * this.state.reservation.room_types[1].numb}</Table.Cell>*!/*/}
+                            {/*</Table.Row>*/}
 
-                            <Table.Row>
-                                <Table.Cell>Luxury Room</Table.Cell>
-                                {/*<Table.Cell><Input defaultValue={this.state.reservation.room_types[2].numb} /></Table.Cell>*/}
-                                {/*<Table.Cell>{this.state.reservation.rooms[2].numb}</Table.Cell>*/}
-                                {/*<Table.Cell>${this.state.reservation.room_types[2].price}/Night</Table.Cell>*/}
-                                {/*<Table.Cell>${this.state.reservation.room_types[2].price * this.state.reservation.room_types[2].numb}</Table.Cell>*/}
-                            </Table.Row>
-                        </Table.Body>
-                    </Table>
+                            {/*<Table.Row>*/}
+                                {/*<Table.Cell>Luxury Room</Table.Cell>*/}
+                                {/*/!*<Table.Cell><Input defaultValue={this.state.reservation.room_types[2].numb} /></Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell>{this.state.reservation.rooms[2].numb}</Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell>${this.state.reservation.room_types[2].price}/Night</Table.Cell>*!/*/}
+                                {/*/!*<Table.Cell>${this.state.reservation.room_types[2].price * this.state.reservation.room_types[2].numb}</Table.Cell>*!/*/}
+                            {/*</Table.Row>*/}
+                        {/*</Table.Body>*/}
+                    {/*</Table>*/}
                 </Grid.Row>
                 <Grid.Row columns={2}>
                     <Grid.Column width={13}>
@@ -335,8 +311,8 @@ class HotelPage extends React.Component {
                         </Grid.Row>
                         <Grid.Row>
                             <Button primary onClick={()=> this.makeReservation()}>Book</Button>
-                            <Button primary onClick={()=> this.cancelReservation()}>Delete</Button>
-                            <Button onClick={()=> this.getRes()}>GetRes</Button>
+                            {/*<Button primary onClick={()=> this.cancelReservation()}>Delete</Button>*/}
+                            {/*<Button onClick={()=> this.getRes()}>GetRes</Button>*/}
                             {/*<Button primary onClick={()=> this.props.firebase.addReservationToDB(this.state.reservation.user_id,this.state.reservation).then(alert('123'))}>Book</Button>*/}
 
                         </Grid.Row>

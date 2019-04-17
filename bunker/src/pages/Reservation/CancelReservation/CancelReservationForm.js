@@ -14,12 +14,7 @@ const CancelReservationForm = props => {
 				Address: {hotel.data.address.street}, {hotel.data.address.city},{" "}
 				{hotel.data.address.state}, {hotel.data.address.country}
 			</p>
-			{reservation.data.room_types.map(room_type => (
-				<div>
-					<p>Type: {room_type.type}</p>
-					<p>Number of Room: {room_type.number}</p>
-				</div>
-			))}
+			<p>{reservation.data.room_types}</p>
 			{!reservation.data.isUseReward? (<p>Total Price: {reservation.data.price}</p>) : (<p>Discounted Price: {reservation.data.price}</p>)}
 		</div>
 	);
