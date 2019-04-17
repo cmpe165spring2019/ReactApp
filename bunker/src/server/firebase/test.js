@@ -10,8 +10,7 @@ class testPage extends Component {
         example: this.props.firebase.googleSignIn
         */
 
-        console.log(this.props.firebase);
-
+        console.log(this.props.firebase.FieldValue);
 
         //Your test code end here
       return(

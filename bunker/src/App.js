@@ -32,6 +32,7 @@ const App = () => (
       <Route path={ROUTES.ACCOUNT} component={AccountPage} />
       <Route path={ROUTES.ADMIN} component={AdminPage} />
       <Route path={ROUTES.HOTEL_RESERVATION} component={ReservationPage} />
+      <Route path={'/test'} component={TestPage} />
     </div>
   </Router>
 );

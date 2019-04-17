@@ -24,11 +24,11 @@ const defaultDateRange = defaultDateRangeArray.join(" - ");
 class SearchBar extends Component {
     constructor(props) {
         super(props);
-          this.state={
+        this.state={
 
+        }
     }
-}
-    
+
 
     render() {
 
@@ -39,68 +39,68 @@ class SearchBar extends Component {
                 <Grid.Row/>
                 <Grid.Row centered>
                     <Grid.Column width={3}>
-                    <div>
-                        Location:
-                    </div>
-                     <Dropdown search selection fluid 
-                     name="location"
-                     options={this.props.locationOptions} 
-                     placeholder="City, Adress, Zip code..."
-                     onChange={this.props.handleLocation}
-                     onSearchChange={this.props.handleLocation}
-                     onLabelClick={this.props.handleLocation}
-                     />
-                     </Grid.Column>
-                     <Grid.Column width={3}>
-                         <div>
-                             Check In/Out:
-                         </div>
-                         <DatesRangeInput 
-                         name="datesRange"  
-                         minDate={today}
-                         initialDate={defaultDateRange}
-                         dateFormat="MM-DD-YYYY" 
-                         onChange={this.props.handleCheckInOut} 
-                         value={this.props.datesRange} 
-                         icon="bullhorn" 
-                         iconPosition="left" 
-                         placeholder="From - To"
+                        <div>
+                            Location:
+                        </div>
+                        <Dropdown search selection fluid
+                                  name="location"
+                                  options={this.props.locationOptions}
+                                  placeholder="City, Adress, Zip code..."
+                                  onChange={this.props.handleLocation}
+                                  onSearchChange={this.props.handleLocation}
+                                  onLabelClick={this.props.handleLocation}
                         />
-                     </Grid.Column>
-                     <Grid.Column width={2}>
-                     <div>Room Type:</div>
-                        <Select 
-                        name="roomType"                        
-                        placeholder='' 
-                        options={this.props.roomTypeOptions} 
-                        onChange={this.props.handleRoomType}
-                        defaultValue={this.props.defaultRoomType}
+                    </Grid.Column>
+                    <Grid.Column width={3}>
+                        <div>
+                            Check In/Out:
+                        </div>
+                        <DatesRangeInput
+                            name="datesRange"
+                            minDate={today}
+                            initialDate={defaultDateRange}
+                            dateFormat="MM-DD-YYYY"
+                            onChange={this.props.handleCheckInOut}
+                            value={this.props.datesRange}
+                            icon="bullhorn"
+                            iconPosition="left"
+                            placeholder="From - To"
                         />
-                     </Grid.Column>
-                     <Grid.Column width={1}>
-                     <div>Quantity:</div>
+                    </Grid.Column>
+                    <Grid.Column width={2}>
+                        <div>Room Type:</div>
+                        <Select
+                            name="roomType"
+                            placeholder=''
+                            options={this.props.roomTypeOptions}
+                            onChange={this.props.handleRoomType}
+                            defaultValue={this.props.defaultRoomType}
+                        />
+                    </Grid.Column>
+                    <Grid.Column width={1}>
+                        <div>Quantity:</div>
                         <Dropdown
-                        compact
-                        selection 
-                        name="roomQuantity"                        
-                        placeholder='' 
-                        options={this.props.roomQuantityOptions} 
-                        onChange={this.props.handleRoomType}
-                        defaultValue={1}
+                            compact
+                            selection
+                            name="roomQuantity"
+                            placeholder=''
+                            options={this.props.roomQuantityOptions}
+                            onChange={this.props.handleRoomType}
+                            defaultValue={1}
                         />
-                     </Grid.Column>
-                     <Grid.Column width={1}>
-                         <br></br>
+                    </Grid.Column>
+                    <Grid.Column width={1}>
+                        <br></br>
                         <Button
-                        onClick={this.props.handleSearch}
+                            onClick={this.props.handleSearch}
                         >
                             Search
                         </Button>
                     </Grid.Column>
                 </Grid.Row>
-            </Grid>    
-            );
-        }
+            </Grid>
+        );
     }
+}
 
 export default withFirebase(SearchBar);

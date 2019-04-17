@@ -12,11 +12,27 @@ export default class ListingBase extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      datesRange:'',
+      roomtype:'',
     };
   }
+  componentDidUpdate(prevProps){
+        if(this.props.datesRange!== this.state.datesRange){
+            this.setState({
+                datesRange:this.props.datesRange,
+            })
+        }
+
+    }
 
   render() {
+<<<<<<< HEAD
     let {roomType, roomQuantity, datesRange} = this.props;
+=======
+
+      const { datesRange, roomType, roomQuantity } = this.props;
+
+>>>>>>> 438a8f1e2f3f216bc85d053a6a94c7785e7f1ba6
     return (
       <div>
         <Grid stackable padded="vertically" columns={3}>
@@ -30,10 +46,14 @@ export default class ListingBase extends Component {
                   <Grid.Column stretched padded="vertically">
                 <Link to = {{
                   pathname: `${ROUTES.HOTEL}/${hotel.id}`,
+<<<<<<< HEAD
                   state: { hotel, roomType, roomQuantity, datesRange }
+=======
+                    state: { hotel, datesRange, roomType, roomQuantity }
+>>>>>>> 438a8f1e2f3f216bc85d053a6a94c7785e7f1ba6
                 }}
                 >
-                <HotelCard 
+                <HotelCard
                 hotelImage={hotel.data.image[0]}
                 hotelName={hotel.data.name}
                 hotelPrice={price}
