@@ -106,7 +106,7 @@ class Navigation extends Component {
                     active={this.state.activeItem === 'signout'}
                     onClick={this.handleItemClick}
                     >
-                                                <Icon name='logout' />
+                                                <Icon name='sign-out' />
 Sign Out
                 </Menu.Item>
                 </Menu.Menu>
