@@ -16,13 +16,9 @@ export default class ListingBase extends Component {
   }
 
   render() {
-<<<<<<< Updated upstream
-    let {roomType, roomQuantity, datesRange} = this.props;
-=======
 
       const { datesRange, roomType, roomQuantity } = this.props;
 
->>>>>>> Stashed changes
     return (
       <div>
         <Grid stackable padded="vertically" columns={3}>
@@ -36,11 +32,7 @@ export default class ListingBase extends Component {
                   <Grid.Column stretched padded="vertically">
                 <Link to = {{
                   pathname: `${ROUTES.HOTEL}/${hotel.id}`,
-<<<<<<< Updated upstream
-                  state: { hotel, roomType, roomQuantity, datesRange }
-=======
                     state: { hotel, datesRange, roomType, roomQuantity }
->>>>>>> Stashed changes
                 }}
                 >
                 <HotelCard 
