@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import {withFirebase} from '../../../server/Firebase';
 import CheckInOutCalendar from '../../../commonComponents/CheckInOutCalendar';
 import RoomTypeSelect from "../../../commonComponents/RoomTypeSelect";
+import RoomQuantitySelect from "../../../commonComponents/Navigation/RoomQuantitySelect";
 
 
 class SearchBar extends Component {
@@ -61,14 +62,8 @@ class SearchBar extends Component {
                     </Grid.Column>
                     <Grid.Column width={1}>
                         <div>Quantity:</div>
-                        <Dropdown
-                            compact
-                            selection
-                            name="roomQuantity"
-                            placeholder=''
-                            options={this.props.roomQuantityOptions}
-                            onChange={this.props.handleRoomType}
-                            defaultValue={1}
+                        <RoomQuantitySelect
+                        onChange={this.props.handleRoomType}
                         />
                     </Grid.Column>
                     <Grid.Column width={1}>

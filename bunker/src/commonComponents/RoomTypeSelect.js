@@ -22,6 +22,7 @@ const roomTypeOptions = [
 
 const RoomTypeSelect = (props) => (
     <Select
+    compact
     name="roomType"
     placeholder=''
     options={roomTypeOptions}

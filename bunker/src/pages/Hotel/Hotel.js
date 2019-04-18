@@ -8,13 +8,18 @@ import {
     Button,
     Container,
     Header,
-    Segment
+    Segment,
+    Divider,
+    Rating
 } from 'semantic-ui-react';
 
 
 //Debugging purposes
 import * as util from 'util' // has no default export
 import CheckInOutCalendar from '../../commonComponents/CheckInOutCalendar';
+import RoomTypeSelect from "../../commonComponents/RoomTypeSelect";
+import RoomQuantitySelect from '../../commonComponents/Navigation/RoomQuantitySelect';
+
 
 class HotelPage extends Component {
 
@@ -29,6 +34,7 @@ class HotelPage extends Component {
     componentDidMount(){
         //parse dates into check in and out
         this.parseDatesRange(this.state.datesRange);
+        this.calculateRoomPrice();
     }
 
     componentDidUpdate () {
@@ -71,12 +77,34 @@ class HotelPage extends Component {
         this.parseDatesRange(value);    
     }
 
-    calculatePrice () {
-        const room_types = this.state.hotel.data;
+    handleRoomTypeQuantity=(e, {name, value})=>{
+        this.setState({
+            [name]: value
+        },
+        () => {
+            this.calculateRoomPrice();
+        });
+    }
+
+    calculateRoomPrice () {
+        const { room_types } = this.state.hotel.data;
+        const { roomQuantity } = this.state;
+        console.log('room_types: ' + util.inspect(room_types));
         const roomTypeData = room_types.filter(roomType=> roomType.type === this.state.roomType);
         const roomPrice = roomTypeData[0].price;
+
+        const pricePerNight = roomPrice*roomQuantity;
+        console.log(pricePerNight);
+
         this.setState({
-            currentRoomPrice: roomPrice
+            hotel : {
+                ...this.state.hotel,
+                data: {
+                    ...this.state.hotel.data,
+                    currentRoomPrice: roomPrice
+                }
+            },
+            pricePerNight: pricePerNight
         })
     }
           
@@ -85,7 +113,6 @@ class HotelPage extends Component {
         const { name, address, details, image, rating, room_types } = this.state.hotel.data;
         const { datesRange, roomType, roomQuantity } = this.state;
 
-        console.log(util.inspect(address));
         return (
             <Grid centered celled columns={2}>
                 <Grid.Row>
@@ -112,20 +139,42 @@ class HotelPage extends Component {
                     </Grid.Column>
                     <Grid.Column width={4}>
                     <Segment padded='very'>
-                    insert booking details here
-                        Price per night
-                        Check In/Out Date:
-                        <CheckInOutCalendar
-            onChange={this.handleCheckInOut.bind(this)}
-            value={this.state.datesRange}
-            />
-                        RoomType:
-                        RoomQuantity:
-                        RoomPrice:
-                        <Button>
-                            Book
-                        </Button>
+                        <Container textAlign='center'>
+                            <Header as='h3'>
+                            ${this.state.pricePerNight} / night
+                            </Header>
+                            <Rating disabled icon='star' defaultRating={rating} maxRating={5} />
+                            <br></br>
+                           <Divider/>
+                           <br></br>
+                            <p>
+                            Check In/Out Date:
+                            <CheckInOutCalendar
+                            onChange={this.handleCheckInOut.bind(this)}
+                            value={this.state.datesRange}
+                            />
+                            </p>
+                            <p>
+                            Room Type/Quantity:   
+                            <br></br>                           
+                            <RoomTypeSelect
+                                onChange={this.handleRoomTypeQuantity.bind(this)}
+                                defaultValue={this.state.roomType}
+                            />
 
+                            <RoomQuantitySelect
+                                onChange={this.handleRoomTypeQuantity.bind(this)}
+                                defaultValue={this.state.roomQuantity}
+                            />
+                           </p>
+                           <br></br>
+                           <Divider/>
+                           <br></br>
+
+                            <Button fluid>
+                                Book
+                            </Button>
+                        </Container>
                     </Segment>
                     </Grid.Column>
 
