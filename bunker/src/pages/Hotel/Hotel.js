@@ -70,9 +70,22 @@ class HotelPage extends Component {
         //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
         this.parseDatesRange(value);    
     }
+
+    calculatePrice () {
+        const room_types = this.state.hotel.data;
+        const roomTypeData = room_types.filter(roomType=> roomType.type === this.state.roomType);
+        const roomPrice = roomTypeData[0].price;
+        this.setState({
+            currentRoomPrice: roomPrice
+        })
+    }
           
 
     render () {
+        const { name, address, details, image, rating, room_types } = this.state.hotel.data;
+        const { datesRange, roomType, roomQuantity } = this.state;
+
+        console.log(util.inspect(address));
         return (
             <Grid centered celled columns={2}>
                 <Grid.Row>
@@ -80,18 +93,21 @@ class HotelPage extends Component {
                     Images
                 </Grid.Row>
                 <Grid.Row width={13} centered columns={3}>
-                    <Grid.Column width={10}>
+                    <Grid.Column width={8}>
                     <Segment textAlign='left' padded='very'>
                         <Container textAlign='left'>
                             <Header as='h2'>
-                            Name
+                            {name}
                             </Header>
+                            <p>
+                                {address.street}
+                                <br></br>
+                                {address.city}, {address.state} {address.country}
+                            </p>
+                            <p>
+                                {details}
+                            </p>
                         </Container>
-                        insert hotel details here
-                        Address
-                        Details
-                        Rating
-
                     </Segment>
                     </Grid.Column>
                     <Grid.Column width={4}>

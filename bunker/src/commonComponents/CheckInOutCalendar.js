@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 import { DatesRangeInput } from "semantic-ui-calendar-react";
 import * as moment from 'moment';
@@ -10,16 +10,16 @@ const defaultDateRangeArray = [today, aWeekFromToday];
 const defaultDateRange = defaultDateRangeArray.join(" - ");
 
 const CheckInOutCalendar = (props) => (
-<DatesRangeInput
-name="datesRange"
-minDate={today}
-initialDate={defaultDateRange}
-dateFormat="MM-DD-YYYY"
-onChange={props.onChange}
-value={props.value}
-iconPosition="left"
-placeholder="From - To"
-/>
+    <DatesRangeInput
+    name="datesRange"
+    minDate={today}
+    initialDate={defaultDateRange}
+    dateFormat="MM-DD-YYYY"
+    onChange={props.onChange}
+    value={props.value}
+    iconPosition="left"
+    placeholder="From - To"
+    />
 )
 
 export default CheckInOutCalendar;

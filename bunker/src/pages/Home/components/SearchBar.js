@@ -12,6 +12,7 @@ import * as moment from 'moment';
 
 import {withFirebase} from '../../../server/Firebase';
 import CheckInOutCalendar from '../../../commonComponents/CheckInOutCalendar';
+import RoomTypeSelect from "../../../commonComponents/RoomTypeSelect";
 
 
 class SearchBar extends Component {
@@ -53,12 +54,9 @@ class SearchBar extends Component {
                     </Grid.Column>
                     <Grid.Column width={2}>
                         <div>Room Type:</div>
-                        <Select
-                            name="roomType"
-                            placeholder=''
-                            options={this.props.roomTypeOptions}
-                            onChange={this.props.handleRoomType}
-                            defaultValue={this.props.defaultRoomType}
+                        <RoomTypeSelect
+                        onChange={this.props.handleRoomType}
+                        defaultValue={this.props.defaultRoomType}
                         />
                     </Grid.Column>
                     <Grid.Column width={1}>

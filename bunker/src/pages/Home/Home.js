@@ -456,7 +456,6 @@ class HomePage extends Component {
             <SearchBar
             datesRange={this.state.datesRange}
             locationOptions={this.state.locationOptions}
-            roomTypeOptions={this.state.roomTypeOptions}
             roomQuantityOptions={this.state.roomQuantityOptions}
             defaultRoomType={this.state.search.roomType}
             handleLocation={this.handleLocation.bind(this)}
