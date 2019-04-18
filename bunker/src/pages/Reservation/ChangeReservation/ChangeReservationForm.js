@@ -8,7 +8,8 @@ import {
     Header, Select, Dropdown,
 } from 'semantic-ui-react';
 import * as moment from "moment";
-import { DatesRangeInput } from "semantic-ui-calendar-react";
+import { DatesRangeInput,DateInput } from "semantic-ui-calendar-react";
+import DateRangePicker from '@wojtekmaj/react-daterange-picker'
 
 const today=moment().format('MM-DD-YYYY');
 const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
@@ -27,32 +28,36 @@ class CancelReservationForm extends React.Component{
                 end_date: props.oldReservation.data.end_date,
                 room_types: props.oldReservation.data.room_types,
                 roomQuantity: props.oldReservation.data.roomQuantity,
-            }
+            },
+            // datesRange:[this.state.newReservation.start_date, this.state.newReservation.end_date],
         }
+
+        this.handleRoomType = this.handleRoomType.bind(this);
     }
 
 
 
 
 
-    handleCheckInOut=(event,{name,value})=>{
 
-        //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
-        if(value.length > 13) {
-            const tempa = value.split(" - ")
-            let checkInDate = new Date(tempa[0]).getTime();
-            let checkOutDate = new Date(tempa[1]).getTime();
-
-
-            this.setState({
-                newReservation: {
-                    start_date: checkInDate,
-                    end_date: checkOutDate
-                }
-            });
-        }
-
-    }
+    // handleCheckInOut=(event,{name,value})=>{
+    //
+    //     //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
+    //     if(value.length > 13) {
+    //         const tempa = value.split(" - ")
+    //         let checkInDate = new Date(tempa[0]).getTime();
+    //         let checkOutDate = new Date(tempa[1]).getTime();
+    //
+    //
+    //         this.setState({
+    //             newReservation: {
+    //                 start_date: checkInDate,
+    //                 end_date: checkOutDate
+    //             }
+    //         });
+    //     }
+    //
+    // }
     // handleCheckInOut=(event,{name,value})=>{
     //     //   console.log("name: " + name + " value: " + value);
     //     if(this.state.hasOwnProperty(name)){
@@ -87,7 +92,68 @@ class CancelReservationForm extends React.Component{
     //     }
     // }
 
+    handleRoomType = (event,{name,value}) =>{
+        console.log("name: " + name + " value: " + value);
+        const {newReservation} = this.state;
+        this.setState({
+            newReservation:{
+                ...newReservation,
+                room_types: value,
+            }
+        });
+        // console.log('new type: '+ this.state.newReservation.room_types)
+        // alert(this.state.newReservation.room_types)
+    }
+
+    handleRoomQuantityOptions = (event,{name,value}) =>{
+        // console.log("name: " + name + " value: " + value);
+        const {newReservation} = this.state;
+        this.setState({
+            newReservation:{
+                ...newReservation,
+                roomQuantity: value,
+            }
+        });
+        console.log('new quantity: '+ this.state.newReservation.roomQuantity)
+        // alert(this.state.newReservation.room_types)
+    }
+
+
+    // handleDate = (event) =>{
+    //     console.log(event.target.value);
+    // }
+
+    handleDate = date => {
+        // console.log(date[0]);
+        const {newReservation} = this.state;
+        this.setState({
+            newReservation:{
+                ...newReservation,
+                start_date: date[0].getTime(),
+                end_date: date[1].getTime(),
+            }
+        });
+
+        // const dateRange = moment(this.state.newReservation.start_date).format('MM-DD-YYYY') + " - " +
+        //     moment(this.state.newReservation.end_date).format('MM-DD-YYYY');
+        // const start = moment(this.state.newReservation.start_date).format('MM-DD-YYYY')
+        // console.log(start);
+        // console.log(" + ")
+        console.log(this.state.newReservation.start_date);
+        const start = moment(this.state.newReservation.start_date).format('MM-DD-YYYY')
+        const end = moment(this.state.newReservation.end_date).format('MM-DD-YYYY')
+        console.log('is:'+start);
+        console.log(this.state.newReservation.end_date);
+        console.log('is:'+end);
+
+        // this.setState({ date })
+    }
+
+
+
     render()
+
+
 {
 
     const roomTypeOptions = [
@@ -119,35 +185,32 @@ class CancelReservationForm extends React.Component{
         roomQuantityOptions.push(obj);
     }
 
-    // updateCalendar = (event, {name, value}) =>{
-    //
-    //     setNewRes(updateRes);
 
-    // }
-    const dateRange = moment(this.state.newReservation.start_date).format('MM-DD-YYYY') + " - " +
-        moment(this.state.newReservation.end_date).format('MM-DD-YYYY');
+    // const dateRange = moment(this.state.newReservation.start_date).format('MM-DD-YYYY') + " - " +
+    //     moment(this.state.newReservation.end_date).format('MM-DD-YYYY');
+
+
+    const datesRange = [(this.state.newReservation.start_date), (this.state.newReservation.end_date)];
+
     return (
         <div>
             <Header>Edit Reservation</Header>
             {/*<Button onClick={(event) => {const newdat = Date.now(); setNewReservationData({end_date : Number(newdat)})}}/>*/}
+            <Button onClick={(event) => {this.props.setNewReservationData(this.state.newReservation)}}>Submit</Button>
             <Grid>
                 <Grid.Row>
                     <div>
                         Check In/Out:
                     </div>
+                    <DateRangePicker
+                        // name="dates"
+                        minDate={new Date()}
+                        value={datesRange}
+                        onChange={this.handleDate}
 
-                    <DatesRangeInput
-                        name="datesRange"
-                        minDate={today}
-
-                        dateFormat="MM-DD-YYYY"
-                        onChange={this.handleCheckInOut}
-                        icon="bullhorn"
-                        iconPosition="left"
-                        placeholder="From - To"
                     />
-                    {/*<p>{oldReservation.data.start_date}</p>*/}
-                    {/*{setNewReservationData({start_date: 123123,end_date:13123,room_types:{type: 'single', quantity: }})}*/}
+
+
                 </Grid.Row>
                 <Grid.Row>
                     <div>Room Type:</div>
@@ -155,7 +218,7 @@ class CancelReservationForm extends React.Component{
                         name="roomType"
                         placeholder=''
                         options={roomTypeOptions}
-                        // onChange={this.props.handleRoomType}
+                        onChange={this.handleRoomType.bind(this)}
                         defaultValue={this.state.newReservation.room_types}
                     />
                 </Grid.Row>
@@ -167,8 +230,9 @@ class CancelReservationForm extends React.Component{
                         name="roomQuantity"
                         placeholder=''
                         options={roomQuantityOptions}
-                        // onChange={handleRoomType}
-                        text={this.state.newReservation.roomQuantity}
+                        onChange={this.handleRoomQuantityOptions}
+                        defaultValue={parseInt(this.state.newReservation.roomQuantity)}
+
                     />
                 </Grid.Row>
             </Grid>

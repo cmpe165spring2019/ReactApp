@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@wojtekmaj/react-daterange-picker": "^2.1.0",
     "firebase": "^5.8.5",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
