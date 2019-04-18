@@ -210,6 +210,7 @@ class HomePage extends Component {
                 [name]: value
             }
         });
+        console.log(this.state.search.roomType)
         //Make pop up modal for guests
     }
 
