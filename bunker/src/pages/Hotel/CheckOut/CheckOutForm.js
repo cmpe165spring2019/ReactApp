@@ -19,12 +19,11 @@ const CheckOutForm = props => {
 				Address: {hotel.data.address.street}, {hotel.data.address.city},{" "}
 				{hotel.data.address.state}, {hotel.data.address.country}
 			</p>
-			{reservation.room_types.map(room_type => (
-				<div>
-					<p>Type: {room_type.type}</p>
-					<p>Number of Room: {room_type.number}</p>
-				</div>
-			))}
+
+					<p>Type: {reservation.room_types}</p>
+					<p>Number of Room: {reservation.roomQuantity}</p>
+			
+
 			{!isUseReward? (<p>Total Price: {totalPrice}</p>) : (<p>Discounted Price: {totalPrice}</p>)}
 		</div>
 	);

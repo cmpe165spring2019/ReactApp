@@ -13,6 +13,11 @@ import {
 } from 'semantic-ui-react';
 import CheckOut from './CheckOut/CheckOut';
 
+// import Carousel from 'react-bootstrap/Carousel';
+// import { Carousel } from 'react-responsive-carousel';
+
+import * as moment from 'moment';
+
 
 //Debugging purposes
 import * as util from 'util' // has no default export
@@ -27,6 +32,8 @@ class HotelPage extends Component {
         super (props);
         this.state = {
             ...props.location.state,
+            checkInDate: '',
+            checkOutDate: '',
             reservation: {
                 start_date: 0,
                 end_date: 0,
@@ -34,14 +41,13 @@ class HotelPage extends Component {
                 roomQuantity: 0,
                 room_types: '',
             }
-
         }
     }
 
     componentDidMount(){
         //parse dates into check in and out
         this.parseDatesRange(this.state.datesRange);
-        this.calculateRoomPrice();
+        this.calculatePricePerNight();
     }
 
     componentDidUpdate (prevProps, prevState) {
@@ -64,11 +70,15 @@ class HotelPage extends Component {
                 parseInt(checkOutArray[0]-1),
                 parseInt(checkOutArray[1])
             );
+
             this.setState({
                 ...this.state,
+                checkInDate: checkInDate,
+                checkOutDate: checkOutDate,
                 reservation: {
-                    start_date: checkInDate.getTime,
-                    end_date: checkOutDate.getTime,
+                    ...this.state.reservation,
+                    start_date: checkInDate.getTime(),
+                    end_date: checkOutDate.getTime()
                 }
             });
 
@@ -78,11 +88,12 @@ class HotelPage extends Component {
     handleCheckInOut=(event,{name,value})=>{
         //set datesRange whenever calendar range is updated
             if(this.state.hasOwnProperty(name)){
-                this.setState({[name]:value});
+                this.setState({[name]:value},
+                    ()=>{
+                        //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
+                        this.parseDatesRange(value);
+                    });
             }
-
-        //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
-        this.parseDatesRange(value);
     }
 
     handleRoomTypeQuantity=(e, {name, value})=>{
@@ -90,11 +101,11 @@ class HotelPage extends Component {
             [name]: value
         },
         () => {
-            this.calculateRoomPrice();
+            this.calculatePricePerNight();
         });
     }
 
-    calculateRoomPrice () {
+    calculatePricePerNight () {
         const { room_types } = this.state.hotel.data;
         const { roomQuantity } = this.state;
         console.log('room_types: ' + util.inspect(room_types));
@@ -116,17 +127,24 @@ class HotelPage extends Component {
         })
     }
 
+    calculateTotalPrice () {
+        const { pricePerNight, checkInDate, checkOutDate } = this.state;
+        let a = moment(checkInDate);
+        let b = moment(checkOutDate);
+        let totalDays = b.diff(a, 'days');
+        let totalPrice = totalDays * pricePerNight;
+        console.log(totalPrice);
+    }      
 
     render () {
         const { name, address, details, image, rating, room_types } = this.state.hotel.data;
-        const { hotel, datesRange, roomType, roomQuantity, pricePerNight } = this.state;
+        const { reservation, hotel, datesRange, roomType, roomQuantity, pricePerNight } = this.state;
         console.log('roomQuantity: ' + roomQuantity);
 
         return (
             <Grid centered celled columns={2}>
                 <Grid.Row>
-                    insert carousel here
-                    Images
+                    insert carousel
                 </Grid.Row>
                 <Grid.Row width={13} centered columns={3}>
                     <Grid.Column width={8}>
@@ -160,7 +178,7 @@ class HotelPage extends Component {
                             Check In/Out Date:
                             <CheckInOutCalendar
                             onChange={this.handleCheckInOut.bind(this)}
-                            value={datesRange}
+                            value={this.state.datesRange}
                             />
                             </p>
                             <p>
