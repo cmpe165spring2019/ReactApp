@@ -7,6 +7,7 @@ import * as ROUTES from "../../constants/routes";
 import _ from "lodash";
 import {
 	Container,
+	Message,
 	Header,
 	Icon,
 	Dimmer,
@@ -34,7 +35,8 @@ class Reservation extends Component {
 			reservations: [],
 			stupidway: 1,
 			isLoading: true,
-			isEmpty: true
+			isEmpty: true,
+			isError: false
 		};
 	}
 
@@ -43,44 +45,57 @@ class Reservation extends Component {
 
 		this.setState({
 			isLoading: true,
-			isEmpty: false
+			isEmpty: false,
+			isError: false
 		});
-		this.props.firebase
-			.getReservations(user.reservations)
-			.then(result => {
-				console.log(result);
-				const reservations = result.filter(item => (item.data.start_date <= Date.now()) && item);
-				let hotelIDs = [];
-				reservations.forEach(reservation =>
-					hotelIDs.push(reservation.data.hotel_id)
-				);
-				this.props.firebase.getHotels(hotelIDs).then(hotels => {
+		this.props.firebase.getReservations(user.reservations).then(result => {
+			console.log(result);
+			const reservations = result.filter(
+				item => item.data.start_date <= Date.now() && item
+			);
+			console.log(reservations);
+			let hotelIDs = [];
+			reservations.forEach(reservation =>
+				hotelIDs.push(reservation.data.hotel_id)
+			);
+			this.props.firebase
+				.getHotels(hotelIDs)
+				.then(hotels => {
 					console.log(hotels);
 					this.setState({
 						reservations: reservations,
 						hotels: hotels,
 						user: user,
-						isEmpty: (reservations.length === 0 ) ? true : false,
-						isLoading: false
-
+						isEmpty: reservations.length === 0 ? true : false,
+						isLoading: false,
+						isError: false
+					});
+				})
+				.catch(error => {
+					console.log(error);
+					this.setState({
+						isError: true,
+						isLoading: false,
+						isEmpty: reservations.length === 0 ? true : false
 					});
 				});
-			});
+		});
 	}
 
 	render() {
-		const {reservations, isLoading, isEmpty} = this.state;
+		const {reservations, isLoading, isEmpty, isError} = this.state;
 		console.log(isLoading);
 		return (
 			<Segment>
 				{isEmpty ? (
-						<Header as="h2" icon textAlign="center">
-							<Icon name="hotel" circular />
-							<Header.Content>No Reservation</Header.Content>
-						</Header>
+					<Header as="h2" icon textAlign="center">
+						<Icon name="hotel" circular />
+						<Header.Content>No Reservation</Header.Content>
+					</Header>
 				) : (
 					<Segment>
-					<Loader active={isLoading} inline='centered' size="large" />
+						<Loader active={isLoading} inline="centered" size="large" />
+
 						<Grid divided="vertically">
 							{this.state.reservations.map((reservation, i) => {
 								const hotel = this.state.hotels[i];
@@ -110,7 +125,10 @@ class Reservation extends Component {
 													reservation={reservation}
 													updateReservations={value => {
 														_.remove(reservations, value);
-														this.setState({reservations: reservations, isEmpty: (reservations.length === 0) ? true : false});
+														this.setState({
+															reservations: reservations,
+															isEmpty: reservations.length === 0 ? true : false
+														});
 													}}
 												/>
 											</Grid.Row>
@@ -124,13 +142,11 @@ class Reservation extends Component {
 										</Grid.Column>
 									</Grid.Row>
 								);
-							})
-
-						}
+							})}
 						</Grid>
-						</Segment>
+					</Segment>
 				)}
-				</Segment>
+			</Segment>
 		);
 	}
 }
