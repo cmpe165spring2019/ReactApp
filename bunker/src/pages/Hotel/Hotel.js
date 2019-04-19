@@ -11,6 +11,7 @@ import {
     Divider,
     Rating
 } from 'semantic-ui-react';
+import CheckOut from './CheckOut/CheckOut';
 
 
 //Debugging purposes
@@ -26,6 +27,13 @@ class HotelPage extends Component {
         super (props);
         this.state = {
             ...props.location.state,
+            reservation: {
+                start_date: 0,
+                end_date: 0,
+                hotel_id: '',
+                roomQuantity: 0,
+                room_types: '',
+            }
 
         }
     }
@@ -36,8 +44,7 @@ class HotelPage extends Component {
         this.calculateRoomPrice();
     }
 
-    componentDidUpdate () {
-        console.log(util.inspect(this.state));
+    componentDidUpdate (prevProps, prevState) {
     }
 
     parseDatesRange = (datesRange) => {
@@ -59,8 +66,10 @@ class HotelPage extends Component {
             );
             this.setState({
                 ...this.state,
-                checkInDate: checkInDate,
-                checkOutDate: checkOutDate,
+                reservation: {
+                    start_date: checkInDate.getTime,
+                    end_date: checkOutDate.getTime,
+                }
             });
 
     }
@@ -110,7 +119,7 @@ class HotelPage extends Component {
 
     render () {
         const { name, address, details, image, rating, room_types } = this.state.hotel.data;
-        const { datesRange, roomType, roomQuantity, pricePerNight } = this.state;
+        const { hotel, datesRange, roomType, roomQuantity, pricePerNight } = this.state;
         console.log('roomQuantity: ' + roomQuantity);
 
         return (
@@ -173,6 +182,10 @@ class HotelPage extends Component {
                             <Button fluid>
                                 Book
                             </Button>
+                            <CheckOut
+                            hotel = {hotel}
+                            reservation = {reservation}
+                            />
                         </Container>
                     </Segment>
                     </Grid.Column>

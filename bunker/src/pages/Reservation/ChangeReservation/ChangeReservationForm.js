@@ -9,7 +9,7 @@ import {
 } from 'semantic-ui-react';
 import * as moment from "moment";
 import { DatesRangeInput,DateInput } from "semantic-ui-calendar-react";
-import DateRangePicker from '@wojtekmaj/react-daterange-picker'
+// import DateRangePicker from '@wojtekmaj/react-daterange-picker'
 
 const today=moment().format('MM-DD-YYYY');
 const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
@@ -202,12 +202,14 @@ class CancelReservationForm extends React.Component{
                     <div>
                         Check In/Out:
                     </div>
-                    <DateRangePicker
+                    {/* <DateRangePicker
                         // name="dates"
                         minDate={new Date()}
                         value={datesRange}
                         onChange={this.handleDate}
 
+                    /> */}
+                    <DatesRangeInput
                     />
 
 
