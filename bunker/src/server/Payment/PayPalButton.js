@@ -70,11 +70,17 @@ class PayPalButton extends React.Component {
 
 				onSuccess(payment);
 			});
+			const style = {
+				size: 'medium',
+				color: 'blue',
+				shape: 'rect',
+			}
 
 		return (
 			<div>
 				{showButton && (
 					<paypal.Button.react
+						style={style}
 						env={env}
 						client={client}
 						commit={commit}
