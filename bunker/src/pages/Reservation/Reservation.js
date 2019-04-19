@@ -47,7 +47,9 @@ class Reservation extends Component {
 
 		this.props.firebase
 			.getReservations(user.reservations)
-			.then(reservations => {
+			.then(result => {
+				console.log(result);
+				const reservations = result.filter(item => (item.data.start_date <= Date.now()) && item);
 				let hotelIDs = [];
 				reservations.forEach(reservation =>
 					hotelIDs.push(reservation.data.hotel_id)
@@ -72,7 +74,7 @@ class Reservation extends Component {
 	render() {
 		const {reservations, isLoading, isEmpty} = this.state;
 		return (
-			<Segment>
+			<div>
 				{isEmpty ? (
 					<div>
 						<Header as="h2" icon textAlign="center">
@@ -81,8 +83,8 @@ class Reservation extends Component {
 						</Header>
 					</div>
 				) : (
-					<div>
-						<Grid divided="vertically">
+					<Segment>
+						{isLoading ? <Loader active inverted size="large" /> : <Grid divided="vertically">
 							{this.state.reservations.map((reservation, i) => {
 								const hotel = this.state.hotels[i];
 								const startDate = new Date(reservation.data.start_date);
@@ -125,12 +127,15 @@ class Reservation extends Component {
 										</Grid.Column>
 									</Grid.Row>
 								);
-							})}
+							})
+
+						}
 						</Grid>
-						<Loader active={isLoading} size="small" />
-					</div>
+					}
+							
+						</Segment>
 				)}
-			</Segment>
+			</div>
 		);
 	}
 }
