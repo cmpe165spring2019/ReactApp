@@ -115,6 +115,15 @@ class Firebase {
 				return result;
 			});
 
+	addGoogleUserToDB = (socialAuthUser) => {
+		return this.user(socialAuthUser.user.uid).set({
+			username: socialAuthUser.user.displayName,
+			email: socialAuthUser.user.email,
+			reservations: this.FieldValue.arrayUnion(""),
+			reward_points: this.FieldValue.increment(0),
+		},{merge: true})
+	}
+
 	addUserToDB = (authUser, email, username) => {
 		const data = {
 			user_id: authUser.user.uid,
@@ -179,7 +188,7 @@ class Firebase {
 			this.checkForConflictWithDates(data.start_date, data.end_date, user_id)
 		) {
 			//Create new reservation document
-			return this.reservationsRef()
+			this.reservationsRef()
 				.add(data)
 				.then(res_doc => {
 					//Add reservation_id to reservation document
@@ -199,9 +208,9 @@ class Firebase {
 							});
 							return true;
 						})
-						.catch(error => {console.log("Failed to add to user " + error); return error});
+						.catch(error => console.log("Failed to add to user " + error));
 				})
-				.catch(error => {console.log("Failed to add res " + error); return error});
+				.catch(error => console.log("Failed to add res " + error));
 		}
 		return false;
 	};
@@ -221,24 +230,29 @@ class Firebase {
 	};
 
 	//Delete reservation
-	deleteReservationFromDB = (reservation_id, user_id) => {
-		return this.user(user_id)
-			.update({
-				reservations: this.FieldValue.arrayRemove(
-					reservation_id
-				)
-			})
-			.then(() => {
-				return this.reservationRef(reservation_id)
-					.delete()
-					.then(() => {
-						console.log("Done delete reservation");
-						return true;
-					})
-					.catch(err => err);
-			})
-			.catch(err => err);
-	};
+	deleteReservationFromDB = (reservation_id, user_id, price) => {
+	return this.user(user_id)
+		.update({
+			reservations: this.FieldValue.arrayRemove(reservation_id),
+			reward_points: this.FieldValue.increment(-Math.floor(price / 10))
+		})
+		.then(() => {
+			return this.reservationRef(reservation_id)
+				.delete()
+				.then(() => {
+					console.log("Done delete reservation");
+				})
+				.catch(err => {
+					console.log("Error in delete reservation", err);
+					return err;
+				});
+		})
+		.catch(err => {
+			console.log("Error in remove reservations id or decrease reward_points");
+				return err;
+		});
+};
+
 
 	//location Search function
 	getCities = next =>

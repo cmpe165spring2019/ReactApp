@@ -39,15 +39,17 @@ class Reservation extends Component {
 	}
 
 	componentDidMount() {
+		const {user} = this.props;
+
 		this.setState({
 			isLoading: true,
 			isEmpty: false
 		});
-		const {user} = this.props;
-
 		this.props.firebase
 			.getReservations(user.reservations)
-			.then(reservations => {
+			.then(result => {
+				console.log(result);
+				const reservations = result.filter(item => (item.data.start_date <= Date.now()) && item);
 				let hotelIDs = [];
 				reservations.forEach(reservation =>
 					hotelIDs.push(reservation.data.hotel_id)
@@ -59,29 +61,26 @@ class Reservation extends Component {
 						hotels: hotels,
 						user: user,
 						isEmpty: (reservations.length === 0 ) ? true : false,
+						isLoading: false
 
 					});
 				});
 			});
-
-		this.setState({
-			isLoading: false
-		});
 	}
 
 	render() {
 		const {reservations, isLoading, isEmpty} = this.state;
+		console.log(isLoading);
 		return (
 			<Segment>
 				{isEmpty ? (
-					<div>
 						<Header as="h2" icon textAlign="center">
 							<Icon name="hotel" circular />
 							<Header.Content>No Reservation</Header.Content>
 						</Header>
-					</div>
 				) : (
-					<div>
+					<Segment>
+					<Loader active={isLoading} inline='centered' size="large" />
 						<Grid divided="vertically">
 							{this.state.reservations.map((reservation, i) => {
 								const hotel = this.state.hotels[i];
@@ -125,12 +124,13 @@ class Reservation extends Component {
 										</Grid.Column>
 									</Grid.Row>
 								);
-							})}
+							})
+
+						}
 						</Grid>
-						<Loader active={isLoading} size="small" />
-					</div>
+						</Segment>
 				)}
-			</Segment>
+				</Segment>
 		);
 	}
 }
