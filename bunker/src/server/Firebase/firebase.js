@@ -230,25 +230,29 @@ class Firebase {
 	};
 
 	//Delete reservation
-	deleteReservationFromDB = (reservation_id, user_id) => {
-		this.user(user_id)
-			.update({
-				reservations: this.firebase.firestore.FieldValue.arrayRemove(
-					reservation_id
-				)
-			})
-			.then(() => {
-				return this.reservationRef(reservation_id)
-					.delete()
-					.then(() => {
-						console.log("Done delete reservation");
-					})
-					.catch(err => {
-						console.log("Error in delete reservation", err);
-					});
-			})
-			.catch(err => err);
-	};
+	deleteReservationFromDB = (reservation_id, user_id, price) => {
+	this.user(user_id)
+		.update({
+			reservations: this.FieldValue.arrayRemove(reservation_id),
+			reward_points: this.FieldValue.increment(-Math.floor(price / 10))
+		})
+		.then(() => {
+			return this.reservationRef(reservation_id)
+				.delete()
+				.then(() => {
+					console.log("Done delete reservation");
+				})
+				.catch(err => {
+					console.log("Error in delete reservation", err);
+					return err;
+				});
+		})
+		.catch(err => {
+			console.log("Error in remove reservations id or decrease reward_points");
+				return err;
+		});
+};
+
 
 	//location Search function
 	getCities = next =>
