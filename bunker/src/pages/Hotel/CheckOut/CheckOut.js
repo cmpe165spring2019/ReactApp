@@ -5,20 +5,19 @@ import {
 	Message,
 	Segment
 } from "semantic-ui-react";
-import {withFirebase} from "../../server/Firebase";
+import {withFirebase} from "../../../server/Firebase";
 import CheckOutForm from "./CheckOutForm";
-import PayPalButton from "../../server/Payment/PayPalButton";
+import PayPalButton from "../../../server/Payment/PayPalButton";
 
 const CheckOut = props => {
 	const [isOpen, setIsOpen] = React.useState(false);
-
 	const [isError, setIsError] = React.useState(false);
 	const [isUseReward, setIsUseReward] = React.useState(false);
 	const handleUseReward = () => {
 		setIsUseReward(!isUseReward);
 	};
 
-	const {reservation} = props;
+	const {reservation, hotel} = props;
 	const user = JSON.parse(localStorage.getItem("authUser"));
 
 	const onSuccess = payment => {
@@ -39,34 +38,25 @@ const CheckOut = props => {
 		setIsError(true);
 	};
 
-	React.useEffect(() => {
-		setIsOpen(false);
-	}, []);
-	React.useEffect(
-		() => {
-			setIsOpen(props.open);
-		},
-		[props.open]
-	);
-
 	return (
-		<div>
-			<Button
-				color="green"
-				size="small"
-				width="70px"
-				onClick={props.handleOpen}
-			>
-				Book now
-			</Button>
-			<TransitionablePortal onClose={props.handleClose} open={isOpen}>
+			<TransitionablePortal onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)} open={isOpen} closeOnTriggerClick openOnTriggerClick trigger={
+				<Button
+					color="blue"
+					size="small"
+					width="70px"
+					positive={!isOpen}
+					negative={isOpen}
+				>
+					Book now
+				</Button>
+			}>
 				<Segment
 					size={"massive"}
 					style={{left: "30%", position: "fixed", top: "0%", zIndex: 1000}}
 				>
 					<CheckOutForm
-						hotel={props.hotel}
-						reservation={props.reservation}
+						hotel={hotel}
+						reservation={reservation}
 						user={user}
 						isUseReward={isUseReward}
 					/>
@@ -96,7 +86,6 @@ const CheckOut = props => {
 					) : null}
 				</Segment>
 			</TransitionablePortal>
-		</div>
 	);
 };
 
