@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 // Components
-import Carousel from 'nuka-carousel'
 import { DatesRangeInput } from "semantic-ui-calendar-react";
 import { withFirebase } from '../../server/Firebase';
 import {
