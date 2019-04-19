@@ -22,7 +22,7 @@ const CancelReservation = props => {
 
 	const handleDeleteReservation = () => {
 		props.firebase
-			.deleteReservationFromDB(reservation.id, user.uid)
+			.deleteReservationFromDB(reservation.id, user.uid, reservation.data.price)
 			.then(() => updateReservations(reservation))
 			.catch(error => {
 				setIsError(true);
