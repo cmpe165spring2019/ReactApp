@@ -39,12 +39,12 @@ class Reservation extends Component {
 	}
 
 	componentDidMount() {
+		const {user} = this.props;
+
 		this.setState({
 			isLoading: true,
 			isEmpty: false
 		});
-		const {user} = this.props;
-
 		this.props.firebase
 			.getReservations(user.reservations)
 			.then(result => {
@@ -61,30 +61,27 @@ class Reservation extends Component {
 						hotels: hotels,
 						user: user,
 						isEmpty: (reservations.length === 0 ) ? true : false,
+						isLoading: false
 
 					});
 				});
 			});
-
-		this.setState({
-			isLoading: false
-		});
 	}
 
 	render() {
 		const {reservations, isLoading, isEmpty} = this.state;
+		console.log(isLoading);
 		return (
-			<div>
+			<Segment>
 				{isEmpty ? (
-					<div>
 						<Header as="h2" icon textAlign="center">
 							<Icon name="hotel" circular />
 							<Header.Content>No Reservation</Header.Content>
 						</Header>
-					</div>
 				) : (
 					<Segment>
-						{isLoading ? <Loader active inverted size="large" /> : <Grid divided="vertically">
+					<Loader active={isLoading} inline='centered' size="large" />
+						<Grid divided="vertically">
 							{this.state.reservations.map((reservation, i) => {
 								const hotel = this.state.hotels[i];
 								const startDate = new Date(reservation.data.start_date);
@@ -131,11 +128,9 @@ class Reservation extends Component {
 
 						}
 						</Grid>
-					}
-							
 						</Segment>
 				)}
-			</div>
+				</Segment>
 		);
 	}
 }

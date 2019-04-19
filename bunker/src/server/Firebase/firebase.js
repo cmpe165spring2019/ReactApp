@@ -231,7 +231,7 @@ class Firebase {
 
 	//Delete reservation
 	deleteReservationFromDB = (reservation_id, user_id, price) => {
-	this.user(user_id)
+	return this.user(user_id)
 		.update({
 			reservations: this.FieldValue.arrayRemove(reservation_id),
 			reward_points: this.FieldValue.increment(-Math.floor(price / 10))
