@@ -1,10 +1,5 @@
 import React from "react";
-import {
-	TransitionablePortal,
-	Button,
-	Message,
-	Segment
-} from "semantic-ui-react";
+import {Modal, Button, Message, Image} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import CheckOutForm from "./CheckOutForm";
 import PayPalButton from "../../../server/Payment/PayPalButton";
@@ -22,11 +17,10 @@ const CheckOut = props => {
 
 	const onSuccess = payment => {
 		console.log("Successful payment!", payment);
-		const reservation_with_payment = {payment: payment, ...reservation};
-		props.firebase.addReservation(
+		const reservation_with_payment = {payment: payment,hotel_id: hotel.id, ...reservation, };
+		props.firebase.addReservationToDB(
 			user.uid,
 			reservation_with_payment,
-			isUseReward
 		);
 	};
 	const onCancel = data => {
@@ -39,7 +33,13 @@ const CheckOut = props => {
 	};
 
 	return (
-			<TransitionablePortal onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)} open={isOpen} closeOnTriggerClick openOnTriggerClick trigger={
+		<Modal
+			onOpen={() => setIsOpen(true)}
+			centered={true}
+			size="large"
+			onClose={() => setIsOpen(false)}
+			open={isOpen}
+			trigger={
 				<Button
 					color="blue"
 					size="small"
@@ -49,43 +49,48 @@ const CheckOut = props => {
 				>
 					Book now
 				</Button>
-			}>
-				<Segment
-					size={"massive"}
-					style={{left: "30%", position: "fixed", top: "0%", zIndex: 1000}}
-				>
+			}
+		>
+			<Modal.Header>Payment confirm</Modal.Header>
+			<Modal.Content image>
+				<Image wrapped size="medium" src={hotel.data.image[0]} />
+				<Modal.Description>
 					<CheckOutForm
 						hotel={hotel}
 						reservation={reservation}
 						user={user}
 						isUseReward={isUseReward}
 					/>
-					<Button
-						content={
-							isUseReward
-								? "Reward is used"
-								: `Reward left: ${user.reward_points}`
-						}
-						negative={isUseReward}
-						positive={!isUseReward}
-						onClick={handleUseReward}
-					/>
-					<PayPalButton
-						total={reservation.price}
-						currency={"USD"}
-						commit={true}
-						onSuccess={onSuccess}
-						onError={onError}
-						onCancel={onCancel}
-					/>
-					{isError ? (
-						<Message negative>
-							<Message.Header>Opps!!!</Message.Header>
-							<p>Something when wrong</p>
-						</Message>
-					) : null}
-				</Segment>
-			</TransitionablePortal>
+				</Modal.Description>
+			</Modal.Content>
+			<Modal.Actions>
+				<Button
+					content={
+						isUseReward
+							? "Reward is used"
+							: `Reward left: ${user.reward_points}`
+					}
+					disabled={user.reward_points === 0}
+					negative={isUseReward}
+					positive={!isUseReward}
+					onClick={handleUseReward}
+				/>
+				<PayPalButton
+					total={reservation.price}
+					currency={"USD"}
+					commit={true}
+					onSuccess={onSuccess}
+					onError={onError}
+					onCancel={onCancel}
+				/>
+			</Modal.Actions>
+			{isError ? (
+				<Message negative>
+					<Message.Header>Opps!!!</Message.Header>
+					<p>Something when wrong</p>
+				</Message>
+			) : null}
+		</Modal>
 	);
 };
 
