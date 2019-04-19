@@ -2,7 +2,18 @@ import React from 'react';
 
 import { Dropdown } from 'semantic-ui-react';
 
+import * as util from 'util' // has no default export
+
+
 const createRoomQuantityOptions = () => {
+
+}
+
+const roomQuantityOptions = createRoomQuantityOptions();
+
+const RoomQuantitySelect = (props) => {
+    // console.log('props: ' + typeof(Integer(props.defaultValue)));
+
     let roomQuantityOptions = [];
     for(let i = 0; i < 17; i++){
         let obj = {
@@ -12,12 +23,8 @@ const createRoomQuantityOptions = () => {
         };
         roomQuantityOptions.push(obj);
     }
-    return roomQuantityOptions;
-}
 
-const roomQuantityOptions = createRoomQuantityOptions();
-
-const RoomQuantitySelect = (props) => (
+    return(
     <Dropdown
     compact
     selection
@@ -25,8 +32,9 @@ const RoomQuantitySelect = (props) => (
     placeholder=''
     options={roomQuantityOptions}
     onChange={props.onChange}
-    defaultValue={1}
-/>
-)
+    defaultValue={props.defaultValue}
+    />
+    )
+}
 
 export default RoomQuantitySelect;

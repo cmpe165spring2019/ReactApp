@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 // Components
-import Carousel from 'nuka-carousel'
 import { withFirebase } from '../../server/Firebase';
 import {
     Grid,
@@ -111,7 +110,8 @@ class HotelPage extends Component {
 
     render () {
         const { name, address, details, image, rating, room_types } = this.state.hotel.data;
-        const { datesRange, roomType, roomQuantity } = this.state;
+        const { datesRange, roomType, roomQuantity, pricePerNight } = this.state;
+        console.log('roomQuantity: ' + roomQuantity);
 
         return (
             <Grid centered celled columns={2}>
@@ -141,7 +141,7 @@ class HotelPage extends Component {
                     <Segment padded='very'>
                         <Container textAlign='center'>
                             <Header as='h3'>
-                            ${this.state.pricePerNight} / night
+                            ${pricePerNight} / night
                             </Header>
                             <Rating disabled icon='star' defaultRating={rating} maxRating={5} />
                             <br></br>
@@ -151,7 +151,7 @@ class HotelPage extends Component {
                             Check In/Out Date:
                             <CheckInOutCalendar
                             onChange={this.handleCheckInOut.bind(this)}
-                            value={this.state.datesRange}
+                            value={datesRange}
                             />
                             </p>
                             <p>
@@ -159,12 +159,11 @@ class HotelPage extends Component {
                             <br></br>                           
                             <RoomTypeSelect
                                 onChange={this.handleRoomTypeQuantity.bind(this)}
-                                defaultValue={this.state.roomType}
+                                defaultValue={roomType}
                             />
-
                             <RoomQuantitySelect
                                 onChange={this.handleRoomTypeQuantity.bind(this)}
-                                defaultValue={this.state.roomQuantity}
+                                defaultValue={roomQuantity}
                             />
                            </p>
                            <br></br>

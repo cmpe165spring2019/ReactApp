@@ -15,6 +15,8 @@ import CheckInOutCalendar from '../../../commonComponents/CheckInOutCalendar';
 import RoomTypeSelect from "../../../commonComponents/RoomTypeSelect";
 import RoomQuantitySelect from "../../../commonComponents/Navigation/RoomQuantitySelect";
 
+import * as util from 'util' // has no default export
+
 
 class SearchBar extends Component {
     constructor(props) {
@@ -26,7 +28,7 @@ class SearchBar extends Component {
 
 
     render() {
-
+        console.log('this.props.defaultRoomQuantity : '  + util.inspect(this.props.defaultRoomQuantity));
         return (
             <Grid centered>
                 <Grid.Row/>
@@ -56,14 +58,15 @@ class SearchBar extends Component {
                     <Grid.Column width={2}>
                         <div>Room Type:</div>
                         <RoomTypeSelect
-                        onChange={this.props.handleRoomType}
+                        onChange={this.props.handleRoomTypeQuantity}
                         defaultValue={this.props.defaultRoomType}
                         />
                     </Grid.Column>
                     <Grid.Column width={1}>
                         <div>Quantity:</div>
                         <RoomQuantitySelect
-                        onChange={this.props.handleRoomType}
+                        onChange={this.props.handleRoomTypeQuantity}
+                        defaultValue={this.props.defaultRoomQuantity}
                         />
                     </Grid.Column>
                     <Grid.Column width={1}>

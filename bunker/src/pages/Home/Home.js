@@ -25,15 +25,13 @@ class HomePage extends Component {
             filteredHotels: [],
             searchedSortedHotels: [],
             locationOptions: [],
-            roomTypeOptions: [],
-            roomQuantityOptions: [],
             datesRange: '',
             search: {
                 location: {},
                 checkInDate: null,
                 checkOutDate: null,
                 roomType: 'single',
-                roomQuantity: '1'
+                roomQuantity: 1
             },
             filter: {
                 x: 100,
@@ -419,6 +417,7 @@ class HomePage extends Component {
             datesRange={this.state.datesRange}
             locationOptions={this.state.locationOptions}
             defaultRoomType={this.state.search.roomType}
+            defaultRoomQuantity={this.state.search.roomQuantity}
             handleLocation={this.handleLocation.bind(this)}
             handleCheckInOut={this.handleCheckInOut.bind(this)}
             handleRoomTypeQuantity={this.handleRoomTypeQuantity.bind(this)}
