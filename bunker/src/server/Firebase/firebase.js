@@ -119,6 +119,15 @@ class Firebase {
 				return result;
 			});
 
+	addGoogleUserToDB = (socialAuthUser) => {
+		return this.user(socialAuthUser.user.uid).set({
+			username: socialAuthUser.user.displayName,
+			email: socialAuthUser.user.email,
+			reservations: this.FieldValue.arrayUnion(""),
+			reward_points: this.FieldValue.increment(0),
+		},{merge: true})
+	}
+
 	addUserToDB = (authUser, email, username) => {
 		const data = {
 			user_id: authUser.user.uid,
