@@ -1,270 +1,187 @@
 import React, { Component } from 'react';
-import {withRouter} from 'react-router-dom';
-import{DateInput}from 'semantic-ui-calendar-react';
-import { compose } from 'recompose';
-import { withAuthorization, withEmailVerification } from '../../server/Session';
+
+// Components
 import { withFirebase } from '../../server/Firebase';
-import * as ROUTES from "../../constants/routes";
 import {
+    Grid,
     Button,
+    Container,
+    Header,
+    Segment,
+    Divider,
+    Rating
 } from 'semantic-ui-react';
-import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
-import * as moment from "moment";
 
-// const hotel = [{
-//     name: "1",
-//     location: "Dsadas",
-//     image: "https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg",
-//     address:"1111",
-//     price:"222"
-// }]
-const today = moment().format("MM-DD-YYYY");
-const tommorrow = moment()
-    .add(1, "days")
-    .format("MM-DD-YYYY");
 
-class HotelPage extends React.Component {
+//Debugging purposes
+import * as util from 'util' // has no default export
+import CheckInOutCalendar from '../../commonComponents/CheckInOutCalendar';
+import RoomTypeSelect from "../../commonComponents/RoomTypeSelect";
+import RoomQuantitySelect from '../../commonComponents/Navigation/RoomQuantitySelect';
+
+
+class HotelPage extends Component {
+
     constructor(props) {
-        super(props);
+        super (props);
         this.state = {
             ...props.location.state,
-            dateIn: "",
-            dateOut: "",
-            maxCheckIn: "",
-            minCheckout: tommorrow
+
         }
     }
 
-    handleCheckInDate = (event, { name, value }) => {
-        let parts = value.split("-");
-        let dt = new Date(
-            parseInt(parts[2]),
-            parseInt(parts[0] - 1),
-            parseInt(parts[1])
-        );
-        //if(value.length>=10 && dt<new Date()){
-        //  window.alert("The Earliest CheckInDate is today, please choose from calendar")
-        //  }
-        //  else{
+    componentDidMount(){
+        //parse dates into check in and out
+        this.parseDatesRange(this.state.datesRange);
+        this.calculateRoomPrice();
+    }
 
-        let date = moment(dt)
-            .add(1, "days")
-            .format("MM-DD-YYYY");
-        console.log(date);
-        //let date1=moment(dt2).add(120,'days').format('MM-DD-YYYY');
-        if (this.state.hasOwnProperty(name)) {
-            console.log("good1");
-            this.setState({ [name]: value, minCheckout: date });
-        }
-        //}
-    };
+    componentDidUpdate () {
+        console.log(util.inspect(this.state));
+    }
 
-    handleCheckOutDate = (event, { name, value }) => {
-        console.log("good2");
-        let parts = value.split("-");
-        let dt = new Date(
-            parseInt(parts[2]),
-            parseInt(parts[0] - 1),
-            parseInt(parts[1])
-        );
-        //  if(value.length>=10 && dt<=new Date()){
-        //  window.alert("The Earliest CheckOutDate is tommorrow, please choose from calendar");
-        //  }
-        //  else{
-        let date = moment(dt)
-            .subtract(1, "days")
-            .format("MM-DD-YYYY");
-        //let date1=today;
-        //  if(moment(dt).subtract(120,'days')>moment()){
-        //date1=moment(dt).subtract(120,'days').format('MM-DD-YYYY');
-        //  }
-        if (this.state.hasOwnProperty(name)) {
-            console.log("good3");
-            this.setState({ [name]: value, maxCheckIn: date });
-        }
-        //}
-    };
+    parseDatesRange = (datesRange) => {
+        if(datesRange.length > 13){
+            let parsedValue = datesRange.split(" ");
+            let checkInString = parsedValue[0];
+            let checkOutString = parsedValue[2];
+            let checkInArray = checkInString.split("-");
+            let checkOutArray = checkOutString.split("-");
+            let checkInDate = new Date(
+                parseInt(checkInArray[2]),
+                parseInt(checkInArray[0]-1),
+                parseInt(checkInArray[1])
+            );
+            let checkOutDate = new Date(
+                parseInt(checkOutArray[2]),
+                parseInt(checkOutArray[0]-1),
+                parseInt(checkOutArray[1])
+            );
+            this.setState({
+                ...this.state,
+                checkInDate: checkInDate,
+                checkOutDate: checkOutDate,
+            });
 
-    render() {
+    }
+}
+
+    handleCheckInOut=(event,{name,value})=>{
+        //set datesRange whenever calendar range is updated
+            if(this.state.hasOwnProperty(name)){
+                this.setState({[name]:value});
+            }
+        
+        //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
+        this.parseDatesRange(value);    
+    }
+
+    handleRoomTypeQuantity=(e, {name, value})=>{
+        this.setState({
+            [name]: value
+        },
+        () => {
+            this.calculateRoomPrice();
+        });
+    }
+
+    calculateRoomPrice () {
+        const { room_types } = this.state.hotel.data;
+        const { roomQuantity } = this.state;
+        console.log('room_types: ' + util.inspect(room_types));
+        const roomTypeData = room_types.filter(roomType=> roomType.type === this.state.roomType);
+        const roomPrice = roomTypeData[0].price;
+
+        const pricePerNight = roomPrice*roomQuantity;
+        console.log(pricePerNight);
+
+        this.setState({
+            hotel : {
+                ...this.state.hotel,
+                data: {
+                    ...this.state.hotel.data,
+                    currentRoomPrice: roomPrice
+                }
+            },
+            pricePerNight: pricePerNight
+        })
+    }
+          
+
+    render () {
+        const { name, address, details, image, rating, room_types } = this.state.hotel.data;
+        const { datesRange, roomType, roomQuantity, pricePerNight } = this.state;
+        console.log('roomQuantity: ' + roomQuantity);
+
         return (
-
-            <div>
-                {/*<div><SearchFilterBar /></div>*/}
-                <div style={imageDiv}>
-                    <img src={this.state.hotel.image1} style={imageStyle}/>
-                    <img src={this.state.hotel.image2} style={imageStyle1}/>
-                    <img src={this.state.hotel.image3} style={imageStyle1}/>
-                    <img src={this.state.hotel.image4} style={imageStyle1}/>
-                    <img src={this.state.hotel.image5} style={imageStyle1}/>
-                </div>
-                <div style={hotelDiv}>
-                    <div style={leftDiv}>
-                        <div style={hotelNameDiv}>
-                            <h1 style={hotelName}>{this.state.hotel.data.name}</h1>
-                        </div>
-                        <div style={locationDiv}>
-                            <h3 >{this.state.hotel.data.city}, {this.state.hotel.data.country}</h3>
-                        </div>
-
-                        <div style={priceDiv}>
-                            <h2 >${this.state.hotel.price}/Night</h2>
-                        </div>
-                        <div style={detail}>
-                            <h2 >{this.state.hotel.data.details}</h2>
-                        </div>
-                    </div>
-                    <div style={rightDiv}>
-                        <div style={checkIn}>
-                            <div><h4>CheckInDate</h4></div>
-                            <DateInput
-                                name="dateIn"
-                                minDate={today}
-                                maxDate={this.state.maxCheckIn}
-                                dateFormat="MM-DD-YYYY"
-                                onChange={this.handleCheckInDate}
-                                value={this.state.dateIn}
-                                icon="bullhorn"
-                                iconPosition="left"
-                                placeholder="MM-DD-YYYY"
+            <Grid centered celled columns={2}>
+                <Grid.Row>
+                    insert carousel here
+                    Images
+                </Grid.Row>
+                <Grid.Row width={13} centered columns={3}>
+                    <Grid.Column width={8}>
+                    <Segment textAlign='left' padded='very'>
+                        <Container textAlign='left'>
+                            <Header as='h2'>
+                            {name}
+                            </Header>
+                            <p>
+                                {address.street}
+                                <br></br>
+                                {address.city}, {address.state} {address.country}
+                            </p>
+                            <p>
+                                {details}
+                            </p>
+                        </Container>
+                    </Segment>
+                    </Grid.Column>
+                    <Grid.Column width={4}>
+                    <Segment padded='very'>
+                        <Container textAlign='center'>
+                            <Header as='h3'>
+                            ${pricePerNight} / night
+                            </Header>
+                            <Rating disabled icon='star' defaultRating={rating} maxRating={5} />
+                            <br></br>
+                           <Divider/>
+                           <br></br>
+                            <p>
+                            Check In/Out Date:
+                            <CheckInOutCalendar
+                            onChange={this.handleCheckInOut.bind(this)}
+                            value={datesRange}
                             />
-                        </div>
-                        <div style={checkOut}>
-                            <div><h4>CheckOutDate</h4></div>
-                            <DateInput
-                                name="dateOut"
-                                minDate={this.state.minCheckout}
-                                dateFormat="MM-DD-YYYY"
-                                onChange={this.handleCheckOutDate}
-                                value={this.state.dateOut}
-                                icon="paper plane"
-                                iconPosition="left"
-                                placeholder="MM-DD-YYYY"
+                            </p>
+                            <p>
+                            Room Type/Quantity:   
+                            <br></br>                           
+                            <RoomTypeSelect
+                                onChange={this.handleRoomTypeQuantity.bind(this)}
+                                defaultValue={roomType}
                             />
-                        </div>
-                        <div style={bookDiv1}>
-                            <h3>Book Now</h3>
-                            <Button color="green" size="small" width="70px">Book</Button>
-                        </div>
-                    </div>
-                    <div style={googleMapDiv}>
-                        <img src={"https://beta.techcrunch.com/wp-content/uploads/2013/05/sf-search-results.png"} style={googleMap}/>
-                    </div>
-                </div>
+                            <RoomQuantitySelect
+                                onChange={this.handleRoomTypeQuantity.bind(this)}
+                                defaultValue={roomQuantity}
+                            />
+                           </p>
+                           <br></br>
+                           <Divider/>
+                           <br></br>
 
-                <div style={bookDiv2}>
-                    <table className="ui celled table">
-                        <thead className="">
-                        <tr className="">
-                            <th className="">Room Type</th>
-                            <th className="">Guest Capacity</th>
-                            <th className="">Total Price</th>
-                            <th className="">Book Now</th>
+                            <Button fluid>
+                                Book
+                            </Button>
+                        </Container>
+                    </Segment>
+                    </Grid.Column>
 
-                        </tr>
-                        </thead>
-                        <tbody className="">
-                        <tr className="">
-                            <td className="">One bed Room</td>
-                            <td className="">{this.state.hotel.oneBedCap}</td>
-                            <td className="">${this.state.hotel.oneBedPrice}/Night</td>
-                            <td className=""><Button color="green" size="small" >Book</Button></td>
-                        </tr>
-                        <tr className="">
-                            <td className="">Two Bed Room</td>
-                            <td className="">{this.state.hotel.twoBesCap}</td>
-                            <td className="">${this.state.hotel.twoBedPrice}/Night</td>
-                            <td className=""><Button color="green" size="small" >Book</Button></td>
-                        </tr>
-                        <tr className="">
-                            <td className="">Luxury Room</td>
-                            <td className="">{this.state.hotel.LuxuryCap}</td>
-                            <td className="">${this.state.hotel.LuxuryPrice}/Night</td>
-                            <td className=""><Button color="green" size="small" >Book</Button></td>
-                        </tr>
-                        </tbody>
-                        <tfoot className="">
-                        </tfoot>
-                    </table>
-                </div>
+                </Grid.Row>
+            </Grid>
 
-            </div>
         )
     }
 }
-const imageDiv = {
-    width:"100%",
-    height:"400px",
-    margin:"0 auto"
-};
 
-const imageStyle = {
-    width:"50%",
-    height:"400px",
-    float:"left",
-    border: '1px solid black'
-};
-const imageStyle1 = {
-    width:"25%",
-    height:"200px",
-    float:"left",
-    border: '1px solid black'
-};
-const hotelDiv = {
-    width:"100%",
-    height:"300px"
-}
-const leftDiv={
-    margin:"20px 0 0 100px",
-    float:"left",
-    width:"25%",
-    height:"300px"
-};
-const rightDiv={
-    margin:"20px 0 0 100px",
-    float:"left",
-    width:"20%",
-    height:"300px"
-}
-const googleMapDiv={
-    margin:"20px 0 0 0",
-    float:"left",
-    width:"30%",
-    height:"300px"
-}
-const googleMap={
-    width:"100%",
-    height:"300px",
-}
-const hotelName = {
-
-    clear:"both"
-}
-const hotelNameDiv={
-    clear:"both",
-}
-const locationDiv={
-    margin: "20px 0 0 0",
-}
-const priceDiv={
-    margin: "20px 0 0 0",
-}
-const detail={
-    margin: "20px 0 0 0",
-}
-const checkIn={
-    margin:"20px 0 0 0"
-}
-const checkOut={
-    margin:"20px 0 0 0"
-}
-const bookDiv1={
-    margin: "20px 0 0 0",
-}
-const bookDiv2={
-    clear:"both",
-    margin: "50px 0 0 0",
-    width:"100%",
-    height:"300px"
-}
-
-export default withRouter(HotelPage);
+export default HotelPage;

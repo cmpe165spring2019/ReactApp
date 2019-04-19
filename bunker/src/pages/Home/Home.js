@@ -25,15 +25,13 @@ class HomePage extends Component {
             filteredHotels: [],
             searchedSortedHotels: [],
             locationOptions: [],
-            roomTypeOptions: [],
-            roomQuantityOptions: [],
             datesRange: '',
             search: {
                 location: {},
                 checkInDate: null,
                 checkOutDate: null,
                 roomType: 'single',
-                roomQuantity: '1'
+                roomQuantity: 1
             },
             filter: {
                 x: 100,
@@ -115,43 +113,6 @@ class HomePage extends Component {
         // call filter and sort methods
         // filteredHotels is what gets rendered after filtering/sorting hotels
 
-
-        // set default room options
-
-        const roomTypeOptions = [
-            {
-                key: 'single',
-                text: 'Single-Person',
-                value: 'single'
-            },
-            {
-                key: 'double',
-                text: 'Double-Person',
-                value: 'double'
-            },
-            {
-                key: 'multiple',
-                text: 'Multiple-Person',
-                value: 'multiple'
-            }
-        ];
-
-        const roomQuantityOptions = [];
-
-        for(let i = 0; i < 17; i++){
-            let obj = {
-                key: i,
-                text: i,
-                value: i
-            };
-            roomQuantityOptions.push(obj);
-        }
-
-        this.setState({
-        roomTypeOptions: roomTypeOptions,
-        roomQuantityOptions: roomQuantityOptions
-        });
-
     }
 
     componentWillUnmount() {
@@ -203,14 +164,13 @@ class HomePage extends Component {
       }
 
 
-    handleRoomType=(e, {name, value})=>{
+    handleRoomTypeQuantity=(e, {name, value})=>{
         this.setState({
             search: {
                 ...this.state.search,
                 [name]: value
             }
         });
-        //Make pop up modal for guests
     }
 
     handleLocation=(e, {name,value})=>{
@@ -250,8 +210,8 @@ class HomePage extends Component {
             let roomTypePrices = [];
             searchedHotels = searchedHotels.filter(
                 hotel => {
-                    let hotelsOfRoomType = hotel.data.room_types.filter(room_type => room_type.type === this.state.search.roomType);
-                    let roomTypePrice = hotelsOfRoomType[0].price;
+                    let roomTypeOfHotel = hotel.data.room_types.filter(room_type => room_type.type === this.state.search.roomType);
+                    let roomTypePrice = roomTypeOfHotel[0].price;
 
                     // push price onto array to check for max/min at the end of if statement
                     roomTypePrices.push(roomTypePrice);
@@ -259,7 +219,7 @@ class HomePage extends Component {
                     // set the price of rooms based on the current roomType search criteria to an easily accessible attribute (hotel.data.currentRoomPrice)
                     hotel.data.currentRoomPrice = roomTypePrice;
                     return(
-                        hotelsOfRoomType
+                        roomTypeOfHotel
                     );
                 }
             )
@@ -456,12 +416,11 @@ class HomePage extends Component {
             <SearchBar
             datesRange={this.state.datesRange}
             locationOptions={this.state.locationOptions}
-            roomTypeOptions={this.state.roomTypeOptions}
-            roomQuantityOptions={this.state.roomQuantityOptions}
             defaultRoomType={this.state.search.roomType}
+            defaultRoomQuantity={this.state.search.roomQuantity}
             handleLocation={this.handleLocation.bind(this)}
             handleCheckInOut={this.handleCheckInOut.bind(this)}
-            handleRoomType={this.handleRoomType.bind(this)}
+            handleRoomTypeQuantity={this.handleRoomTypeQuantity.bind(this)}
             handleSearch={this.handleSearch.bind(this)}
             />
             <FilterSort
