@@ -134,7 +134,7 @@ class HotelPage extends Component {
         let totalDays = b.diff(a, 'days');
         let totalPrice = totalDays * pricePerNight;
         console.log(totalPrice);
-    }      
+    }
 
     render () {
         const { name, address, details, image, rating, room_types } = this.state.hotel.data;
@@ -196,10 +196,6 @@ class HotelPage extends Component {
                            <br></br>
                            <Divider/>
                            <br></br>
-
-                            <Button fluid>
-                                Book
-                            </Button>
                             <CheckOut
                             hotel = {hotel}
                             reservation = {reservation}
