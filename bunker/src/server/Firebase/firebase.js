@@ -152,60 +152,68 @@ class Firebase {
 			.catch(error => error);
 	};
 
-	checkForConflictWithDates = (new_start, new_end, uid) => {
-		return this.user(uid).get()
+	checkForConflictWithDates = (new_start, new_end, user_id) => {
+		this.user(user_id)
+			.get()
 			.then(user_doc => {
-				return user_doc.data().reservations;
-			})
-			.then(res_ids => {
-				return this.getReservations(res_ids)
-			})
-			.then(async reservations => {
-				let conflict = false;
-				if(reservations.length<1){conflict = false;}
-				else{
-					await reservations.forEach(res => {
-						if((new_start>=res.data.start_date&&new_start<res.data.end_date)//new start date is between existing date range
-						||(new_end>res.data.start_date&&new_end<=res.data.end_date)//new end date is between existing date range
-						||(new_start>=res.data.start_date&&new_end<=res.data.end_date)//new date range is within existing date range
-						||(new_start<=res.data.start_date&&new_end>=res.data.end_date))//new range encapsulate existing range
-							{
-								conflict = true;
-							}
-					})
+				const current_reservations = user_doc.data().reservations;
+				//If reservations exist check for date confilcts
+				if (current_reservations.length >= 1) {
+					current_reservations.forEach(res_id => {
+						this.database
+							.collection("reservations")
+							.doc(res_id)
+							.get()
+							.then(res_doc => {
+								const existing_start = res_doc.data().start_date;
+								const existing_end = res_doc.data().end_date;
+								if (
+									(new_start >= existing_start && new_start < existing_end) || //new start date is between existing date range
+									(new_end > existing_start && new_end <= existing_end) || //new end date is between existing date range
+									(new_start >= existing_start && new_end <= existing_end) || //new date range is within existing date range
+									(new_start <= existing_start && new_end >= existing_end)
+								) {
+									//new range encapsulate existing range
+									return false;
+								}
+							});
+					});
 				}
-				return conflict;
-			})
-	}
+			});
+		return true;
+	};
 
-	addReservationToDB = (user_id, data, isUseReward) => {
-		//Create new reservation document
-		data.user_id = user_id;
-		this.reservationsRef()
-			.add(data)
-			.then(res_doc => {
-				//Add reservation_id to reservation document
-				//get user's document
-				this.user(user_id)
-					.get()
-					.then(user_doc => {
-						//add reservation to user's current reservation array
-						let new_res = user_doc.data().reservations; //Reference to reservation array
-						new_res.push(res_doc.id); //Adding new reservation_id
-						//Update rewards points
-						if(!isUseReward){
-							let new_points = user_doc.data().reward_points + Math.floor(data.price/10);
-							this.editUserAccount(user_id, {reservations: new_res, reward_points: new_points});
-						}
-						else{
-							let new_points = 0;
-							this.editUserAccount(user_id, {reservations: new_res, reward_points: new_points})
-						}
-					})
-					.catch(error => console.log("Failed to add to user " +error));
-			})
-			.catch(error => console.log("Failed to add res " +error));
-    };
+	addReservationToDB = (user_id, data) => {
+		if (
+			this.checkForConflictWithDates(data.start_date, data.end_date, user_id)
+		) {
+			//Create new reservation document
+			this.reservationsRef()
+				.add(data)
+				.then(res_doc => {
+					//Add reservation_id to reservation document
+					//get user's document
+					this.user(user_id)
+						.get()
+						.then(user_doc => {
+							//add reservation to user's current reservation array
+							let new_res = user_doc.data().reservations; //Reference to reservation array
+							new_res.push(res_doc.id); //Adding new reservation_id
+							//Update rewards points
+							let new_points =
+								user_doc.data().reward_points + Math.floor(data.price / 10);
+							this.editUserAccount(user_id, {
+								reservations: new_res,
+								reward_points: new_points
+							});
+							return true;
+						})
+						.catch(error => console.log("Failed to add to user " + error));
+				})
+				.catch(error => console.log("Failed to add res " + error));
+		}
+		return false;
+	};
 
 	//edit reservation data
 	editReservationInfo = (reservation_id, data) => {
