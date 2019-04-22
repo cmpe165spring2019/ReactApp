@@ -33,7 +33,6 @@ class Reservation extends Component {
 			hotels: [],
 			user: {},
 			reservations: [],
-			stupidway: 1,
 			isLoading: true,
 			isEmpty: true,
 			isError: false
@@ -48,38 +47,77 @@ class Reservation extends Component {
 			isEmpty: false,
 			isError: false
 		});
-		this.props.firebase.getReservations(user.reservations).then(result => {
-			console.log(result);
-			const reservations = result.filter(
-				item => item.data.start_date <= Date.now() && item
-			);
-			console.log(reservations);
-			let hotelIDs = [];
-			reservations.forEach(reservation =>
-				hotelIDs.push(reservation.data.hotel_id)
-			);
-			this.props.firebase
-				.getHotels(hotelIDs)
-				.then(hotels => {
-					console.log(hotels);
-					this.setState({
-						reservations: reservations,
-						hotels: hotels,
-						user: user,
-						isEmpty: reservations.length === 0 ? true : false,
-						isLoading: false,
-						isError: false
-					});
-				})
-				.catch(error => {
-					console.log(error);
-					this.setState({
-						isError: true,
-						isLoading: false,
-						isEmpty: reservations.length === 0 ? true : false
-					});
+		this.subscribe = this.props.firebase.subscribeReservations(
+			user.uid,
+			// Date.now(),
+			reservations => {
+				let hotelIDs = [];
+				reservations.forEach(reservation =>
+					hotelIDs.push(reservation.data.hotel_id)
+				);
+				console.log(reservations);
+				this.props.firebase
+					.getHotels(hotelIDs)
+					.then(hotels => {
+						this.setState({
+							reservations: reservations,
+							isLoading: false,
+							isEmpty: reservations.length || true,
+							hotels: hotels,
+							isError: false
+						});
+					})
+					.catch(err =>{
+						console.log(err);
+						this.setState({
+							isLoading: false,
+							isError: true
+						})}
+					);
+			},
+			error => {
+				this.setState({
+					isError: true,
+					isLoading: false
 				});
-		});
+			}
+		);
+		// );
+		// 		this.props.firebase.getReservations(user.reservations).then(result => {
+		// 			console.log(result);
+		// 			const reservations = result.filter(
+		// 				item => item.data.start_date <= Date.now() && item
+		// 			);
+		// 			let hotelIDs = [];
+		// 			reservations.forEach(reservation =>
+		// 				hotelIDs.push(reservation.data.hotel_id)
+		// 			);
+		// 			this.props.firebase
+		// 				.getHotels(hotelIDs)
+		// 				.then(hotels => {
+		// 					console.log(hotels);
+		// 					this.setState({
+		// 						reservations: reservations,
+		// 						hotels: hotels,
+		// 						user: user,
+		// 						isEmpty: reservations.length === 0 ? true : false,
+		// 						isLoading: false,
+		// 						isError: false
+		// 					});
+		// 				})
+		// 				.catch(error => {
+		// 					console.log(error);
+		// 					this.setState({
+		// 						isError: true,
+		// 						isLoading: false,
+		// 						isEmpty: reservations.length === 0 ? true : false
+		// 					});
+		// 				});
+		// 		});
+	}
+
+	componentWillUnmount() {
+		this.subscribe();
 	}
 
 	render() {
@@ -87,7 +125,7 @@ class Reservation extends Component {
 		console.log(isLoading);
 		return (
 			<Segment>
-				{isEmpty ? (
+				{isEmpty === true ? (
 					<Header as="h2" icon textAlign="center">
 						<Icon name="hotel" circular />
 						<Header.Content>No Reservation</Header.Content>
@@ -97,7 +135,7 @@ class Reservation extends Component {
 						<Loader active={isLoading} inline="centered" size="large" />
 
 						<Grid divided="vertically">
-							{this.state.reservations.map((reservation, i) => {
+							{reservations.map((reservation, i) => {
 								const hotel = this.state.hotels[i];
 								const startDate = new Date(reservation.data.start_date);
 								const endDate = new Date(reservation.data.end_date);
@@ -123,13 +161,6 @@ class Reservation extends Component {
 												<CancelReservation
 													hotel={hotel}
 													reservation={reservation}
-													updateReservations={value => {
-														_.remove(reservations, value);
-														this.setState({
-															reservations: reservations,
-															isEmpty: reservations.length === 0 ? true : false
-														});
-													}}
 												/>
 											</Grid.Row>
 											<p />
@@ -146,6 +177,12 @@ class Reservation extends Component {
 						</Grid>
 					</Segment>
 				)}
+				{isError ? (
+					<Message floating negative hidden={!isError}>
+						<Message.Header>We could't load that content</Message.Header>
+						<p>Please contact us to resolve the problem</p>
+					</Message>
+				) : null}
 			</Segment>
 		);
 	}
