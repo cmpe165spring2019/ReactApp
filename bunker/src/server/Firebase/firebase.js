@@ -216,7 +216,7 @@ addReservationToDB = (user_id, data) => {
 
 	//Delete reservation
 	deleteReservationFromDB = (reservation_id, user_id, price) => {
-	this.user(user_id)
+	return this.user(user_id)
 		.update({
 			reservations: this.FieldValue.arrayRemove(reservation_id),
 			reward_points: this.FieldValue.increment(-Math.floor(price / 10))
@@ -257,6 +257,25 @@ addReservationToDB = (user_id, data) => {
 				return cities;
 			});
 
+subscribeReservations = (userID,
+	// start_date,
+	doChange, doError) => {
+	return this.reservationsRef()
+		.where("user_id", "==", userID)
+		// .where("start_date", ">=", start_date)
+		.onSnapshot(snapshot => {
+			let reservations = [];
+			snapshot.forEach(doc =>
+				reservations.push({id: doc.id, data: doc.data()})
+			);
+			doChange(reservations);
+		},
+	(error) => {
+		doError(error)
+	})
+};
+
+
 	getReservations = reservationIDs => {
 		let result = [];
 		let promise = [];
@@ -275,18 +294,14 @@ addReservationToDB = (user_id, data) => {
 		});
 	};
 
-	getHotels = async hotelIDs => {
-		let result = [];
-		let promise = [];
-		hotelIDs.forEach(hotelID => promise.push(this.hotelRef(hotelID).get()));
+	getHotels = hotelIDs => {
+		let promise = hotelIDs.map(hotelID => this.hotelRef(hotelID).get());
 		return Promise.all(promise).then(snapshots => {
-			snapshots.forEach(snapshot => {
-				const obj = {
+			let result = snapshots.map(snapshot => ({
 					id: snapshot.id,
 					data: snapshot.data()
-				};
-				result.push(obj);
-			});
+				})
+			);
 			return result;
 		});
 	};

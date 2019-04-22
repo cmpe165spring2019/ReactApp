@@ -7,6 +7,7 @@ import * as ROUTES from "../../constants/routes";
 import _ from "lodash";
 import {
 	Container,
+	Message,
 	Header,
 	Icon,
 	Dimmer,
@@ -32,60 +33,109 @@ class Reservation extends Component {
 			hotels: [],
 			user: {},
 			reservations: [],
-			stupidway: 1,
 			isLoading: true,
-			isEmpty: true
+			isEmpty: true,
+			isError: false
 		};
 	}
 
 	componentDidMount() {
-		this.setState({
-			isLoading: true,
-			isEmpty: false
-		});
 		const {user} = this.props;
 
-		this.props.firebase
-			.getReservations(user.reservations)
-			.then(result => {
-				console.log(result);
-				const reservations = result.filter(item => (item.data.start_date <= Date.now()) && item);
+		this.setState({
+			isLoading: true,
+			isEmpty: false,
+			isError: false
+		});
+		this.subscribe = this.props.firebase.subscribeReservations(
+			user.uid,
+			// Date.now(),
+			reservations => {
 				let hotelIDs = [];
 				reservations.forEach(reservation =>
 					hotelIDs.push(reservation.data.hotel_id)
 				);
-				this.props.firebase.getHotels(hotelIDs).then(hotels => {
-					console.log(hotels);
-					this.setState({
-						reservations: reservations,
-						hotels: hotels,
-						user: user,
-						isEmpty: (reservations.length === 0 ) ? true : false,
-
-					});
+				console.log(reservations);
+				this.props.firebase
+					.getHotels(hotelIDs)
+					.then(hotels => {
+						this.setState({
+							reservations: reservations,
+							isLoading: false,
+							isEmpty: reservations.length || true,
+							hotels: hotels,
+							isError: false
+						});
+					})
+					.catch(err =>{
+						console.log(err);
+						this.setState({
+							isLoading: false,
+							isError: true
+						})}
+					);
+			},
+			error => {
+				this.setState({
+					isError: true,
+					isLoading: false
 				});
-			});
+			}
+		);
+		// );
+		// 		this.props.firebase.getReservations(user.reservations).then(result => {
+		// 			console.log(result);
+		// 			const reservations = result.filter(
+		// 				item => item.data.start_date <= Date.now() && item
+		// 			);
+		// 			let hotelIDs = [];
+		// 			reservations.forEach(reservation =>
+		// 				hotelIDs.push(reservation.data.hotel_id)
+		// 			);
+		// 			this.props.firebase
+		// 				.getHotels(hotelIDs)
+		// 				.then(hotels => {
+		// 					console.log(hotels);
+		// 					this.setState({
+		// 						reservations: reservations,
+		// 						hotels: hotels,
+		// 						user: user,
+		// 						isEmpty: reservations.length === 0 ? true : false,
+		// 						isLoading: false,
+		// 						isError: false
+		// 					});
+		// 				})
+		// 				.catch(error => {
+		// 					console.log(error);
+		// 					this.setState({
+		// 						isError: true,
+		// 						isLoading: false,
+		// 						isEmpty: reservations.length === 0 ? true : false
+		// 					});
+		// 				});
+		// 		});
+	}
 
-		this.setState({
-			isLoading: false
-		});
+	componentWillUnmount() {
+		this.subscribe();
 	}
 
 	render() {
-		const {reservations, isLoading, isEmpty} = this.state;
+		const {reservations, isLoading, isEmpty, isError} = this.state;
+		console.log(isLoading);
 		return (
-			<div>
-				{isEmpty ? (
-					<div>
-						<Header as="h2" icon textAlign="center">
-							<Icon name="hotel" circular />
-							<Header.Content>No Reservation</Header.Content>
-						</Header>
-					</div>
+			<Segment>
+				{isEmpty === true ? (
+					<Header as="h2" icon textAlign="center">
+						<Icon name="hotel" circular />
+						<Header.Content>No Reservation</Header.Content>
+					</Header>
 				) : (
 					<Segment>
-						{isLoading ? <Loader active inverted size="large" /> : <Grid divided="vertically">
-							{this.state.reservations.map((reservation, i) => {
+						<Loader active={isLoading} inline="centered" size="large" />
+
+						<Grid divided="vertically">
+							{reservations.map((reservation, i) => {
 								const hotel = this.state.hotels[i];
 								const startDate = new Date(reservation.data.start_date);
 								const endDate = new Date(reservation.data.end_date);
@@ -96,6 +146,7 @@ class Reservation extends Component {
 											<Image
 												src={hotel.data.image[0]}
 												//size='medium'
+												alt='No image'
 												width="250px"
 												height="150px"
 											/>
@@ -111,10 +162,6 @@ class Reservation extends Component {
 												<CancelReservation
 													hotel={hotel}
 													reservation={reservation}
-													updateReservations={value => {
-														_.remove(reservations, value);
-														this.setState({reservations: reservations, isEmpty: (reservations.length === 0) ? true : false});
-													}}
 												/>
 											</Grid.Row>
 											<p />
@@ -127,15 +174,17 @@ class Reservation extends Component {
 										</Grid.Column>
 									</Grid.Row>
 								);
-							})
-
-						}
+							})}
 						</Grid>
-					}
-							
-						</Segment>
+					</Segment>
 				)}
-			</div>
+				{isError ? (
+					<Message floating negative hidden={!isError}>
+						<Message.Header>We could't load that content</Message.Header>
+						<p>Please contact us to resolve the problem</p>
+					</Message>
+				) : null}
+			</Segment>
 		);
 	}
 }
