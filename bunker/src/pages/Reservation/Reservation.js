@@ -146,6 +146,7 @@ class Reservation extends Component {
 											<Image
 												src={hotel.data.image[0]}
 												//size='medium'
+												alt='No image'
 												width="250px"
 												height="150px"
 											/>
