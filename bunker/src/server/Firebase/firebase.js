@@ -183,37 +183,22 @@ class Firebase {
 		return true;
 	};
 
-	addReservationToDB = (user_id, data) => {
-		if (
-			this.checkForConflictWithDates(data.start_date, data.end_date, user_id)
-		) {
-			//Create new reservation document
-			this.reservationsRef()
-				.add(data)
-				.then(res_doc => {
-					//Add reservation_id to reservation document
-					//get user's document
-					this.user(user_id)
-						.get()
-						.then(user_doc => {
-							//add reservation to user's current reservation array
-							let new_res = user_doc.data().reservations; //Reference to reservation array
-							new_res.push(res_doc.id); //Adding new reservation_id
-							//Update rewards points
-							let new_points =
-								user_doc.data().reward_points + Math.floor(data.price / 10);
-							this.editUserAccount(user_id, {
-								reservations: new_res,
-								reward_points: new_points
-							});
-							return true;
-						})
-						.catch(error => console.log("Failed to add to user " + error));
-				})
-				.catch(error => console.log("Failed to add res " + error));
-		}
-		return false;
-	};
+addReservationToDB = (user_id, data) => {
+	if (this.checkForConflictWithDates(data.start_date, data.end_date, user_id)) {
+		//Create new reservation document
+		this.reservationsRef()
+			.add(data)
+			.then(res_doc => {
+				this.editUserAccount(user_id, {
+					reservations: this.FieldValue.arrayUnion(res_doc.id),
+					reward_points: this.FieldValue.increment(Math.floor(data.price / 10))
+				});
+				return true;
+			})
+			.catch(error => console.log("Failed to add res " + error));
+	}
+	return false;
+};
 
 	//edit reservation data
 	editReservationInfo = (reservation_id, data) => {
