@@ -22,6 +22,8 @@ class Firebase {
 		//this.db = app.database();
 		this.database = app.firestore();
 
+		this.FieldValue = app.firestore.FieldValue;
+
 		/* Social Sign In Method Provider */
 
 		this.googleProvider = new app.auth.GoogleAuthProvider();
@@ -59,14 +61,11 @@ class Firebase {
 	//Base API call
 	user = uid => this.database.collection("users").doc(uid);
 
-	hotelRef = uid => this.database.collections("hotels").doc(uid);
+	hotelRef = uid => this.database.collection("hotels").doc(uid);
 
 	reservationRef = uid => this.database.collection("reservations").doc(uid);
 	reservationsRef = () => this.database.collection("reservations");
 
-	emailExists = email => {
-		this.database.collection('users')
-	}
 	// *** Merge Auth and DB User API *** //
 
 	onAuthUserListener = (next, fallback) =>
@@ -116,6 +115,15 @@ class Firebase {
 				return result;
 			});
 
+	addGoogleUserToDB = (socialAuthUser) => {
+		return this.user(socialAuthUser.user.uid).set({
+			username: socialAuthUser.user.displayName,
+			email: socialAuthUser.user.email,
+			reservations: this.FieldValue.arrayUnion(""),
+			reward_points: this.FieldValue.increment(0),
+		},{merge: true})
+	}
+
 	addUserToDB = (authUser, email, username) => {
 		const data = {
 			user_id: authUser.user.uid,
@@ -135,7 +143,7 @@ class Firebase {
 	};
 
 	editUserAccount = (user_id, data) => {
-		this.user(user_id)
+		return this.user(user_id)
 			.update(data)
 			.then(() => {
 				console.log("User data was successfully changed");
@@ -201,7 +209,7 @@ class Firebase {
 
 	//edit reservation data
 	editReservationInfo = (reservation_id, data) => {
-		this.reservationRef(reservation_id)
+		return this.reservationRef(reservation_id)
 			.update(data)
 			.then(() => {
 				console.log("Reservation data was successfully changed");
@@ -209,20 +217,34 @@ class Firebase {
 			})
 			.catch(error => {
 				console.error("Error editing document: ", error);
-				return false;
+				return error;
 			});
 	};
 
 	//Delete reservation
-	deleteReservationFromDB = (reservation_id, user_id) => {
-		this.user(user_id).update({
-			reservations: this.firebase.firestore.FieldValue.arrayRemove(reservation_id)
-		}).then(() => {
-			this.reservationRef(reservation_id).delete().then(() => {
-				console.log("Done delete reservation");
-			}).catch(err => {console.log("Error in delete reservation",err)})
-		}).catch(err => console.log("Error in delete reservation in user", err));
-	};
+	deleteReservationFromDB = (reservation_id, user_id, price) => {
+	this.user(user_id)
+		.update({
+			reservations: this.FieldValue.arrayRemove(reservation_id),
+			reward_points: this.FieldValue.increment(-Math.floor(price / 10))
+		})
+		.then(() => {
+			return this.reservationRef(reservation_id)
+				.delete()
+				.then(() => {
+					console.log("Done delete reservation");
+				})
+				.catch(err => {
+					console.log("Error in delete reservation", err);
+					return err;
+				});
+		})
+		.catch(err => {
+			console.log("Error in remove reservations id or decrease reward_points");
+				return err;
+		});
+};
+
 
 	//location Search function
 	getCities = next =>
@@ -242,23 +264,39 @@ class Firebase {
 				return cities;
 			});
 
-	getReservations = async reservationIDs =>{
-		let reservations = [];
-		reservations.length = reservationIDs.length;
-		let i = 0;
+	getReservations = reservationIDs => {
+		let result = [];
+		let promise = [];
+		reservationIDs.forEach(reservationID =>
+			promise.push(this.reservationRef(reservationID).get())
+		);
+		return Promise.all(promise).then(snapshots => {
+			snapshots.forEach(snapshot => {
+				const obj = {
+					id: snapshot.id,
+					data: snapshot.data()
+				};
+				result.push(obj);
+			});
+			return result;
+		});
+	};
 
-		for(let res_id of reservationIDs){
-			reservations[i] = await  this.reservationRef(res_id).get()
-				.then(snapshot => {
-					const obj = {
-						id: snapshot.id,
-						data: snapshot.data()
-					}
-					return obj;
-				})
-		}
-		return reservations
-	}
+	getHotels = async hotelIDs => {
+		let result = [];
+		let promise = [];
+		hotelIDs.forEach(hotelID => promise.push(this.hotelRef(hotelID).get()));
+		return Promise.all(promise).then(snapshots => {
+			snapshots.forEach(snapshot => {
+				const obj = {
+					id: snapshot.id,
+					data: snapshot.data()
+				};
+				result.push(obj);
+			});
+			return result;
+		});
+	};
 
 	//Data Retrive and filter
 	getLocationHotel = location => {
