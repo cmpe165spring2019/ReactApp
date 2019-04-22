@@ -5,7 +5,6 @@ import CheckOutForm from "./CheckOutForm";
 import PayPalButton from "../../../server/Payment/PayPalButton";
 
 const CheckOut = props => {
-	const [isOpen, setIsOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
 	const [isUseReward, setIsUseReward] = React.useState(false);
 	const handleUseReward = () => {
@@ -17,7 +16,7 @@ const CheckOut = props => {
 
 	const onSuccess = payment => {
 		console.log("Successful payment!", payment);
-		const reservation_with_payment = {payment: payment,hotel_id: hotel.id, ...reservation, };
+		const reservation_with_payment = {user_id: user.uid, payment: payment, hotel_id: hotel.id, ...reservation, };
 		props.firebase.addReservationToDB(
 			user.uid,
 			reservation_with_payment,
@@ -34,18 +33,13 @@ const CheckOut = props => {
 
 	return (
 		<Modal
-			onOpen={() => setIsOpen(true)}
 			centered={true}
 			size="large"
-			onClose={() => setIsOpen(false)}
-			open={isOpen}
 			trigger={
 				<Button
 					color="blue"
 					size="small"
 					width="70px"
-					positive={!isOpen}
-					negative={isOpen}
 				>
 					Book now
 				</Button>
@@ -70,13 +64,13 @@ const CheckOut = props => {
 							? "Reward is used"
 							: `Reward left: ${user.reward_points}`
 					}
-					disabled={user.reward_points === 0}
+					disabled={user.reward_points <= 0}
 					negative={isUseReward}
 					positive={!isUseReward}
 					onClick={handleUseReward}
 				/>
 				<PayPalButton
-					total={reservation.price}
+					total={reservation.price || 100}
 					currency={"USD"}
 					commit={true}
 					onSuccess={onSuccess}
