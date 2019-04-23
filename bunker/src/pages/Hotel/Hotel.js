@@ -137,7 +137,8 @@ class HotelPage extends Component {
       end_date,
 			roomQuantity,
       roomType,
-			pricePerNight
+			pricePerNight,
+			datesRange
 		} = this.state;
 
 		return (
@@ -192,7 +193,7 @@ class HotelPage extends Component {
 								<br />
 								<Divider />
 								<br />
-								<CheckOut hotel={hotel} reservation={{
+								<CheckOut datesRange={datesRange} hotel={hotel} reservation={{
                   room_types: roomType,
                   roomQuantity,
                   start_date,

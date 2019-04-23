@@ -11,7 +11,7 @@ const CheckOut = props => {
 		setIsUseReward(!isUseReward);
 	};
 
-	const {reservation, hotel} = props;
+	const {reservation, hotel, datesRange} = props;
 	const user = JSON.parse(localStorage.getItem("authUser"));
 
 	const onSuccess = payment => {
