@@ -111,11 +111,11 @@ class LoginManagementBase extends Component {
     const { activeSignInMethods, error } = this.state;
 
     return (
-        <Grid.Row>
-      <div>
+        <Grid.Column>
+      <Header>
         Sign In Methods:
-
-        <ul>
+        </Header>
+        <Segment.Group>
           {SIGN_IN_METHODS.map(signInMethod => {
             const onlyOneLeft = activeSignInMethods.length === 1;
             const isEnabled = activeSignInMethods.includes(
@@ -124,7 +124,7 @@ class LoginManagementBase extends Component {
 
             return (
 
-              <li key={signInMethod.id}>
+              <Segment key={signInMethod.id}>
                 {signInMethod.id === 'password' ? (
                   <DefaultLoginToggle
                     onlyOneLeft={onlyOneLeft}
@@ -145,15 +145,15 @@ class LoginManagementBase extends Component {
                 )
 
               }
-              </li>
+              </Segment>
 
             );
   })}
-        </ul>
+        </Segment.Group>
 
-        {error && error.message}
-      </div>
-      </Grid.Row>
+        {error && <Message negative>{error.message}</Message>}
+
+      </Grid.Column>
 
     );
   }
@@ -168,7 +168,7 @@ const SocialLoginToggle = ({
 }) =>
   isEnabled ? (
     <Button
-      type="button"
+      fluid
       onClick={() => onUnlink(signInMethod.id)}
       disabled={onlyOneLeft}
     >
@@ -176,10 +176,11 @@ const SocialLoginToggle = ({
     </Button>
   ) : (
     <Button
-      type="button"
+      fluid
+      icon
       onClick={() => onLink(signInMethod.provider)}
     >
-      Link {signInMethod.id}
+      <Icon name={signInMethod.id}></Icon>
     </Button>
   );
 
@@ -217,24 +218,24 @@ class DefaultLoginToggle extends Component {
     return isEnabled ? (
 
       <Button
-        type="button"
+        fluid
         onClick={() => onUnlink(signInMethod.id)}
         disabled={onlyOneLeft}
       >
         Deactivate {signInMethod.id}
       </Button>
     ) : (
-       <Grid>
+
       <Form size="large" onSubmit={this.onSubmit}>
 
-        <Grid.Row><Form.Input
+        <Form.Input
           fluid
           name="passwordOne"
           value={passwordOne}
           onChange={this.onChange}
           type="password"
           placeholder="New Password"
-        /></Grid.Row>
+        />
         <Form.Input
           name="passwordTwo"
           value={passwordTwo}
@@ -243,12 +244,11 @@ class DefaultLoginToggle extends Component {
           placeholder="Con New Password"
         />
 
-        <Button disabled={isInvalid} type="submit">
+        <Button disabled={isInvalid} fluid>
           Link {signInMethod.id}
         </Button>
 
       </Form>
-</Grid>
     );
   }
 }
