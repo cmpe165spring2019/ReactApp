@@ -122,3 +122,4 @@ bunker/database.rules.json
 bunker/firebase.json
 bunker/firestore.indexes.json
 bunker/firestore.rules
+bunker/package.json
