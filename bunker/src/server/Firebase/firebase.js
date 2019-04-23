@@ -161,7 +161,7 @@ checkForConflictWithDates = (new_start, new_end, user_id) => {
 			return this.getReservations(reservationIDs).then(reservations =>
 				reservations.every(res => {
 					const check =
-						new_start < res.data.start_date || new_end > res.data.end_date;
+						(new_start < res.data.start_date && new_end < res.data.start_date) || (new_start > res.data.end_date);
 					console.log(
 						new_start,
 						res.data.start_date,

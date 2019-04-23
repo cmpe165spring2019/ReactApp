@@ -7,6 +7,7 @@ import PayPalButton from "../../../server/Payment/PayPalButton";
 const CheckOut = props => {
 	const [isError, setIsError] = React.useState(false);
 	const [isUseReward, setIsUseReward] = React.useState(false);
+	const [error, setError] = React.useState(null);
 	const handleUseReward = () => {
 		setIsUseReward(!isUseReward);
 	};
@@ -16,7 +17,7 @@ const CheckOut = props => {
 
 	const onSuccess = payment => {
 		console.log("Successful payment!", payment);
-		const reservation_with_payment = {user_id: user.uid, payment: payment, hotel_id: hotel.id, ...reservation, };
+		const reservation_with_payment = {user_id: user.uid, payment: payment, hotel_id: hotel.id, datesRange, ...reservation, };
 		props.firebase.addReservationToDB(
 			user.uid,
 			reservation_with_payment,
@@ -26,8 +27,9 @@ const CheckOut = props => {
 		console.log("Cancel: ", data);
 		setIsError(true);
 	};
-	const onError = error => {
-		console.log("Error: ", error);
+	const onError = paypalError => {
+		console.log("Error: ", paypalError);
+		setError(paypalError);
 		setIsError(true);
 	};
 
@@ -70,6 +72,9 @@ const CheckOut = props => {
 					onClick={handleUseReward}
 				/>
 				<PayPalButton
+					new_end={reservation.end_date}
+					new_start={reservation.start_date}
+					user_id={user.uid}
 					total={reservation.price || 100}
 					currency={"USD"}
 					commit={true}
@@ -81,7 +86,7 @@ const CheckOut = props => {
 			{isError ? (
 				<Message negative>
 					<Message.Header>Opps!!!</Message.Header>
-					<p>Something when wrong</p>
+					{error.message === "MultipleBookingError" ? <p> Cannot have multiple booking</p> :<p>Something when wrong</p>}
 				</Message>
 			) : null}
 		</Modal>
