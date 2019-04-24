@@ -8,6 +8,8 @@ const CheckOut = props => {
 	const [isError, setIsError] = React.useState(false);
 	const [isUseReward, setIsUseReward] = React.useState(false);
 	const [error, setError] = React.useState(null);
+	const [isSuccess, setIsSuccess] = React.useState(false);
+
 	const handleUseReward = () => {
 		setIsUseReward(!isUseReward);
 	};
@@ -22,11 +24,14 @@ const CheckOut = props => {
 			user.uid,
 			reservation_with_payment,
 		);
+		setIsSuccess(payment.paid);
 	};
+
 	const onCancel = data => {
 		console.log("Cancel: ", data);
 		setIsError(true);
 	};
+
 	const onError = paypalError => {
 		console.log("Error: ", paypalError);
 		setError(paypalError);
@@ -95,12 +100,19 @@ const CheckOut = props => {
 				
 				</Segment>
 			</Modal.Actions>
-			{isError ? (
+			{ isError ? (
 				<Message negative>
-					<Message.Header>Opps!!!</Message.Header>
+					<Message.Header>Oops!!!</Message.Header>
 					{error.message === "MultipleBookingError" ? <p> Cannot have multiple booking</p> :<p>Something when wrong</p>}
 				</Message>
-			) : null}
+			) : null }
+			{ isSuccess ? 			( <Message
+			success
+			header='Your reservation booking was successful!'
+			content='You can view your reservations now at My Reservations'
+			/> ) : null
+
+			}
 		</Modal>
 	);
 };
