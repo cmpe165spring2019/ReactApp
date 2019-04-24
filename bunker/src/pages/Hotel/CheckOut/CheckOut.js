@@ -1,5 +1,5 @@
 import React from "react";
-import {Modal, Button, Message, Image} from "semantic-ui-react";
+import {Modal, Button, Message, Image, Segment, Grid} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import CheckOutForm from "./CheckOutForm";
 import PayPalButton from "../../../server/Payment/PayPalButton";
@@ -36,7 +36,7 @@ const CheckOut = props => {
 	return (
 		<Modal
 			centered={true}
-			size="large"
+			size="small"
 			trigger={
 				<Button
 					color="blue"
@@ -47,7 +47,7 @@ const CheckOut = props => {
 				</Button>
 			}
 		>
-			<Modal.Header>Payment confirm</Modal.Header>
+			<Modal.Header>Payment confirmation</Modal.Header>
 			<Modal.Content image>
 				<Image wrapped size="medium" src={hotel.data.image[0]} />
 				<Modal.Description>
@@ -60,7 +60,11 @@ const CheckOut = props => {
 				</Modal.Description>
 			</Modal.Content>
 			<Modal.Actions>
-				<Button
+				<Segment>
+					<Grid>
+						<Grid.Row columns='equal'>
+						<Grid.Column>
+						<Button floated='left'
 					content={
 						isUseReward
 							? "Reward is used"
@@ -71,7 +75,9 @@ const CheckOut = props => {
 					positive={!isUseReward}
 					onClick={handleUseReward}
 				/>
-				<PayPalButton
+							</Grid.Column>
+							<Grid.Column >
+						<PayPalButton
 					new_end={reservation.end_date}
 					new_start={reservation.start_date}
 					user_id={user.uid}
@@ -82,6 +88,12 @@ const CheckOut = props => {
 					onError={onError}
 					onCancel={onCancel}
 				/>
+						</Grid.Column>
+						
+						</Grid.Row>
+					</Grid>
+				
+				</Segment>
 			</Modal.Actions>
 			{isError ? (
 				<Message negative>

@@ -6,19 +6,25 @@ const CheckOutForm = props => {
 	const totalPrice = isUseReward
 		? reservation.price - user.reward_points
 		: reservation.price;
+
+	const { name, address } = hotel.data;
+	const { roomQuantity, room_types } = reservation;
+	const roomTypeString = room_types.charAt(0).toUpperCase() + room_types.slice(1) + '-Person Room';
+
 	return (
 		<Segment>
-			<p>Hotel: {hotel.data.name}</p>
+			<h3>Your booking for: </h3>
+
+			<p>{name}</p>
 			<p>
-				Address: {hotel.data.address.street}, {hotel.data.address.city},{" "}
-				{hotel.data.address.state}, {hotel.data.address.country}
+				{address.street}, {address.city},{" "}
+				{address.state}, {address.country}
 			</p>
-			<p>Type: {reservation.room_types}</p>
-			<p>Number of Room: {reservation.roomQuantity}</p>
+			<p>{roomQuantity} x {roomTypeString}</p>
 			{!isUseReward ? (
-				<p>Total Price: {totalPrice}</p>
+				<h4>Total Price: ${totalPrice}</h4>
 			) : (
-				<p>Discounted Price: {totalPrice}</p>
+				<p>Discounted Price: ${totalPrice}</p>
 			)}
 		</Segment>
 	);
