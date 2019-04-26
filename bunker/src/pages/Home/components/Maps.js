@@ -1,5 +1,6 @@
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from "google-maps-react";
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import * as ROUTES from "../../../constants/routes";
 
 // Backend functionalities
@@ -34,24 +35,34 @@ export class MapContainer extends Component {
   //loop this marker
   render() {
     return (
-      <Map google={this.props.google} onClick={this.onMapClicked}>
-        <Marker
-          onClick={this.onMarkerClick}
-          name={"San Francisco"}
-          position={{ lat: 37.759703, lng: -122.428093 }}
-        />
+      <div>
+        <Map google={this.props.google} onClick={this.onMapClicked}>
+          <Marker
+            onClick={this.onMarkerClick}
+            name={"San Francisco"}
+            position={{ lat: 37.759703, lng: -122.428093 }}
+          />
 
-        {this.props.hotels.map(hotel => {})}
+          <Marker
+            onClick={this.onMarkerClick}
+            name={"China Town"}
+            position={{ lat: 37.759703, lng: -122.428093 }}
+          />
 
-        <InfoWindow
-          marker={this.state.activeMarker}
-          visible={this.state.showingInfoWindow}
-        >
-          <div>
-            <h1>{this.state.selectedPlace.name}</h1>
-          </div>
-        </InfoWindow>
-      </Map>
+          {this.props.hotels.map(hotel => {
+            console.log(hotel.data.name);
+          })}
+
+          <InfoWindow
+            marker={this.state.activeMarker}
+            visible={this.state.showingInfoWindow}
+          >
+            <div>
+              <h1>{this.state.selectedPlace.name}</h1>
+            </div>
+          </InfoWindow>
+        </Map>
+      </div>
     );
   }
 }
