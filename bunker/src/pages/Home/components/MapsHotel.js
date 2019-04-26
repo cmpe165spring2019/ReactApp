@@ -37,18 +37,17 @@ export class MapContainer extends Component {
     return (
       <div>
         <Map google={this.props.google} onClick={this.onMapClicked}>
-          {this.props.hotels.map(hotel => {
-            return (
-              <Marker
-                onClick={this.onMarkerClick}
-                name={hotel.data.name}
-                position={{
-                  lat: hotel.data.address.lat,
-                  lng: hotel.data.address.long
-                }}
-              />
-            );
-          })}
+          <Marker
+            onClick={this.onMarkerClick}
+            name={"San Francisco"}
+            position={{ lat: 37.759703, lng: -122.428093 }}
+          />
+
+          <Marker
+            onClick={this.onMarkerClick}
+            name={"China Town"}
+            position={{ lat: 37.759703, lng: -122.428093 }}
+          />
 
           <InfoWindow
             marker={this.state.activeMarker}
