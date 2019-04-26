@@ -50,8 +50,14 @@ class Reservation extends Component {
 		this.subscribe = this.props.firebase.subscribeReservations(
 			user.uid,
 			// Date.now(),
-			reservations => {
+			newreservations => {
 				let hotelIDs = [];
+				const reservations = newreservations.filter(
+					item => item.data.start_date >= Date.now()
+				);
+				console.log(newreservations)
+				console.log(reservations);
+
 				reservations.forEach(reservation =>
 					hotelIDs.push(reservation.data.hotel_id)
 				);

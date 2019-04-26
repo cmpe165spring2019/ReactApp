@@ -83,12 +83,13 @@ const ChangeReservationForm = props => {
 		});
 	};
 	return (
+
 		<Grid>
 			<Grid.Row>
 				<div>CheckInOutCalendar In/Out:</div>
 				<CheckInOutCalendar
 					onChange={(event, {name, value}) => {setNewDatesRange(value)}}
-					value={newDatesRange}
+					defaultValue={newDatesRange}
 				/>
 			</Grid.Row>
 			<Grid.Row>
@@ -96,7 +97,7 @@ const ChangeReservationForm = props => {
 				<RoomTypeSelect
 					name="room_types"
 					onChange={handleChange}
-					defaultValue={room_types}
+					value={room_types}
 				/>
 			</Grid.Row>
 			<Grid.Row>
@@ -104,7 +105,7 @@ const ChangeReservationForm = props => {
 				<RoomQuantitySelect
 					name="roomQuantity"
 					onChange={handleChange}
-					defaultValue={roomQuantity}
+					value={roomQuantity}
 				/>
 			</Grid.Row>
 			<Button
