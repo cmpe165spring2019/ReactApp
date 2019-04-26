@@ -161,7 +161,7 @@ checkForConflictWithDates = (new_start, new_end, user_id) => {
 			return this.getReservations(reservationIDs).then(reservations =>
 				reservations.every(res => {
 					const check =
-						(new_start < res.data.start_date && new_end < res.data.start_date) || (new_start > res.data.end_date);
+						(new_end < res.data.start_date) || (new_start > res.data.end_date);
 					console.log(
 						new_start,
 						res.data.start_date,
@@ -198,17 +198,25 @@ addReservationToDB = (user_id, data) => {
 };
 
 	//edit reservation data
-	editReservationInfo = (reservation_id, data) => {
-		return this.reservationRef(reservation_id)
-			.update(data)
-			.then(() => {
-				console.log("Reservation data was successfully changed");
-				return true;
-			})
-			.catch(error => {
-				console.error("Error editing document: ", error);
-				return error;
-			});
+	editReservationInfo = (reservation_id, data, user_id) => {
+		return this.checkForConflictWithDates(data.start_date, data.end_date, user_id).then((check) => {
+			if(check){
+				this.reservationRef(reservation_id)
+				.update(data)
+				.then(() => {
+					console.log("Reservation data was successfully changed");
+					return true;
+				})
+				.catch(error => {
+					console.error("Error editing document: ", error);
+					return error;
+				});
+			}
+			else{
+				return new Error("multiplebooking");
+			}
+		})
+
 	};
 
 	//Delete reservation
