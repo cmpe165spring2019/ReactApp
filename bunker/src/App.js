@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {BrowserRouter as Router, Route} from "react-router-dom";
-import {TestPage} from "./server/Firebase";
 import {PayPalButton} from "./server/Payment/PayPalButton";
 
 import Navigation from './commonComponents/Navigation/Navigation';
@@ -32,7 +31,6 @@ const App = () => (
       <Route path={ROUTES.ACCOUNT} component={AccountPage} />
       <Route path={ROUTES.ADMIN} component={AdminPage} />
       <Route path={ROUTES.HOTEL_RESERVATION} component={ReservationPage} />
-      <Route path={'/test'} component={TestPage} />
     </div>
   </Router>
 );
