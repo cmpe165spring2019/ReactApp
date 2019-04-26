@@ -4,10 +4,12 @@ import {withFirebase} from "../../../server/Firebase";
 import ChangeReservationForm from "./ChangeReservationForm";
 
 const ChangeReservation = props => {
-	const [isOpen, setIsOpen] = React.useState(false);
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
-	const [newReservationData, setNewReservationData] = React.useState({});
+	const [error, setError] = React.useState(new Error("null"));
+	const [newReservationData, setNewReservationData] = React.useState({
+		...props.reservation.data
+	});
 
 	const {hotel} = props;
 	const oldReservation = props.reservation;
@@ -16,9 +18,10 @@ const ChangeReservation = props => {
 	const handleChangeReservation = () => {
 		console.log(newReservationData);
 		props.firebase
-			.editReservationInfo(oldReservation.id, newReservationData)
+			.editReservationInfo(oldReservation.id, newReservationData, user.uid)
 			.catch(error => {
 				setIsError(true);
+				setError(error);
 				console.log(error);
 			});
 		console.log("handle Edit");
@@ -27,27 +30,23 @@ const ChangeReservation = props => {
 	return (
 		<Modal
 			trigger={
-				<Button
-					size="small"
-					color="yellow"
-					width="70px"
-					positie={!isOpen}
-					negative={isOpen}
-				>
+				<Button size="small" color="yellow" width="70px">
 					Change this reservation
 				</Button>
 			}
 		>
 			<Modal.Header>Edit Reservation</Modal.Header>
 			<Modal.Description>
-				<ChangeReservationForm
-					oldReservation={oldReservation}
-					setNewReservationData={setNewReservationData}
-					isError={isError}
-					user={user}
-					hotel={hotel}
-					newReservationData={newReservationData}
-				/>
+				<Segment>
+					<ChangeReservationForm
+						oldReservation={oldReservation}
+						setNewReservationData={setNewReservationData}
+						isError={isError}
+						user={user}
+						hotel={hotel}
+						newReservation={newReservationData}
+					/>
+				</Segment>
 			</Modal.Description>
 			<Modal.Actions>
 				<Button
@@ -66,7 +65,13 @@ const ChangeReservation = props => {
 			{isError ? (
 				<Message negative>
 					<Message.Header>Opps!!!</Message.Header>
-					<p>Something when wrong</p>
+					{error.message === "multiplebooking" ? (
+						<Message.Content>
+							It seem like you have a reservation for the same day.
+						</Message.Content>
+					) : (
+						<Message.Content>Something when wrong</Message.Content>
+					)}
 				</Message>
 			) : null}
 		</Modal>
