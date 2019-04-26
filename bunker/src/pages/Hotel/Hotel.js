@@ -118,8 +118,8 @@ class HotelPage extends Component {
 		let b = moment(checkOutDate);
 		let totalDays = b.diff(a, "days");
 		let totalPrice = totalDays * pricePerNight;
-    console.log(totalPrice);
-    return totalPrice
+        // console.log(totalPrice);
+        return totalPrice
 	}
 
 	render() {
@@ -129,14 +129,13 @@ class HotelPage extends Component {
 			details,
 			image,
 			rating,
-
 		} = this.state.hotel.data;
 		const {
 			hotel,
 			start_date,
-      end_date,
+            end_date,
 			roomQuantity,
-      roomType,
+            roomType,
 			pricePerNight,
 			datesRange
 		} = this.state;
@@ -193,13 +192,16 @@ class HotelPage extends Component {
 								<br />
 								<Divider />
 								<br />
-								<CheckOut datesRange={datesRange} hotel={hotel} reservation={{
-                  room_types: roomType,
-                  roomQuantity,
-                  start_date,
-                  price: this.calculateTotalPrice(),
-                  end_date,
-                }} />
+                                <CheckOut 
+                                datesRange={datesRange} 
+                                hotel={hotel} 
+                                reservation={{
+                                    room_types: roomType,
+                                    roomQuantity,
+                                    start_date,
+                                    price: this.calculateTotalPrice(),
+                                    end_date,
+                                }} />
 							</Container>
 						</Segment>
 					</Grid.Column>

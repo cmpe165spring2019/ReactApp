@@ -8,102 +8,57 @@ import {
     Header, Select, Dropdown,
 } from 'semantic-ui-react';
 import * as moment from "moment";
-import { DatesRangeInput,DateInput } from "semantic-ui-calendar-react";
+// import { DatesRangeInput,DateInput } from "semantic-ui-calendar-react";
 // import DateRangePicker from '@wojtekmaj/react-daterange-picker'
+import CheckInOutCalendar from '../../../commonComponents/CheckInOutCalendar';
+import RoomTypeSelect from "../../../commonComponents/RoomTypeSelect";
+import RoomQuantitySelect from "../../../commonComponents/Navigation/RoomQuantitySelect";
 
-const today=moment().format('MM-DD-YYYY');
-const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
-const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
-const defaultDateRangeArray = [today, aWeekFromToday];
-const defaultDateRange = defaultDateRangeArray.join(" - ");
+// const today=moment().format('MM-DD-YYYY');
+// const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
+// const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
+// const defaultDateRangeArray = [today, aWeekFromToday];
+// const defaultDateRange = defaultDateRangeArray.join(" - ");
 
 
 
-class CancelReservationForm extends React.Component{
+class ChangeReservationForm extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            newReservation: {
-                start_date: props.oldReservation.data.start_date,
-                end_date: props.oldReservation.data.end_date,
-                room_types: props.oldReservation.data.room_types,
-                roomQuantity: props.oldReservation.data.roomQuantity,
-            },
-            // datesRange:[this.state.newReservation.start_date, this.state.newReservation.end_date],
+            newReservation: {},
         }
 
         this.handleRoomType = this.handleRoomType.bind(this);
     }
 
-
-
-
-
-
-    // handleCheckInOut=(event,{name,value})=>{
-    //
-    //     //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
-    //     if(value.length > 13) {
-    //         const tempa = value.split(" - ")
-    //         let checkInDate = new Date(tempa[0]).getTime();
-    //         let checkOutDate = new Date(tempa[1]).getTime();
-    //
-    //
-    //         this.setState({
-    //             newReservation: {
-    //                 start_date: checkInDate,
-    //                 end_date: checkOutDate
-    //             }
-    //         });
-    //     }
-    //
-    // }
-    // handleCheckInOut=(event,{name,value})=>{
-    //     //   console.log("name: " + name + " value: " + value);
-    //     if(this.state.hasOwnProperty(name)){
-    //         this.setState({[name]:value});
-    //     }
-    //
-    //     //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
-    //     if(value.length > 13){
-    //         let parsedValue = value.split(" ");
-    //         let checkInString = parsedValue[0];
-    //         let checkOutString = parsedValue[2];
-    //         let checkInArray = checkInString.split("-");
-    //         let checkOutArray = checkOutString.split("-");
-    //         let checkInDate = new Date(
-    //             parseInt(checkInArray[2]),
-    //             parseInt(checkInArray[0]-1),
-    //             parseInt(checkInArray[1])
-    //         );
-    //         let checkOutDate = new Date(
-    //             parseInt(checkOutArray[2]),
-    //             parseInt(checkOutArray[0]-1),
-    //             parseInt(checkOutArray[1])
-    //         );
-    //         this.setState({
-    //                         newReservation: {
-    //                             start_date: checkInDate,
-    //                             end_date: checkOutDate
-    //                         }
-    //         });
-    //
-    //         // console.log("check in :" + checkInDate + " check out: " + checkOutDate);
-    //     }
-    // }
-
-    handleRoomType = (event,{name,value}) =>{
-        console.log("name: " + name + " value: " + value);
-        const {newReservation} = this.state;
+    componentDidMount() {
         this.setState({
-            newReservation:{
-                ...newReservation,
-                room_types: value,
+            newReservation: {
+                start_date: this.props.oldReservation.data.start_date,
+                end_date: this.props.oldReservation.data.end_date,
+                room_types: this.props.oldReservation.data.room_types,
+                roomQuantity: this.props.oldReservation.data.roomQuantity,
+                datesRange: this.props.oldReservation.data.datesRange || null
             }
-        });
-        // console.log('new type: '+ this.state.newReservation.room_types)
-        // alert(this.state.newReservation.room_types)
+        })
+        console.log(this.state);
     }
+
+    componentDidUpdate() {
+        console.log(this.state);
+    }
+
+    // handleRoomType = (event,{name,value}) =>{
+    //     console.log("name: " + name + " value: " + value);
+    //     const {newReservation} = this.state;
+    //     this.setState({
+    //         newReservation:{
+    //             ...newReservation,
+    //             room_types: value,
+    //         }
+    //     });
+    // }
 
     handleRoomQuantityOptions = (event,{name,value}) =>{
         // console.log("name: " + name + " value: " + value);
@@ -149,6 +104,56 @@ class CancelReservationForm extends React.Component{
         // this.setState({ date })
     }
 
+    handleCheckInOut = (event, {name, value}) => {
+		//set datesRange whenever calendar range is updated
+		if (this.state.hasOwnProperty(name)) {
+			this.setState({[name]: value}, () => {
+				//parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
+				this.parseDatesRange(value);
+			});
+		}
+    };
+
+    handleRoomTypeQuantity=(e, {name, value})=>{
+        this.setState({
+            newReservation: {
+                ...this.state.newReservation,
+                room_types: value
+            }
+        });
+    }
+    
+	parseDatesRange = datesRange => {
+		if (datesRange.length > 13) {
+			let parsedValue = datesRange.split(" ");
+			let checkInString = parsedValue[0];
+			let checkOutString = parsedValue[2];
+			let checkInArray = checkInString.split("-");
+			let checkOutArray = checkOutString.split("-");
+			let checkInDate = new Date(
+				parseInt(checkInArray[2]),
+				parseInt(checkInArray[0] - 1),
+				parseInt(checkInArray[1])
+			);
+			let checkOutDate = new Date(
+				parseInt(checkOutArray[2]),
+				parseInt(checkOutArray[0] - 1),
+				parseInt(checkOutArray[1])
+			);
+
+      this.setState({
+        ...this.state,
+        newReservation: {
+            ...this.state.newReservation,
+            start_date: checkInDate.getTime(),
+            end_date: checkOutDate.getTime()
+        },
+        checkInDate: checkInDate,
+        checkOutDate: checkOutDate,
+
+      });
+		}
+	};
 
 
     render()
@@ -202,31 +207,28 @@ class CancelReservationForm extends React.Component{
                     <div>
                         Check In/Out:
                     </div>
-                    {/* <DateRangePicker
-                        // name="dates"
-                        minDate={new Date()}
-                        value={datesRange}
-                        onChange={this.handleDate}
-
-                    /> */}
-                    <DatesRangeInput
+                    <CheckInOutCalendar
+                    onChange={this.handleCheckInOut.bind(this)}
+                    value={this.state.newReservation.datesRange}
                     />
-
-
                 </Grid.Row>
                 <Grid.Row>
                     <div>Room Type:</div>
-                    <Select
+                    <RoomTypeSelect
+                        onChange={this.handleRoomTypeQuantity.bind(this)}
+                        defaultValue={this.state.newReservation.room_types}
+                        />
+                    {/* <Select
                         name="roomType"
                         placeholder=''
                         options={roomTypeOptions}
                         onChange={this.handleRoomType.bind(this)}
-                        defaultValue={this.state.newReservation.room_types}
-                    />
+                        defaultValue={this.state.}
+                    /> */}
                 </Grid.Row>
                 <Grid.Row>
                     <div>Quantity:</div>
-                    <Dropdown
+                    {/* <Dropdown
                         compact
                         selection
                         name="roomQuantity"
@@ -235,7 +237,11 @@ class CancelReservationForm extends React.Component{
                         onChange={this.handleRoomQuantityOptions}
                         defaultValue={parseInt(this.state.newReservation.roomQuantity)}
 
-                    />
+                    /> */}
+                        <RoomQuantitySelect
+                        onChange={this.handleRoomTypeQuantity.bind(this)}
+                        defaultValue={this.state.newReservation.roomQuantity}
+                        />
                 </Grid.Row>
             </Grid>
         </div>
@@ -243,4 +249,4 @@ class CancelReservationForm extends React.Component{
 }
 };
 
-export default CancelReservationForm;
+export default ChangeReservationForm;
