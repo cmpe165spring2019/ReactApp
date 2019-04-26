@@ -123,3 +123,4 @@ bunker/firebase.json
 bunker/firestore.indexes.json
 bunker/firestore.rules
 bunker/package.json
+bunker/src/server/firebase/test.js
