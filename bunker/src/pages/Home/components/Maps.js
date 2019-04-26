@@ -6,11 +6,14 @@ import * as ROUTES from "../../../constants/routes";
 import { withFirebase } from "../../../server/Firebase/index";
 
 export class MapContainer extends Component {
-  state = {
-    showingInfoWindow: false,
-    activeMarker: {},
-    selectedPlace: {}
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      showingInfoWindow: false,
+      activeMarker: {},
+      selectedPlace: {}
+    };
+  }
 
   onMarkerClick = (props, marker, e) =>
     this.setState({
@@ -38,11 +41,7 @@ export class MapContainer extends Component {
           position={{ lat: 37.759703, lng: -122.428093 }}
         />
 
-        <Marker
-          onClick={this.onMarkerClick}
-          name={"China Town"}
-          position={{ lat: 38.759703, lng: -122.428093 }}
-        />
+        {this.props.hotels.map(hotel => {})}
 
         <InfoWindow
           marker={this.state.activeMarker}
