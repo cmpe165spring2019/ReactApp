@@ -22,7 +22,7 @@ import * as moment from "moment";
 import * as util from "util"; // has no default export
 import CheckInOutCalendar from "../../commonComponents/CheckInOutCalendar";
 import RoomTypeSelect from "../../commonComponents/RoomTypeSelect";
-import RoomQuantitySelect from "../../commonComponents/Navigation/RoomQuantitySelect";
+import RoomQuantitySelect from '../../commonComponents/RoomQuantitySelect';
 
 class HotelPage extends Component {
   constructor(props) {
@@ -118,8 +118,8 @@ class HotelPage extends Component {
 		let b = moment(checkOutDate);
 		let totalDays = b.diff(a, "days");
 		let totalPrice = totalDays * pricePerNight;
-    console.log(totalPrice);
-    return totalPrice
+        // console.log(totalPrice);
+        return totalPrice
 	}
 
 	render() {
@@ -129,15 +129,15 @@ class HotelPage extends Component {
 			details,
 			image,
 			rating,
-
 		} = this.state.hotel.data;
 		const {
 			hotel,
 			start_date,
-      end_date,
+            end_date,
 			roomQuantity,
-      roomType,
-			pricePerNight
+            roomType,
+			pricePerNight,
+			datesRange
 		} = this.state;
 
 		return (
@@ -192,13 +192,16 @@ class HotelPage extends Component {
 								<br />
 								<Divider />
 								<br />
-								<CheckOut hotel={hotel} reservation={{
-                  room_types: roomType,
-                  roomQuantity,
-                  start_date,
-                  price: this.calculateTotalPrice(),
-                  end_date,
-                }} />
+                                <CheckOut 
+                                datesRange={datesRange} 
+                                hotel={hotel} 
+                                reservation={{
+                                    room_types: roomType,
+                                    roomQuantity,
+                                    start_date,
+                                    price: this.calculateTotalPrice(),
+                                    end_date,
+                                }} />
 							</Container>
 						</Segment>
 					</Grid.Column>

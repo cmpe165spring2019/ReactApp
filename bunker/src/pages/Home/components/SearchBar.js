@@ -13,7 +13,7 @@ import * as moment from 'moment';
 import {withFirebase} from '../../../server/Firebase';
 import CheckInOutCalendar from '../../../commonComponents/CheckInOutCalendar';
 import RoomTypeSelect from "../../../commonComponents/RoomTypeSelect";
-import RoomQuantitySelect from "../../../commonComponents/Navigation/RoomQuantitySelect";
+import RoomQuantitySelect from '../../../commonComponents/RoomQuantitySelect';
 
 import * as util from 'util' // has no default export
 

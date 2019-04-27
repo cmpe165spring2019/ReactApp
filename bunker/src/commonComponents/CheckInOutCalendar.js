@@ -13,7 +13,6 @@ const CheckInOutCalendar = (props) => (
     <DatesRangeInput
     name="datesRange"
     minDate={today}
-    initialDate={defaultDateRange}
     dateFormat="MM-DD-YYYY"
     onChange={props.onChange}
     value={props.value}

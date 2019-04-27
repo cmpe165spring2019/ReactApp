@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import scriptLoader from "react-async-script-loader";
 import {paypalConfig} from "../Firebase/config";
+import {withFirebase} from "../Firebase";
 const CLIENT = paypalConfig;
 
 class PayPalButton extends React.Component {
@@ -38,7 +39,7 @@ class PayPalButton extends React.Component {
 	}
 
 	render() {
-		const {total, currency, commit, onSuccess, onError, onCancel} = this.props;
+		const {total, currency, commit, onSuccess, onError, onCancel, new_start, new_end, user_id} = this.props;
 		const env = "sandbox";
 		const client = CLIENT;
 		const {showButton} = this.state;
@@ -57,19 +58,26 @@ class PayPalButton extends React.Component {
 				]
 			});
 
-		const onAuthorize = (data, actions) =>
-			actions.payment.execute().then(() => {
-				const payment = {
-					paid: true,
-					cancelled: false,
-					payerID: data.payerID,
-					paymentID: data.paymentID,
-					paymentToken: data.paymentToken,
-					returnUrl: data.returnUrl
-				};
-
-				onSuccess(payment);
-			});
+		const onAuthorize = (data, actions) =>{
+			this.props.firebase.checkForConflictWithDates(new_start,new_end,user_id).then( check => {
+				if(check){
+					actions.payment.execute().then(() => {
+						const payment = {
+							paid: true,
+							cancelled: false,
+							payerID: data.payerID,
+							paymentID: data.paymentID,
+							paymentToken: data.paymentToken,
+							returnUrl: data.returnUrl
+						};
+						onSuccess(payment);
+					});
+				}
+				else{
+					onError(new Error("MultipleBookingError"))
+				}
+			})
+			}
 			const style = {
 				size: 'medium',
 				color: 'blue',
@@ -96,5 +104,5 @@ class PayPalButton extends React.Component {
 }
 
 export default scriptLoader("https://www.paypalobjects.com/api/checkout.js")(
-	PayPalButton
+	withFirebase(PayPalButton)
 );

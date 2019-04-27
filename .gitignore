@@ -115,3 +115,12 @@ server/firebase/config.js
 yarn.lock
 bunker/src/server/firebase/config.js
 bunker/yarn.lock
+bunker/.firebase/hosting.cHVibGlj.cache
+bunker/.firebase/hosting.YnVpbGQ.cache
+bunker/.firebaserc
+bunker/database.rules.json
+bunker/firebase.json
+bunker/firestore.indexes.json
+bunker/firestore.rules
+bunker/package.json
+bunker/src/server/firebase/test.js
