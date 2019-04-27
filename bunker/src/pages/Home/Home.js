@@ -31,6 +31,7 @@ class HomePage extends Component {
                 checkInDate: null,
                 checkOutDate: null,
                 roomType: 'single',
+                roomQuantity: 1
             },
             filter: {
                 x: 100,
@@ -68,8 +69,20 @@ class HomePage extends Component {
                     return -1
                 }
             })
-            this.setState({locationOptions: locationData});
+
+            const locationOptions = locationData.map(
+                (location) =>
+                ({
+                key: location.data.city,
+                text: `${location.data.city} , ${location.data.state}, ${location.data.country}`,
+                value: location
+                })
+            );
+
+            this.setState({locationOptions: locationOptions});
         });
+
+        
 
         //get all the hotels from firebase, set allHotels
         this._asyncRequest = this.props.firebase.getAllHotels()
@@ -109,7 +122,7 @@ class HomePage extends Component {
     }
 
     componentDidUpdate(prevState) {
-        // console.log(this.state);
+        console.log(this.state);
         // console.log("allHotels: " + util.inspect(this.state.allHotels));
         // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
         // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
@@ -151,14 +164,13 @@ class HomePage extends Component {
       }
 
 
-    handleRoomType=(e, {value})=>{
+    handleRoomTypeQuantity=(e, {name, value})=>{
         this.setState({
             search: {
                 ...this.state.search,
-                roomType: value
+                [name]: value
             }
         });
-        //Make pop up modal for guests
     }
 
     handleLocation=(e, {name,value})=>{
@@ -198,8 +210,8 @@ class HomePage extends Component {
             let roomTypePrices = [];
             searchedHotels = searchedHotels.filter(
                 hotel => {
-                    let hotelsOfRoomType = hotel.data.room_types.filter(room_type => room_type.type === this.state.search.roomType);
-                    let roomTypePrice = hotelsOfRoomType[0].price;
+                    let roomTypeOfHotel = hotel.data.room_types.filter(room_type => room_type.type === this.state.search.roomType);
+                    let roomTypePrice = roomTypeOfHotel[0].price;
 
                     // push price onto array to check for max/min at the end of if statement
                     roomTypePrices.push(roomTypePrice);
@@ -207,29 +219,14 @@ class HomePage extends Component {
                     // set the price of rooms based on the current roomType search criteria to an easily accessible attribute (hotel.data.currentRoomPrice)
                     hotel.data.currentRoomPrice = roomTypePrice;
                     return(
-                        hotelsOfRoomType
+                        roomTypeOfHotel
                     );
                 }
             )
             // check for min and max to display range of slider for each roomType search
-            console.log(roomTypePrices);
             maxRoomPrice = Math.max(...roomTypePrices);
-            console.log('maxRoomPrice: ' + typeof maxRoomPrice);
             minRoomPrice = Math.min(...roomTypePrices);
-            // this.setState({
-            //     filter: {
-            //         ...this.state.filter,
-            //         maxPrice: maxRoomPrice,
-            //         minPrice: minRoomPrice,
-            //         price: maxRoomPrice
-            //     }
-            // },
-            // ()=>{
-            //     console.log('this.state.filter: ' + util.inspect(this.state.filter));
-            //     console.log('this.state.filter.maxPrice : ' + this.state.filter.maxPrice);
-            //     console.log('this.state.filter.minPrice : ' + this.state.filter.minPrice);
 
-            // })
         }
 
         //***filter by dateRanges***
@@ -402,6 +399,8 @@ class HomePage extends Component {
             console.log('filtering both');
         }
 
+        this.sortHotels(filteredHotels, this.state.sort)
+
         if(filteredHotels!==this.state.filteredHotels){
             this.setState({
                 filteredHotels: filteredHotels
@@ -412,43 +411,16 @@ class HomePage extends Component {
 
     render() {
 
-        const locationOptions = this.state.locationOptions.map(
-            (location) =>
-            ({
-            key: location.data.city,
-            text: `${location.data.city} , ${location.data.state}, ${location.data.country}`,
-            value: location
-            })
-        );
-
-      const roomOptions = [
-          {
-            key: 'single',
-            text: 'Single-Person',
-            value: 'single'
-          },
-          {
-            key: 'double',
-            text: 'Double-Person',
-            value: 'double'
-          },
-          {
-            key: 'multiple',
-            text: 'Multiple-Person',
-            value: 'multiple'
-          }
-        ];
-
         return (
             <div>
             <SearchBar
             datesRange={this.state.datesRange}
-            locationOptions={locationOptions}
-            roomOptions={roomOptions}
+            locationOptions={this.state.locationOptions}
             defaultRoomType={this.state.search.roomType}
+            defaultRoomQuantity={this.state.search.roomQuantity}
             handleLocation={this.handleLocation.bind(this)}
             handleCheckInOut={this.handleCheckInOut.bind(this)}
-            handleRoomType={this.handleRoomType.bind(this)}
+            handleRoomTypeQuantity={this.handleRoomTypeQuantity.bind(this)}
             handleSearch={this.handleSearch.bind(this)}
             />
             <FilterSort
@@ -468,7 +440,9 @@ class HomePage extends Component {
                         <Grid.Column width={10}>
                             <ListingBase
                             hotels={this.state.filteredHotels}
+                            datesRange={this.state.datesRange}
                             roomType={this.state.search.roomType}
+                            roomQuantity={this.state.search.roomQuantity}
                             />
                         </Grid.Column>
                         <Grid.Column width={6}>

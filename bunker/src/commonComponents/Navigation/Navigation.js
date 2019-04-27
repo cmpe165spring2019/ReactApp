@@ -8,7 +8,8 @@ import { withFirebase } from '../../server/Firebase/index';
 
 // Components
 import { Link } from 'react-router-dom';
-import { Menu, Segment } from 'semantic-ui-react'
+import { Menu, Button, Dropdown, Image, Icon } from 'semantic-ui-react';
+import BunkerImage from '../../images/bunker.png';
 
 class Navigation extends Component {
     constructor(props){
@@ -47,27 +48,36 @@ class Navigation extends Component {
         const NavigationAuth = ({ authUser }) => (
 
             <div>
-                <Menu pointing secondary>
+                <Menu pointing secondary size="medium">
                 <Link to={ROUTES.LANDING}>
                 <Menu.Item
                     name='landing'
                     active={activeItem === 'landing'}
                     onClick={this.handleItemClick}
-                />
+                >
+                {/* <Image src = {BunkerImage} size='tiny'/> */}
+                <Icon name='home' />
+                </Menu.Item>
                 </Link>
                 <Link to={ROUTES.HOME}>
                 <Menu.Item
                     name='home'
                     active={activeItem === 'home'}
                     onClick={this.handleItemClick}
-                />
+                >
+                            <Icon name='hotel' />
+            Book Hotels
+            </Menu.Item>
                 </Link>
                 <Link to={ROUTES.ACCOUNT}>
                 <Menu.Item
                     name='account'
                     active={activeItem === 'account'}
                     onClick={this.handleItemClick}
-                />
+                >
+                 <Icon name='user' />
+                Account
+              </Menu.Item>
                 </Link>
                 { authUser.roles.includes(ROLES.ADMIN) && (
                     <Link to={ROUTES.ADMIN}>
@@ -85,14 +95,20 @@ class Navigation extends Component {
                 name='myReservations'
                 active={this.state.activeItem === 'myReservations'}
                 onClick={this.handleItemClick}
-                />
+                >
+                            <Icon name='address card' />
+            My Reservations
+            </Menu.Item>
                 </Link>
 
                     <Menu.Item
                     name='signout'
                     active={this.state.activeItem === 'signout'}
                     onClick={this.handleItemClick}
-                    />
+                    >
+                                                <Icon name='logout' />
+Sign Out
+                </Menu.Item>
                 </Menu.Menu>
                 </Menu>
 
@@ -101,20 +117,26 @@ class Navigation extends Component {
 
         const NavigationNonAuth = () => (
             <div>
-            <Menu pointing secondary>
+            <Menu pointing secondary size="medium">
             <Link to={ROUTES.LANDING}>
             <Menu.Item
                 name='landing'
                 active={this.state.activeItem === 'landing'}
                 onClick={this.handleItemClick}
-            />
+            >
+            {/* <Image src = {BunkerImage} size='tiny'/> */}
+            <Icon name='home' />
+            </Menu.Item>
             </Link>
             <Link to={ROUTES.HOME}>
             <Menu.Item
                 name='home'
                 active={this.state.activeItem === 'home'}
                 onClick={this.handleItemClick}
-            />
+            >
+            <Icon name='hotel' />
+            Book Hotels
+            </Menu.Item>
             </Link>
 
 
@@ -124,14 +146,11 @@ class Navigation extends Component {
                 name='Sign In'
                 active={this.state.activeItem === 'signin'}
                 onClick={this.handleItemClick}
-                />
-            </Link>
-            <Link to={ROUTES.SIGN_UP}>
-                <Menu.Item
-                name='Sign Up'
-                active={this.state.activeItem === 'signup'}
-                onClick={this.handleItemClick}
-                />
+                >
+                            <Icon name='sign-in' />
+                            Sign In/Sign Up
+
+                </Menu.Item>
             </Link>
             </Menu.Menu>
             </Menu>

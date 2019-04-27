@@ -17,6 +17,8 @@ export default class ListingBase extends Component {
 
   render() {
 
+      const { datesRange, roomType, roomQuantity } = this.props;
+
     return (
       <div>
         <Grid stackable padded="vertically" columns={3}>
@@ -30,7 +32,7 @@ export default class ListingBase extends Component {
                   <Grid.Column stretched padded="vertically">
                 <Link to = {{
                   pathname: `${ROUTES.HOTEL}/${hotel.id}`,
-                  state: { hotel }
+                    state: { hotel, datesRange, roomType, roomQuantity }
                 }}
                 >
                 <HotelCard 
