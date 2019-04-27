@@ -18,6 +18,7 @@ import {
 } from "semantic-ui-react";
 import ChangeReservation from "./ChangeReservation/ChangeReservation";
 import CancelReservation from "./CancelReservation/CancelReservation";
+import moment from "moment";
 
 const ReservationPage = () => (
 	<div>
@@ -52,8 +53,9 @@ class Reservation extends Component {
 			// Date.now(),
 			newreservations => {
 				let hotelIDs = [];
+				const today = new Date(moment().format('MM-DD-YYYY').split('-'));
 				const reservations = newreservations.filter(
-					item => item.data.start_date >= Date.now()
+					item => item.data.start_date >= today.getTime()
 				);
 				console.log(newreservations)
 				console.log(reservations);
