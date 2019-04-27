@@ -10,8 +10,9 @@ import {
     Select,
     Dropdown
 } from "semantic-ui-react";
-import { DateInput, DatesRangeInput } from "semantic-ui-calendar-react";
-
+import CheckInOutCalendar from '../../commonComponents/CheckInOutCalendar';
+import RoomTypeSelect from '../../commonComponents/RoomTypeSelect';
+import RoomQuantitySelect from '../../commonComponents/RoomQuantitySelect';
 
 // Backend functionalities
 import { withFirebase } from '../../server/Firebase/index';
@@ -19,21 +20,22 @@ import * as ROUTES from '../../constants/routes';
 import * as moment from "moment";
 
 
-const today=moment().format('MM-DD-YYYY');
-const tommorrow=moment().add(1,'days').format('MM-DD-YYYY');
-
 class Landing extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            locationOptions: [],
             datesRange: '',
-            search: {
+            locationOptions: [],
+             search: {
                 location: {},
                 roomType: '',
                 roomQuantity: 0
             }
         }
+    }
+
+    componentDidUpdate() {
+        console.log(this.state);
     }
 
     componentDidMount(){
@@ -70,53 +72,34 @@ class Landing extends React.Component{
             this.setState({locationOptions: locationOptions});
             console.log(this.state.locationOptions);
         });
-
-        // set default room options
-
-        const roomOptions = [
-            {
-              key: 'single',
-              text: 'Single-Person',
-              value: 'single'
-            },
-            {
-              key: 'double',
-              text: 'Double-Person',
-              value: 'double'
-            },
-            {
-              key: 'multiple',
-              text: 'Multiple-Person',
-              value: 'multiple'
-            }
-          ];
-
-          const roomQuantity = [];
-
-          for(let i = 0; i < 16; i++){
-              let obj = {
-                  key: i,
-                  text: i,
-                  value: i
-              };
-              roomQuantity.push(obj);
-          }
-
-          this.setState({
-            roomOptions: roomOptions,
-            roomQuantity: roomQuantity
-        });
     }
 
-    handleCheckInOut=(event,{name,value})=>{
-        //   console.log("name: " + name + " value: " + value);
-            if(this.state.hasOwnProperty(name)){
-                this.setState({[name]:value});
-            }
-    
-            //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
-            if(value.length > 13){
-                let parsedValue = value.split(" ");
+
+        handleLocation=(e, {name,value})=>{
+            // console.log(value);
+            this.setState({
+                search: {
+                    ...this.state.search,
+                    [name]: value
+                }
+            });
+        }
+
+        handleCheckInOut=(event,{name,value})=>{
+            console.log('name: ' + name + " value: " + value);
+            //set datesRange whenever calendar range is updated
+                if(this.state.hasOwnProperty(name)){
+                    this.setState({[name]:value},
+                        ()=>{
+                            //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
+                            this.parseDatesRange(value);
+                        });
+                }
+        }
+
+        parseDatesRange = (datesRange) => {
+            if(datesRange.length > 13){
+                let parsedValue = datesRange.split(" ");
                 let checkInString = parsedValue[0];
                 let checkOutString = parsedValue[2];
                 let checkInArray = checkInString.split("-");
@@ -131,37 +114,23 @@ class Landing extends React.Component{
                     parseInt(checkOutArray[0]-1),
                     parseInt(checkOutArray[1])
                 );
+    
                 this.setState({
-                    search: {
-                        ...this.state.search,
-                        checkInDate: checkInDate,
-                        checkOutDate: checkOutDate,
-                    }
+                    ...this.state,
+                    checkInDate: checkInDate,
+                    checkOutDate: checkOutDate,
+                    start_date: checkInDate.getTime(),
+                    end_date: checkOutDate.getTime()
                 });
     
-                // console.log("check in :" + checkInDate + " check out: " + checkOutDate);
-            }
-          }
-
-          handleRoomType=(e, {name, value})=>{
-            this.setState({
-                search: {
-                    ...this.state.search,
-                    [name]: value
-                }
-            });
-            //Make pop up modal for guests
         }
+    }
 
-        handleLocation=(e, {name,value})=>{
-            // console.log(value);
-            this.setState({
-                search: {
-                    ...this.state.search,
-                    [name]: value
-                }
-            });
-        }
+    handleRoomTypeQuantity=(e, {name, value})=>{
+        this.setState({
+            [name]: value
+        });
+    }
 
     onClick = () => {
         const state = this.state;
@@ -188,7 +157,7 @@ class Landing extends React.Component{
           <Form>
               <div style={Place}>
               <label>
-                  LOCATION:
+                  Location:
               </label>
               <Dropdown search selection fluid 
                      name="location"
@@ -203,48 +172,41 @@ class Landing extends React.Component{
 
               <div style={InOutDiv}>
                   <div style={CheckIn}>
-                      <label>
-                             CHECK IN/OUT:
+                  <label>
+                             Check In/Out:
                          </label>
-                         <DatesRangeInput 
-                         name="datesRange"  
-                         minDate={today}
-                        //  initialDate={this.state.defaultDateRange}
-                         dateFormat="MM-DD-YYYY" 
-                         onChange={this.handleCheckInOut} 
-                         value={this.state.datesRange} 
-                         icon="bullhorn" 
-                         iconPosition="left" 
-                         placeholder="From - To"
-                        />                  </div>
+                         <CheckInOutCalendar
+                            onChange={this.handleCheckInOut.bind(this)}
+                            value={this.state.datesRange}
+                        />        
+                           </div>
                 </div>
                 <div style={InOutDiv}>
+                <div style={Room}>
 
               <div style={RoomType}>
-                      <label>
-                          ROOM TYPE: 
-                          <br></br>
-                      </label>
-                      <Select 
-                        name="roomType"                        
-                        placeholder='Single, Double, Multiple...' 
-                        options={this.state.roomOptions} 
-                        onChange={this.handleRoomType}
-                        />
+              <label>
+    Room Type: 
+    <br></br>
+</label>
+  <RoomTypeSelect
+    onChange={this.handleRoomTypeQuantity}
+    defaultValue={'single'}
+    />
+    </div>
                         <div style={RoomQuantity}>
-                                              <Select 
-                        name="roomQuantity"                        
-                        placeholder='Select' 
-                        options={this.state.roomQuantity} 
-                        onChange={this.handleRoomType}
-                        />
+                        <div>Quantity:</div>
+    <RoomQuantitySelect
+    onChange={this.handleRoomTypeQuantity}
+    defaultValue={1}
+    />
                         </div>
 
               </div>
               </div>
 
               <div style={buttonDiv}>
-                  <Form.Button onClick={this.onClick}>Submit</Form.Button>
+                  <Button onClick={this.onClick}>Submit</Button>
               </div>
           </Form>
       </div>
@@ -281,11 +243,15 @@ const CheckIn = {
     width:"360px",
 };
 const RoomQuantity = {
-    float:'left',
+    float:'right',
     width:"180px",
 };
-const RoomType = {
+const Room = {
     margin:"20px auto 0 auto ",
+    width:"360px",
+};
+const RoomType = {
+    float: 'left',
     width:"180px",
 };
 const buttonDiv = {

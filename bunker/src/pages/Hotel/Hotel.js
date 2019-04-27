@@ -21,7 +21,7 @@ import * as moment from 'moment';
 import * as util from 'util' // has no default export
 import CheckInOutCalendar from '../../commonComponents/CheckInOutCalendar';
 import RoomTypeSelect from "../../commonComponents/RoomTypeSelect";
-import RoomQuantitySelect from '../../commonComponents/Navigation/RoomQuantitySelect';
+import RoomQuantitySelect from '../../commonComponents/RoomQuantitySelect';
 
 
 class HotelPage extends Component {
