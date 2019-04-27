@@ -7,19 +7,20 @@ import PayPalButton from "../../../server/Payment/PayPalButton";
 const CheckOut = props => {
 	const [isError, setIsError] = React.useState(false);
 	const [isUseReward, setIsUseReward] = React.useState(false);
-	const [error, setError] = React.useState(null);
+	const [error, setError] = React.useState(new Error('null'));
 	const [isSuccess, setIsSuccess] = React.useState(false);
 
 	const handleUseReward = () => {
 		setIsUseReward(!isUseReward);
 	};
-
-	const {reservation, hotel, datesRange} = props;
 	const user = JSON.parse(localStorage.getItem("authUser"));
+	console.log(user);
+	const {reservation, hotel, datesRange} = props;
 
 	const onSuccess = payment => {
 		console.log("Successful payment!", payment);
 		const reservation_with_payment = {user_id: user.uid, payment: payment, hotel_id: hotel.id, datesRange, ...reservation, };
+		console.log(reservation_with_payment);
 		props.firebase.addReservationToDB(
 			user.uid,
 			reservation_with_payment,
@@ -29,11 +30,10 @@ const CheckOut = props => {
 
 	const onCancel = data => {
 		console.log("Cancel: ", data);
-		setIsError(true);
 	};
 
 	const onError = paypalError => {
-		console.log("Error: ", paypalError);
+		console.log(paypalError);
 		setError(paypalError);
 		setIsError(true);
 	};
@@ -94,10 +94,10 @@ const CheckOut = props => {
 					onCancel={onCancel}
 				/>
 						</Grid.Column>
-						
+
 						</Grid.Row>
 					</Grid>
-				
+
 				</Segment>
 			</Modal.Actions>
 			{ isError ? (
