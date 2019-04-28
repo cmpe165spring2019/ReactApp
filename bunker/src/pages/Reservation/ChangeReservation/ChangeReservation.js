@@ -28,7 +28,7 @@ const ChangeReservation = props => {
 	};
 
 	return (
-		<Modal
+		<Modal size="mini"
 			trigger={
 				<Button size="small" color="yellow" width="70px">
 					Change this reservation
