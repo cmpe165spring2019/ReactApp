@@ -184,7 +184,7 @@ addReservationToDB = (user_id, data) => {
 				.then(res_doc => {
 					this.editUserAccount(user_id, {
 						reservations: this.FieldValue.arrayUnion(res_doc.id),
-						reward_points: this.FieldValue.increment(Math.floor(data.price / 10))
+						reward_points: this.FieldValue.increment(Math.floor((data.price || 0) / 10))
 					});
 					return true;
 				})
@@ -220,7 +220,7 @@ addReservationToDB = (user_id, data) => {
 	};
 
 	//Delete reservation
-	deleteReservationFromDB = (reservation_id, user_id, price) => {
+	deleteReservationFromDB = (reservation_id, user_id, price = 0) => {
 	return this.user(user_id)
 		.update({
 			reservations: this.FieldValue.arrayRemove(reservation_id),
