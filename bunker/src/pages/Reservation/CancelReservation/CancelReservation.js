@@ -1,11 +1,13 @@
 import React from "react";
-import {Modal, Button, Message, Segment, Confirm} from "semantic-ui-react";
+import {TransitionablePortal,Modal, Button, Message, Segment, Confirm} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import CancelReservationForm from "./CancelReservationForm";
 
 const CancelReservation = props => {
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
+	const [isOpen,setIsOpen]=React.useState(false);
+
 
 	//fake data
 
@@ -23,7 +25,7 @@ const CancelReservation = props => {
 	};
 
 	return (
-		<Modal
+		<TransitionablePortal
 			trigger={
 				<Button
 					size="small"
@@ -32,20 +34,21 @@ const CancelReservation = props => {
 				>
 					Delete this Reservation
 				</Button>
-			}
+			} onClose={()=> setIsOpen(false)} onOpen={()=> setIsOpen(true)} open={isOpen}
 		>
-				<Modal.Header>Delete Payment</Modal.Header>
-				<Modal.Description>
+				<Segment
+				size={"massive"}
+				style={{left: "70%", position: "fixed", top: "0%", zIndex: 1000}}
+       >
 					<CancelReservationForm
 						reservation={reservation}
 						isError={isError}
 						user={user}
 						hotel={hotel}
 					/>
-				</Modal.Description>
-				<Modal.Actions>
+
 					<Button
-						content={"Delete This Reservation"}
+						content={"Confirm Cancellation"}
 						color="red"
 						onClick={() => setIsConfirmOpen(true)}
 					/>
@@ -57,15 +60,17 @@ const CancelReservation = props => {
 					open={isConfirmOpen}
 					onCancel={() => setIsConfirmOpen(false)}
 					onConfirm={handleDeleteReservation}
+					size="mini"
 					/>
-				</Modal.Actions>
+
 				{isError ? (
-					<Message negative>
+					<Message size="mini" negative>
 						<Message.Header>Opps!!!</Message.Header>
 						<p>Something when wrong</p>
 					</Message>
 				) : null}
-		</Modal>
+       	</Segment>
+		</TransitionablePortal>
 	);
 };
 //	111

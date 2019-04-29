@@ -1,122 +1,296 @@
-import React from "react";
+import React, {Component} from "react";
 import {
-	Image,
-	Button,
-	Table,
-	Grid,
-	Input,
-	Header,
-	Select,
-	Dropdown
-} from "semantic-ui-react";
+    Icon,
+    Card,
+    Image,
+    Button,
+    Table,
+    Grid,
+    Input,
+    Header, Select, Dropdown,
+} from 'semantic-ui-react';
 import * as moment from "moment";
-// import { DatesRangeInput,DateInput } from "semantic-ui-calendar-react";
-// import DateRangePicker from '@wojtekmaj/react-daterange-picker'
-import CheckInOutCalendar from "../../../commonComponents/CheckInOutCalendar";
-import RoomTypeSelect from "../../../commonComponents/RoomTypeSelect";
-import RoomQuantitySelect from "../../../commonComponents/RoomQuantitySelect";
-import {DatesRangeInput} from "semantic-ui-calendar-react";
+import { DatesRangeInput,DateInput } from "semantic-ui-calendar-react";
+import DateRangePicker from '@wojtekmaj/react-daterange-picker'
 
-// const today=moment().format('MM-DD-YYYY');
-// const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
-// const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
-// const defaultDateRangeArray = [today, aWeekFromToday];
-// const defaultDateRange = defaultDateRangeArray.join(" - ");
+const today=moment().format('MM-DD-YYYY');
+const tomorrow=moment().add(1,'days').format('MM-DD-YYYY');
+const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
+const defaultDateRangeArray = [today, aWeekFromToday];
+const defaultDateRange = defaultDateRangeArray.join(" - ");
 
-const ChangeReservationForm = props => {
-	const [newDatesRange, setNewDatesRange] = React.useState('');
-	const {start_date, end_date, roomQuantity, room_types, datesRange} = props;
-	const {newReservation, setNewReservationData} = props;
 
-  React.useEffect(() => {
-    parseDatesRange(newDatesRange);
-},[newDatesRange]);
 
-	const handleDate = date => {
-		// console.log(date[0]);
-		setNewReservationData({
-			start_date: date[0].getTime(),
-			end_date: date[1].getTime()
-		});
+class ChangeReservationForm extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            newReservation: {
+                start_date: props.oldReservation.data.start_date,
+                end_date: props.oldReservation.data.end_date,
+                room_types: props.oldReservation.data.room_types,
+                roomQuantity: props.oldReservation.data.roomQuantity,
+                datesRange:props.oldReservation.data.datesRange,
+            },
+            isUpdated:false
+            // datesRange:[this.state.newReservation.start_date, this.state.newReservation.end_date],
+        }
 
-		console.log(start_date);
-		const start = moment(start_date).format("MM-DD-YYYY");
-		const end = moment(end_date).format("MM-DD-YYYY");
-		console.log("is:" + start);
-		console.log(end_date);
-		console.log("is:" + end);
+        this.handleRoomType = this.handleRoomType.bind(this);
+    }
 
-		// setNewReservationData({ date })
-	};
 
-	const handleCheckInOut = ({value}) => {
-		//set datesRange whenever calendar range is updated
-		setNewDatesRange(
-			value
-			// , () => {
-			//parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
-			// parseDatesRange(value);
-			// }
-		);
-	};
 
-	const parseDatesRange = datesRange => {
-		if (datesRange.length > 13) {
-			let parsedValue = datesRange.split(" - ");
 
-			let checkInDate = new Date(parsedValue[0].split("-"));
-			let checkOutDate = new Date(parsedValue[1].split("-"));
-      console.log(checkInDate,checkOutDate,parsedValue);
-			setNewReservationData({
-				...newReservation,
-				start_date: checkInDate.getTime(),
-				end_date: checkOutDate.getTime(),
-				datesRange: newDatesRange
-			});
-		}
-	};
 
-	const handleChange = (event, {name, value}) => {
-		props.setNewReservationData({
-			...newReservation,
-			[name]: value
-		});
-	};
-	return (
 
-		<Grid>
-			<Grid.Row>
-				<div>CheckInOutCalendar In/Out:</div>
-				<CheckInOutCalendar
-					onChange={(event, {name, value}) => {setNewDatesRange(value)}}
-					defaultValue={newDatesRange}
-				/>
-			</Grid.Row>
-			<Grid.Row>
-				<div>Room Type:</div>
-				<RoomTypeSelect
-					name="room_types"
-					onChange={handleChange}
-					value={room_types}
-				/>
-			</Grid.Row>
-			<Grid.Row>
-				<div>Quantity:</div>
-				<RoomQuantitySelect
-					name="roomQuantity"
-					onChange={handleChange}
-					value={roomQuantity}
-				/>
-			</Grid.Row>
-			<Button
-				onClick={event => {
-					props.setNewReservationData({});
-				}}
-			>
-				Submit
-			</Button>
-		</Grid>
-	);
+    // handleCheckInOut=(event,{name,value})=>{
+    //
+    //     //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
+    //     if(value.length > 13) {
+    //         const tempa = value.split(" - ")
+    //         let checkInDate = new Date(tempa[0]).getTime();
+    //         let checkOutDate = new Date(tempa[1]).getTime();
+    //
+    //
+    //         this.setState({
+    //             newReservation: {
+    //                 start_date: checkInDate,
+    //                 end_date: checkOutDate
+    //             }
+    //         });
+    //     }
+    //
+    // }
+    // handleCheckInOut=(event,{name,value})=>{
+    //     //   console.log("name: " + name + " value: " + value);
+    //     if(this.state.hasOwnProperty(name)){
+    //         this.setState({[name]:value});
+    //     }
+    //
+    //     //parse the dates into checkInDate and checkOutDate as Date objects after the user clicks the 2nd date
+    //     if(value.length > 13){
+    //         let parsedValue = value.split(" ");
+    //         let checkInString = parsedValue[0];
+    //         let checkOutString = parsedValue[2];
+    //         let checkInArray = checkInString.split("-");
+    //         let checkOutArray = checkOutString.split("-");
+    //         let checkInDate = new Date(
+    //             parseInt(checkInArray[2]),
+    //             parseInt(checkInArray[0]-1),
+    //             parseInt(checkInArray[1])
+    //         );
+    //         let checkOutDate = new Date(
+    //             parseInt(checkOutArray[2]),
+    //             parseInt(checkOutArray[0]-1),
+    //             parseInt(checkOutArray[1])
+    //         );
+    //         this.setState({
+    //                         newReservation: {
+    //                             start_date: checkInDate,
+    //                             end_date: checkOutDate
+    //                         }
+    //         });
+    //
+    //         // console.log("check in :" + checkInDate + " check out: " + checkOutDate);
+    //     }
+    // }
+
+    handleRoomType = (event,{name,value}) =>{
+        console.log("name: " + name + " value: " + value);
+        const {newReservation} = this.state;
+        this.props.setIsEditable(false);
+        this.setState({
+            newReservation:{
+                ...newReservation,
+                room_types: value,
+            },
+            isUpdated:true,
+        });
+        // console.log('new type: '+ this.state.newReservation.room_types)
+        // alert(this.state.newReservation.room_types)
+    }
+
+    handleRoomQuantityOptions = (event,{name,value}) =>{
+        // console.log("name: " + name + " value: " + value);
+        const {newReservation} = this.state;
+        this.props.setIsEditable(false);
+        this.setState({
+            newReservation:{
+                ...newReservation,
+                roomQuantity: value,
+            },
+            isUpdated:true,
+        });
+        console.log('new quantity: '+ this.state.newReservation.roomQuantity)
+        // alert(this.state.newReservation.room_types)
+    }
+
+
+    // handleDate = (event) =>{
+    //     console.log(event.target.value);
+    // }
+
+    handleDate = date => {
+        // console.log(date[0]);
+        const {newReservation} = this.state;
+        this.props.setIsEditable(false);
+        this.setState({
+            newReservation:{
+                ...newReservation,
+                start_date: date[0].getTime(),
+                end_date: date[1].getTime(),
+            },
+            isUpdated:true,
+        });
+
+        // const dateRange = moment(this.state.newReservation.start_date).format('MM-DD-YYYY') + " - " +
+        //     moment(this.state.newReservation.end_date).format('MM-DD-YYYY');
+        // const start = moment(this.state.newReservation.start_date).format('MM-DD-YYYY')
+        // console.log(start);
+        // console.log(" + ")
+        console.log(this.state.newReservation.start_date);
+        const start = moment(this.state.newReservation.start_date).format('MM-DD-YYYY')
+        const end = moment(this.state.newReservation.end_date).format('MM-DD-YYYY')
+        console.log('is:'+start);
+        console.log(this.state.newReservation.end_date);
+        console.log('is:'+end);
+
+        // this.setState({ date })
+    }
+
+
+
+    render()
+
+
+{
+
+    const roomTypeOptions = [
+        {
+            key: 'single',
+            text: 'Single-Person',
+            value: 'single'
+        },
+        {
+            key: 'double',
+            text: 'Double-Person',
+            value: 'double'
+        },
+        {
+            key: 'multiple',
+            text: 'Multiple-Person',
+            value: 'multiple'
+        }
+    ];
+
+    const roomQuantityOptions = [];
+
+    for(let i = 0; i < 17; i++){
+        let obj = {
+            key: i,
+            text: i,
+            value: i
+        };
+        roomQuantityOptions.push(obj);
+    }
+
+
+    // const dateRange = moment(this.state.newReservation.start_date).format('MM-DD-YYYY') + " - " +
+    //     moment(this.state.newReservation.end_date).format('MM-DD-YYYY');
+
+
+    const datesRange = [(this.state.newReservation.start_date), (this.state.newReservation.end_date)];
+  //  const datesRange = [new Date().setDate(new Date().getDate()-1), new Date()];
+    console.log(this.state.newReservation.start_date);
+    return (
+        <div>
+
+             <Card color="purple">
+
+             <Card.Content>
+             <Grid>
+             <h1><i>Changes.....</i></h1>
+
+
+
+            {/*<Button onClick={(event) => {const newdat = Date.now(); setNewReservationData({end_date : Number(newdat)})}}/>*/}
+
+
+                <Grid.Row columns={3}>
+
+                    <h3>
+                        <Icon name="suitcase" size="big"/>
+                    </h3>
+
+                    <Card.Content extra>
+
+                    <DateRangePicker
+                       // name="dates"
+                       minDate={new Date()}
+                       value={datesRange}
+                       onChange={this.handleDate}
+
+                   />
+
+
+
+                     </Card.Content>
+
+
+
+</Grid.Row>
+
+                <Grid.Row>
+
+                    <Icon name="bed" size="big"/>
+
+
+                    <Select fluid
+                        name="roomType"
+                        placeholder=''
+                        options={roomTypeOptions}
+                        onChange={this.handleRoomType.bind(this)}
+                        defaultValue={this.state.newReservation.room_types}
+                    />
+
+                </Grid.Row>
+                <Grid.Row columns={3}>
+                     <Grid.Column>
+                      <Icon name="x" size="big"/>
+
+                    </Grid.Column>
+                    <Card.Description>
+                    <Dropdown fluid
+                        compact
+                        selection
+                        name="roomQuantity"
+                        placeholder=''
+                        options={roomQuantityOptions}
+                        onChange={this.handleRoomQuantityOptions}
+                        defaultValue={parseInt(this.state.newReservation.roomQuantity)}
+
+                    />
+                     </Card.Description>
+                </Grid.Row>
+
+                <Grid.Row>
+                { this.state.isUpdated ? (
+                  <Button color="violet" active onClick={(event) => {this.props.setNewReservationData(this.state.newReservation);this.props.setIsEditable(true);this.setState({isUpdated:false})}}>Confirm Changes</Button>
+                ) : (
+                  <Button color="violet" disabled onClick={(event) => {this.props.setNewReservationData(this.state.newReservation);this.props.setIsEditable(true)}}>Confirm Changes</Button>
+                )
+              }
+
+                </Grid.Row>
+</Grid>
+              </Card.Content>
+
+            </Card>
+
+        </div>
+    );
+}
 };
 
 export default ChangeReservationForm;

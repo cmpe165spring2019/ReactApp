@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {compose} from "recompose";
 import {withFirebase} from "../../server/Firebase";
 import {withRouter} from "react-router-dom";
+import { Link } from "react-router-dom";
 import {AuthUserContext} from "../../server/Session";
 import * as ROUTES from "../../constants/routes";
 import _ from "lodash";
@@ -148,9 +149,10 @@ class Reservation extends Component {
 								const startDate = new Date(reservation.data.start_date);
 								const endDate = new Date(reservation.data.end_date);
 								return (
-									<Grid.Row key={reservation.id} columns={3}>
+									<Grid.Row key={reservation.id} columns={4}>
 										<Grid.Column width={1} />
-										<Grid.Column>
+										<Grid.Column with={5}>
+										>
 											<Image
 												src={hotel.data.image[0]}
 												//size='medium'
@@ -158,27 +160,62 @@ class Reservation extends Component {
 												width="250px"
 												height="150px"
 											/>
-											<h3> {hotel.data.name}</h3>
+											<h2> {hotel.data.name}</h2>
+											<Icon name="building" size="large" />
+							<i>{hotel.data.address.street} , {hotel.data.address.city}  {hotel.data.address.state}  {hotel.data.address.country}</i>
+
 										</Grid.Column>
 
-										<Grid.Column>
+										<Grid.Column width={7}>
+										<Grid centered columns={4}>
+										<p />
 											<h2>
 												{startDate.toDateString()} - {endDate.toDateString()}
 											</h2>
+											 <Grid.Row>
+											   <Icon name="bed" size="big" />
+												 <font size="+2">
+                         {reservation.data.roomQuantity} {reservation.data.room_types} Rooms
 
-											<Grid.Row>
-												<CancelReservation
-													hotel={hotel}
-													reservation={reservation}
-												/>
-											</Grid.Row>
-											<p />
-											<Grid.Row>
-												<ChangeReservation
-													hotel={hotel}
-													reservation={reservation}
-												/>
-											</Grid.Row>
+												 </font>
+                        </Grid.Row>
+
+												<Grid.Row>
+ 											   <Icon name="money" size="big" />
+ 												 <font size="+2">
+
+                          ${reservation.data.price}
+
+ 												 </font>
+                         </Grid.Row>
+                          
+                          <Grid.Row>
+                            {hotel.data.details}<div></div>
+													  {hotel.data.spots}
+
+													 			</Grid.Row>
+
+
+											 </Grid>
+
+										</Grid.Column>
+
+										<Grid.Column>
+										<p />
+										<div />
+										<Grid.Row>
+											<CancelReservation
+												hotel={hotel}
+												reservation={reservation}
+											/>
+										</Grid.Row>
+										<p />
+										<Grid.Row>
+											<ChangeReservation
+												hotel={hotel}
+												reservation={reservation}
+											/>
+										</Grid.Row>
 										</Grid.Column>
 									</Grid.Row>
 								);

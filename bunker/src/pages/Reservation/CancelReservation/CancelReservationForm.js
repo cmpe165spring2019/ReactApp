@@ -1,5 +1,5 @@
 import React from "react";
-import { Header} from "semantic-ui-react";
+import { Grid,Header,Icon,Card} from "semantic-ui-react";
 const CancelReservationForm = props => {
 	const {
 		reservation,
@@ -7,16 +7,17 @@ const CancelReservationForm = props => {
 	} = props;
 
 	return (
-		<div>
-			<Header>Payment confirm</Header>
-			<p>Hotel: {hotel.data.name}</p>
-			<p>
-				Address: {hotel.data.address.street}, {hotel.data.address.city},{" "}
-				{hotel.data.address.state}, {hotel.data.address.country}
-			</p>
-			<p>{reservation.data.room_types}</p>
-			{!reservation.data.isUseReward? (<p>Total Price: {reservation.data.price}</p>) : (<p>Discounted Price: {reservation.data.price}</p>)}
-		</div>
+		<Card color="red" centered>
+
+          <Icon name="paper plane" size="large"/>
+					
+				 <h3><i>
+				 Total Payment: ${reservation.data.price}
+				</i> </h3>
+
+
+
+		</Card>
 	);
 };
 
