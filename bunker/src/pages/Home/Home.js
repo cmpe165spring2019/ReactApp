@@ -414,8 +414,9 @@ class HomePage extends Component {
           maxPrice={this.state.filter.maxPrice}
           minPrice={this.state.filter.minPrice}
         />
-        <Segment>
-          <Grid celled columns={2}>
+
+          <Grid>
+            <Grid.Row>
             <Grid.Column width={10}>
               <ListingBase
                 hotels={this.state.filteredHotels}
@@ -424,11 +425,14 @@ class HomePage extends Component {
                 roomQuantity={this.state.search.roomQuantity}
               />
             </Grid.Column>
+              <Segment style={{overflow: 'auto', maxHeight: 540, width: 500 }}>
             <Grid.Column width={6}>
               <Maps hotels={this.state.filteredHotels} homestate={this.state} />
             </Grid.Column>
+              </Segment>
+            </Grid.Row>
           </Grid>
-        </Segment>
+        {/*</Segment>*/}
       </div>
     );
   }

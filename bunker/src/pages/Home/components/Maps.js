@@ -42,7 +42,12 @@ export class MapContainer extends Component {
     const { datesRange, roomType, roomQuantity } = this.props;
     return (
       <div>
-        <Map google={this.props.google} onClick={this.onMapClicked}>
+        <Map google={this.props.google}
+             onClick={this.onMapClicked}
+             initialCenter={{
+               lat: 40.854885,
+               lng: -88.081807
+             }}>
           {this.props.hotels.map(hotel => {
             return (
               <Marker
