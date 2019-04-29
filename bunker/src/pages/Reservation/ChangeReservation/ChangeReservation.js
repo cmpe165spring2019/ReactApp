@@ -1,15 +1,23 @@
 import React from "react";
-import {Modal, Button, Message, Segment, Confirm} from "semantic-ui-react";
+import {
+	Modal,
+	Grid,
+	TransitionablePortal,
+	Button,
+	Message,
+	Segment,
+	Confirm
+} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import ChangeReservationForm from "./ChangeReservationForm";
 
 const ChangeReservation = props => {
+	const [isOpen, setIsOpen] = React.useState(false);
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
 	const [error, setError] = React.useState(new Error("null"));
-	const [newReservationData, setNewReservationData] = React.useState({
-		...props.reservation.data
-	});
+	const [isEditable, setIsEditable] = React.useState(false);
+	const [newReservationData, setNewReservationData] = React.useState({});
 
 	const {hotel} = props;
 	const oldReservation = props.reservation;
@@ -37,22 +45,25 @@ const ChangeReservation = props => {
 		>
 			<Modal.Header>Edit Reservation</Modal.Header>
 			<Modal.Description>
-				<Segment>
-					<ChangeReservationForm
-						oldReservation={oldReservation}
-						setNewReservationData={setNewReservationData}
-						isError={isError}
-						user={user}
-						hotel={hotel}
-						newReservation={newReservationData}
-					/>
-				</Segment>
 			</Modal.Description>
 			<Modal.Actions>
 				<Button
 					content={"Edit This Reservation"}
 					color="yellow"
 					onClick={() => setIsConfirmOpen(true)}
+			<Segment
+				size={"big"}
+				style={{left: "70%", position: "fixed", top: "15%", zIndex: 1000}}
+			>
+				<ChangeReservationForm
+					oldReservation={oldReservation}
+					setNewReservationData={setNewReservationData}
+					isError={isError}
+					isEditable={isEditable}
+					setIsEditable={setIsEditable}
+					user={user}
+					hotel={hotel}
+					newReservationData={newReservationData}
 				/>
 				<Confirm
 					content={"Do you still want to edited this reservation"}
