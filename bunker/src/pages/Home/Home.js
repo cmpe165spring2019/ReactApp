@@ -425,7 +425,7 @@ class HomePage extends Component {
               />
             </Grid.Column>
             <Grid.Column width={6}>
-              <Maps hotels={this.state.filteredHotels} />
+              <Maps hotels={this.state.filteredHotels} homestate={this.state} />
             </Grid.Column>
           </Grid>
         </Segment>

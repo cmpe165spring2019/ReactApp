@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Maps from "../Home/components/Maps";
+import MapsHotel from "../Home/components/MapsHotel";
 
 // Components
 import { withFirebase } from "../../server/Firebase";
@@ -139,7 +139,7 @@ class HotelPage extends Component {
             </Segment>
             <Card.Content>
               <Placeholder style={{ height: 100, width: 100 }}>
-                <Maps />
+                <MapsHotel name={name} address={address} />
               </Placeholder>
             </Card.Content>
           </Grid.Column>
