@@ -6,6 +6,7 @@ import { SignUpLink } from '../SignUp/SignUp';
 import { PasswordForgetLink } from '../PasswordForget/PasswordForget';
 import { withFirebase } from '../../server/Firebase';
 import * as ROUTES from '../../constants/routes';
+import Alert from 'react-bootstrap/Alert'
 
 import {
   Button,
@@ -114,7 +115,11 @@ class SignInFormBase extends Component {
 
       <p>  Don't have an Account?
         <a href="/signup"> Sign Up </a>   <PasswordForgetLink /></p>
-         {error && <font size="+1"><i><p>****{error.message}****</p></i></font>}
+           {error &&
+           <Message negative>
+             <Message.Header>Oh snap! You got an error!</Message.Header>
+             <p>{error.message}</p>
+           </Message>}
       </Message>
 
 
@@ -136,11 +141,7 @@ class SignInGoogleBase extends Component {
       .doSignInWithGoogle()
       .then(socialAuthUser => {
         // Create a user in your Firebase Realtime Database too
-        return this.props.firebase.userRef(socialAuthUser.user.uid).set({
-          username: socialAuthUser.user.displayName,
-          email: socialAuthUser.user.email,
-          roles: [],
-        });
+        return this.props.firebase.addGoogleUserToDB(socialAuthUser);
       })
       .then(() => {
         this.setState({ error: null });
@@ -192,8 +193,7 @@ class SignInFacebookBase extends Component {
         return this.props.firebase.user(socialAuthUser.user.uid).set({
           username: socialAuthUser.additionalUserInfo.profile.name,
           email: socialAuthUser.additionalUserInfo.profile.email,
-          roles: [],
-        });
+        }, {merge: true});
       })
       .then(() => {
         this.setState({ error: null });
@@ -245,8 +245,7 @@ class SignInTwitterBase extends Component {
         return this.props.firebase.user(socialAuthUser.user.uid).set({
           username: socialAuthUser.additionalUserInfo.profile.name,
           email: socialAuthUser.additionalUserInfo.profile.email,
-          roles: [],
-        });
+        }, {merge: true});
       })
       .then(() => {
         this.setState({ error: null });

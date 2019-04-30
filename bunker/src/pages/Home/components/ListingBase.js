@@ -46,11 +46,7 @@ export default class ListingBase extends Component {
                 }}
                 >
                 <HotelCard
-                hotelImage={hotel.data.image[0]}
-                hotelName={hotel.data.name}
-                hotelPrice={price}
-                hotelDescription={hotel.data.details}
-                hotelRating={hotel.data.rating}
+                hotel={hotel}
                 />
                 </Link>
               </Grid.Column>
