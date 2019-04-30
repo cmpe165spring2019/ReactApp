@@ -115,14 +115,17 @@ class Firebase {
 				return result;
 			});
 
-	addGoogleUserToDB = (socialAuthUser) => {
-		return this.user(socialAuthUser.user.uid).set({
-			username: socialAuthUser.user.displayName,
-			email: socialAuthUser.user.email,
-			reservations: this.FieldValue.arrayUnion(""),
-			reward_points: this.FieldValue.increment(0),
-		},{merge: true})
-	}
+	addGoogleUserToDB = socialAuthUser => {
+		return this.user(socialAuthUser.user.uid).set(
+			{
+				username: socialAuthUser.user.displayName,
+				email: socialAuthUser.user.email,
+				reservations: this.FieldValue.arrayUnion(""),
+				reward_points: this.FieldValue.increment(0)
+			},
+			{merge: true}
+		);
+	};
 
 	addUserToDB = (authUser, email, username) => {
 		const data = {
@@ -152,16 +155,13 @@ class Firebase {
 			.catch(error => error);
 	};
 
-checkForConflictWithDates = (new_start, new_end, user_id) => {
-	return this.user(user_id)
-		.get()
-		.then(user_doc => {
-			const reservationIDs = user_doc.data().reservations;
-			//If reservations exist check for date confilcts
-			return this.getReservations(reservationIDs).then(reservations =>
-				reservations.every(res => {
+	checkForConflictWithDates = (new_start, new_end, user_id) => {
+		return this.reservationsRef()
+			.where("user_id", "==", user_id)
+			.then(reservations => {
+				return reservations.every(res => {
 					const check =
-						(new_end < res.data.start_date) || (new_start > res.data.end_date);
+						new_end < res.data.start_date || new_start > res.data.end_date;
 					console.log(
 						new_start,
 						res.data.start_date,
@@ -170,79 +170,75 @@ checkForConflictWithDates = (new_start, new_end, user_id) => {
 						check
 					);
 					return check;
-				})
-			);
+				});
+			});
+	};
+
+	addReservationToDB = (user_id, data) => {
+		return this.checkForConflictWithDates(
+			data.start_date,
+			data.end_date,
+			user_id
+		).then(check => {
+			if (check) {
+				this.reservationsRef()
+					.add(data)
+					.then(res_doc => {
+						this.editUserAccount(user_id, {
+							reservations: this.FieldValue.arrayUnion(res_doc.id),
+							reward_points: this.FieldValue.increment(
+								Math.floor((data.price || 0) / 10)
+							)
+						});
+						return true;
+					})
+					.catch(error => console.log("Failed to add res " + error));
+			} else {
+				console.log("Cant have multiple booking");
+				return false;
+			}
 		});
-};
-
-
-addReservationToDB = (user_id, data) => {
-	return this.checkForConflictWithDates(data.start_date, data.end_date, user_id).then((check) => {
-		if(check){
-			this.reservationsRef()
-				.add(data)
-				.then(res_doc => {
-					this.editUserAccount(user_id, {
-						reservations: this.FieldValue.arrayUnion(res_doc.id),
-						reward_points: this.FieldValue.increment(Math.floor((data.price || 0) / 10))
-					});
-					return true;
-				})
-				.catch(error => console.log("Failed to add res " + error));
-		}
-		else{
-			console.log("Cant have multiple booking");
-			return false;
-		}
-	});
-};
+	};
 
 	//edit reservation data
 	editReservationInfo = (reservation_id, data, user_id) => {
-		return this.checkForConflictWithDates(data.start_date, data.end_date, user_id).then((check) => {
-			if(check){
-				this.reservationRef(reservation_id)
-				.update(data)
-				.then(() => {
-					console.log("Reservation data was successfully changed");
-					return true;
-				})
-				.catch(error => {
-					console.error("Error editing document: ", error);
-					return error;
-				});
-			}
-			else{
-				return new Error("multiplebooking");
-			}
-		})
-
+		return this.reservationRef(reservation_id)
+			.update(data)
+			.then(() => {
+				console.log("Reservation data was successfully changed");
+				return true;
+			})
+			.catch(error => {
+				console.error("Error editing document: ", error);
+				return error;
+			});
 	};
 
 	//Delete reservation
 	deleteReservationFromDB = (reservation_id, user_id, price = 0) => {
-	return this.user(user_id)
-		.update({
-			reservations: this.FieldValue.arrayRemove(reservation_id),
-			reward_points: this.FieldValue.increment(-Math.floor(price / 10))
-		})
-		.then(() => {
-			return this.reservationRef(reservation_id)
-				.delete()
-				.then(() => {
-					console.log("Done delete reservation");
-				})
-				.catch(err => {
-					console.log("Error in delete reservation", err);
-					return err;
-				});
-		})
-		.catch(err => {
-			console.log("Error in remove reservations id or decrease reward_points");
+		return this.user(user_id)
+			.update({
+				reservations: this.FieldValue.arrayRemove(reservation_id),
+				reward_points: this.FieldValue.increment(-Math.floor(price / 10))
+			})
+			.then(() => {
+				return this.reservationRef(reservation_id)
+					.delete()
+					.then(() => {
+						console.log("Done delete reservation");
+					})
+					.catch(err => {
+						console.log("Error in delete reservation", err);
+						return err;
+					});
+			})
+			.catch(err => {
+				console.log(
+					"Error in remove reservations id or decrease reward_points"
+				);
 				return err;
-		});
-};
-
+			});
+	};
 
 	//location Search function
 	getCities = next =>
@@ -262,24 +258,30 @@ addReservationToDB = (user_id, data) => {
 				return cities;
 			});
 
-subscribeReservations = (userID,
-	// start_date,
-	doChange, doError) => {
-	return this.reservationsRef()
-		.where("user_id", "==", userID)
-		// .where("start_date", ">=", start_date)
-		.onSnapshot(snapshot => {
-			let reservations = [];
-			snapshot.forEach(doc =>
-				reservations.push({id: doc.id, data: doc.data()})
-			);
-			doChange(reservations);
-		},
-	(error) => {
-		doError(error)
-	})
-};
-
+	subscribeReservations = (
+		userID,
+		// start_date,
+		doChange,
+		doError
+	) => {
+		return (
+			this.reservationsRef()
+				.where("user_id", "==", userID)
+				// .where("start_date", ">=", start_date)
+				.onSnapshot(
+					snapshot => {
+						let reservations = [];
+						snapshot.forEach(doc =>
+							reservations.push({id: doc.id, data: doc.data()})
+						);
+						doChange(reservations);
+					},
+					error => {
+						doError(error);
+					}
+				)
+		);
+	};
 
 	getReservations = reservationIDs => {
 		let result = [];
@@ -303,10 +305,9 @@ subscribeReservations = (userID,
 		let promise = hotelIDs.map(hotelID => this.hotelRef(hotelID).get());
 		return Promise.all(promise).then(snapshots => {
 			let result = snapshots.map(snapshot => ({
-					id: snapshot.id,
-					data: snapshot.data()
-				})
-			);
+				id: snapshot.id,
+				data: snapshot.data()
+			}));
 			return result;
 		});
 	};
