@@ -158,7 +158,14 @@ class Firebase {
 	checkForConflictWithDates = (new_start, new_end, user_id) => {
 		return this.reservationsRef()
 			.where("user_id", "==", user_id)
-			.then(reservations => {
+			.get()
+			.then(snapshots => {
+				let reservations = []
+				snapshots.forEach(snapshot => {
+					reservations.push({
+						data: snapshot.data()
+					})
+				})
 				return reservations.every(res => {
 					const check =
 						new_end < res.data.start_date || new_start > res.data.end_date;
@@ -267,7 +274,7 @@ class Firebase {
 		return (
 			this.reservationsRef()
 				.where("user_id", "==", userID)
-				// .where("start_date", ">=", start_date)
+				.orderBy("start_date")
 				.onSnapshot(
 					snapshot => {
 						let reservations = [];
@@ -277,6 +284,7 @@ class Firebase {
 						doChange(reservations);
 					},
 					error => {
+						console.log(error);
 						doError(error);
 					}
 				)
