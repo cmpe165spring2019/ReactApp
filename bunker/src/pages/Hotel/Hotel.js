@@ -8,10 +8,13 @@ import {
 	Container,
 	Header,
 	Segment,
+	Icon,
+	List,
 	Divider,
 	Rating
 } from "semantic-ui-react";
 import CheckOut from "./CheckOut/CheckOut";
+
 
 // import Carousel from 'react-bootstrap/Carousel';
 // import { Carousel } from 'react-responsive-carousel';
@@ -153,7 +156,13 @@ class HotelPage extends Component {
 									<br />
 									{address.city}, {address.state} {address.country}
 								</p>
-								<p>{details}</p>
+							<List bulleted horizontal>
+								{hotel.data.details.split(", ").map(item => (
+									<List.Item>
+										{item}
+									</List.Item>
+								))}
+							</List>
 							</Container>
 						</Segment>
 					</Grid.Column>
@@ -192,9 +201,9 @@ class HotelPage extends Component {
 								<br />
 								<Divider />
 								<br />
-                                <CheckOut 
-                                datesRange={datesRange} 
-                                hotel={hotel} 
+                                <CheckOut
+                                datesRange={datesRange}
+                                hotel={hotel}
                                 reservation={{
                                     room_types: roomType,
                                     roomQuantity,
