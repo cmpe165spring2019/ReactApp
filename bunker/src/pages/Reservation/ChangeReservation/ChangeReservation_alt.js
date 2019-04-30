@@ -1,16 +1,5 @@
 import React from "react";
-import {
-	Modal,
-	Grid,
-	TransitionablePortal,
-	Button,
-	Icon,
-	Message,
-	Segment,
-	Header,
-	Image,
-	Confirm
-} from "semantic-ui-react";
+import {Modal, Button, Message, Segment, Confirm} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import ChangeReservationForm from "./ChangeReservationForm";
 
@@ -18,8 +7,9 @@ const ChangeReservation = props => {
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
 	const [error, setError] = React.useState(new Error("null"));
-	const [isEditable, setIsEditable] = React.useState(false);
-	const [newReservationData, setNewReservationData] = React.useState({});
+	const [newReservationData, setNewReservationData] = React.useState({
+		...props.reservation.data
+	});
 
 	const {hotel} = props;
 	const oldReservation = props.reservation;
@@ -38,37 +28,31 @@ const ChangeReservation = props => {
 	};
 
 	return (
-		<Modal
+		<Modal size="mini"
 			trigger={
-				<Button size="small" color="yellow">
-					<Icon name="edit" size="large" />
+				<Button size="small" color="yellow" width="70px">
 					Change this reservation
 				</Button>
 			}
 		>
 			<Modal.Header>Edit Reservation</Modal.Header>
-			<Modal.Content image>
-				<Image src={hotel.data.image[0]} size="medium" alt="No Image"/>
-				<Modal.Description>
-				<Header textAlign="center" color="blue">{hotel.data.name}</Header>
+			<Modal.Description>
+				<Segment>
 					<ChangeReservationForm
 						oldReservation={oldReservation}
 						setNewReservationData={setNewReservationData}
 						isError={isError}
-						isEditable={isEditable}
-						setIsEditable={setIsEditable}
 						user={user}
 						hotel={hotel}
-						newReservationData={newReservationData}
+						newReservation={newReservationData}
 					/>
-				</Modal.Description>
-			</Modal.Content>
+				</Segment>
+			</Modal.Description>
 			<Modal.Actions>
 				<Button
 					content={"Edit This Reservation"}
 					color="yellow"
 					onClick={() => setIsConfirmOpen(true)}
-					disabled={newReservationData === {} ? true : false}
 				/>
 				<Confirm
 					content={"Do you still want to edited this reservation"}

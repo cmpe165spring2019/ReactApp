@@ -1,11 +1,20 @@
 import React from "react";
-import {Modal, Button, Message, Segment, Confirm} from "semantic-ui-react";
+import {
+	Modal,
+	Icon,
+	Button,
+	Message,
+	Segment,
+	Image,
+	Confirm
+} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import CancelReservationForm from "./CancelReservationForm";
 
 const CancelReservation = props => {
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
+	const [isOpen, setIsOpen] = React.useState(false);
 
 	//fake data
 
@@ -24,17 +33,17 @@ const CancelReservation = props => {
 
 	return (
 		<Modal
+			size=""
 			trigger={
-				<Button
-					size="small"
-					color="red"
-					width="70px"
-				>
+				<Button icon labelPosition="left" size="small" color="red">
+					<Icon name="cancel" size="large" />
 					Delete this Reservation
 				</Button>
 			}
 		>
-				<Modal.Header>Delete Payment</Modal.Header>
+			<Modal.Header>Edit Reservation</Modal.Header>
+			<Modal.Content image>
+				<Image src={hotel.data.image[0]} size="medium" alt="No Image" />
 				<Modal.Description>
 					<CancelReservationForm
 						reservation={reservation}
@@ -43,13 +52,14 @@ const CancelReservation = props => {
 						hotel={hotel}
 					/>
 				</Modal.Description>
-				<Modal.Actions>
-					<Button
-						content={"Delete This Reservation"}
-						color="red"
-						onClick={() => setIsConfirmOpen(true)}
-					/>
-					<Confirm
+			</Modal.Content>
+			<Modal.Actions>
+				<Button
+					content={"Confirm Cancellation"}
+					color="red"
+					onClick={() => setIsConfirmOpen(true)}
+				/>
+				<Confirm
 					content={
 						"You will only recieve 80% of your payment, do you still want to cancel reservation"
 					}
@@ -57,14 +67,16 @@ const CancelReservation = props => {
 					open={isConfirmOpen}
 					onCancel={() => setIsConfirmOpen(false)}
 					onConfirm={handleDeleteReservation}
-					/>
-				</Modal.Actions>
-				{isError ? (
-					<Message negative>
-						<Message.Header>Opps!!!</Message.Header>
-						<p>Something when wrong</p>
-					</Message>
-				) : null}
+					size="mini"
+				/>
+			</Modal.Actions>
+
+			{isError ? (
+				<Message size="mini" negative>
+					<Message.Header>Opps!!!</Message.Header>
+					<p>Something when wrong</p>
+				</Message>
+			) : null}
 		</Modal>
 	);
 };

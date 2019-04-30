@@ -1,22 +1,32 @@
 import React from "react";
-import { Header} from "semantic-ui-react";
+import {Grid, Header, Icon, Card} from "semantic-ui-react";
+import _ from "lodash";
 const CancelReservationForm = props => {
-	const {
-		reservation,
-		hotel,
-	} = props;
+	const {reservation, hotel} = props;
 
 	return (
-		<div>
-			<Header>Payment confirm</Header>
-			<p>Hotel: {hotel.data.name}</p>
-			<p>
-				Address: {hotel.data.address.street}, {hotel.data.address.city},{" "}
-				{hotel.data.address.state}, {hotel.data.address.country}
-			</p>
-			<p>{reservation.data.room_types}</p>
-			{!reservation.data.isUseReward? (<p>Total Price: {reservation.data.price}</p>) : (<p>Discounted Price: {reservation.data.price}</p>)}
-		</div>
+		<Card color="red" fluid>
+			<Card.Content>
+				<Grid centered columns={4}>
+					<font size="+1">
+						{new Date(reservation.data.start_date).toDateString()} -{" "}
+						{new Date(reservation.data.end_date).toDateString()}
+					</font >
+					<Grid.Row>
+						<Icon name="bed" size="big" />
+						<font size="+1">
+							{reservation.data.roomQuantity}{" "}
+							{_.upperFirst(reservation.data.room_types)} Room(s)
+						</font>
+					</Grid.Row>
+
+					<Grid.Row>
+						<Icon name="money" size="big" />
+						<font size="+1"> Total Price: ${reservation.data.price}</font>
+					</Grid.Row>
+				</Grid>
+			</Card.Content>
+		</Card>
 	);
 };
 
