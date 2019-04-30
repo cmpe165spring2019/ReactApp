@@ -1,8 +1,7 @@
 import React from "react";
 import {Button, Icon, Grid, Segment, Card} from "semantic-ui-react";
 import * as moment from "moment";
-// import { DatesRangeInput,DateInput } from "semantic-ui-calendar-react";
-// import DateRangePicker from '@wojtekmaj/react-daterange-picker'
+import _ from "lodash";
 import CheckInOutCalendar from "../../../commonComponents/CheckInOutCalendar";
 import RoomTypeSelect from "../../../commonComponents/RoomTypeSelect";
 import RoomQuantitySelect from "../../../commonComponents/RoomQuantitySelect";
@@ -10,16 +9,19 @@ import {DatesRangeInput} from "semantic-ui-calendar-react";
 
 const ChangeReservationForm = props => {
 	const [newDatesRange, setNewDatesRange] = React.useState("");
+	const [currentPrice, setCurrentPrice] = React.useState(0);
 	const {
 		start_date,
 		end_date,
 		roomQuantity,
 		room_types,
-		datesRange
+		datesRange,
+		price
 	} = props.oldReservation.data;
-	const {newReservation, setNewReservationData} = props;
+	const {newReservationData, setNewReservationData, hotel, oldReservation} = props;
 	React.useEffect(() => {
 		setNewDatesRange(datesRange);
+		setCurrentPrice(price);
 	}, []);
 
 	React.useEffect(
@@ -27,6 +29,26 @@ const ChangeReservationForm = props => {
 			parseDatesRange(newDatesRange);
 		},
 		[newDatesRange]
+	);
+
+	React.useEffect(
+		() => {
+			if (newReservationData) {
+				console.log(newReservationData.room_types);
+				const currentPrice = (_.find(hotel.data.room_types, {
+					type: newReservationData.room_types || room_types
+				})).price;
+				const currentQuantity = newReservationData.roomQuantity || roomQuantity;
+				console.log(room_types, currentPrice,currentQuantity);
+				setCurrentPrice(
+					(currentQuantity *
+						currentPrice *
+						(newReservationData.end_date - newReservationData.start_date)) /
+						86400000
+				);
+			}
+		},
+		[newReservationData]
 	);
 
 	const parseDatesRange = editDateRanges => {
@@ -38,7 +60,7 @@ const ChangeReservationForm = props => {
 			console.log(checkInDate, checkOutDate, parsedValue);
 			console.log(props.editDateRanges);
 			setNewReservationData({
-				...newReservation,
+				...newReservationData,
 				start_date: checkInDate.getTime(),
 				end_date: checkOutDate.getTime(),
 				datesRange: newDatesRange
@@ -48,7 +70,7 @@ const ChangeReservationForm = props => {
 
 	const handleChange = (event, {name, value}) => {
 		props.setNewReservationData({
-			...newReservation,
+			...newReservationData,
 			[name]: value
 		});
 	};
@@ -79,6 +101,10 @@ const ChangeReservationForm = props => {
 							onChange={handleChange}
 							defaultValue={roomQuantity}
 						/>
+					</Grid.Row>
+					<Grid.Row>
+						<Icon name="money" size="big" />
+						<font size="+2">Total Price: ${currentPrice}</font>
 					</Grid.Row>
 				</Grid>
 			</Card.Content>
