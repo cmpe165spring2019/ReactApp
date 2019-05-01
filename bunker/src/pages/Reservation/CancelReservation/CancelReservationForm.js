@@ -1,10 +1,15 @@
 import React from "react";
+<<<<<<< HEAD
 import {Grid, Image, Divider, Header, Icon, Label, Segment, Container} from "semantic-ui-react";
+=======
+import {Grid, Header, Icon, Card} from "semantic-ui-react";
+>>>>>>> 73137b997399c68c8f031e75e2c83e14d919d699
 import _ from "lodash";
 const CancelReservationForm = props => {
 	const {reservation, hotel} = props;
 
 	return (
+<<<<<<< HEAD
 
 		<Segment textAlign="left" padded="very">
 			<Container text>
@@ -71,6 +76,30 @@ const CancelReservationForm = props => {
 		</Segment>		
 
 
+=======
+		<Card color="red" fluid>
+			<Card.Content>
+				<Grid centered columns={4}>
+					<font size="+1">
+						{new Date(reservation.data.start_date).toDateString()} -{" "}
+						{new Date(reservation.data.end_date).toDateString()}
+					</font >
+					<Grid.Row>
+						<Icon name="bed" size="big" />
+						<font size="+1">
+							{reservation.data.roomQuantity}{" "}
+							{_.upperFirst(reservation.data.room_types)} Room(s)
+						</font>
+					</Grid.Row>
+
+					<Grid.Row>
+						<Icon name="money" size="big" />
+						<font size="+1"> Total Price: ${reservation.data.price}</font>
+					</Grid.Row>
+				</Grid>
+			</Card.Content>
+		</Card>
+>>>>>>> 73137b997399c68c8f031e75e2c83e14d919d699
 	);
 };
 
