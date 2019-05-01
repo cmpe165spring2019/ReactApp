@@ -1,124 +1,242 @@
-import React, { Component } from "react";
-import { compose } from "recompose";
-import { withFirebase } from '../../server/Firebase';
-import { withRouter } from 'react-router-dom';
-import * as ROUTES from '../../constants/routes';
+import React, {Component} from "react";
+import {compose} from "recompose";
+import {withFirebase} from "../../server/Firebase";
+import {withRouter} from "react-router-dom";
+import {Link} from "react-router-dom";
+import {AuthUserContext} from "../../server/Session";
+import * as ROUTES from "../../constants/routes";
+import _ from "lodash";
 import {
-  Button,
-  Form,
-  Grid,
-  Header,
-  Segment,
-  Message,
-  Image
-} from 'semantic-ui-react';
+	Container,
+	Message,
+	Header,
+	Icon,
+	Dimmer,
+	Loader,
+	List,
+	Grid,
+	Segment,
+	Image
+} from "semantic-ui-react";
+import ChangeReservation from "./ChangeReservation/ChangeReservation";
+import CancelReservation from "./CancelReservation/CancelReservation";
+import moment from "moment";
 
-const ReservationPage= () => (
-  <div>
-    <h1></h1>
-    <Reservations />
-
-
-  </div>
+const ReservationPage = () => (
+	<div>
+		<AuthUserContext.Consumer>
+			{authUser => <Reservations user={authUser} />}
+		</AuthUserContext.Consumer>
+	</div>
 );
-class Reservation extends Component{
-  constructor(props) {
-    super(props);
+class Reservation extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			hotels: [],
+			user: {},
+			reservations: [],
+			isLoading: true,
+			isEmpty: true,
+			isError: false
+		};
+	}
 
-    this.state = {};
-  }
+	componentDidMount() {
+		const {user} = this.props;
 
-  render(){
-    return(
-      <Grid divided='vertically'>
-      <Grid.Row columns={3}>
-      <Grid.Column width={1}>
-      </Grid.Column>
-          <Grid.Column>
-               <Image
-                src="https://s-ec.bstatic.com/images/hotel/max1024x768/681/68184730.jpg"
-                //size='medium'
-                width="250px"
-                height="150px"
-                />
-                <h3>  Hilton San Jose</h3>
-          </Grid.Column>
+		this.setState({
+			isLoading: true,
+			isEmpty: false,
+			isError: false
+		});
+		this.subscribe = this.props.firebase.subscribeReservations(
+			user.uid,
+			// Date.now(),
+			newreservations => {
+				let hotelIDs = [];
+				const today = new Date(
+					moment()
+						.format("MM-DD-YYYY")
+						.split("-")
+				);
+				const reservations = newreservations.filter(
+					item => item.data.start_date >= today.getTime()
+				);
+				console.log(newreservations);
+				console.log(reservations);
 
-          <Grid.Column>
-            <h2>April 11th, 2019 - May 11th,2019</h2>
-             <Grid.Row>
-            <Button color='yellow' size='large'>Change Reservation</Button>
-            </Grid.Row>
-              <p></p>
-            <Grid.Row>
-            <Button color='red' size="large">Cancel  Reservation </Button>
-            </Grid.Row>
-          </Grid.Column>
-</Grid.Row>
+				reservations.forEach(reservation =>
+					hotelIDs.push(reservation.data.hotel_id)
+				);
+				console.log(reservations);
+				this.props.firebase
+					.getHotels(hotelIDs)
+					.then(hotels => {
+						this.setState({
+							reservations: reservations,
+							isLoading: false,
+							isEmpty: reservations.length || true,
+							hotels: hotels,
+							isError: false
+						});
+					})
+					.catch(err => {
+						console.log(err);
+						this.setState({
+							isLoading: false,
+							isError: true
+						});
+					});
+			},
+			error => {
+				this.setState({
+					isError: true,
+					isLoading: false
+				});
+			}
+		);
+		// );
+		// 		this.props.firebase.getReservations(user.reservations).then(result => {
+		// 			console.log(result);
+		// 			const reservations = result.filter(
+		// 				item => item.data.start_date <= Date.now() && item
+		// 			);
+		// 			let hotelIDs = [];
+		// 			reservations.forEach(reservation =>
+		// 				hotelIDs.push(reservation.data.hotel_id)
+		// 			);
+		// 			this.props.firebase
+		// 				.getHotels(hotelIDs)
+		// 				.then(hotels => {
+		// 					console.log(hotels);
+		// 					this.setState({
+		// 						reservations: reservations,
+		// 						hotels: hotels,
+		// 						user: user,
+		// 						isEmpty: reservations.length === 0 ? true : false,
+		// 						isLoading: false,
+		// 						isError: false
+		// 					});
+		// 				})
+		// 				.catch(error => {
+		// 					console.log(error);
+		// 					this.setState({
+		// 						isError: true,
+		// 						isLoading: false,
+		// 						isEmpty: reservations.length === 0 ? true : false
+		// 					});
+		// 				});
+		// 		});
+	}
 
-<Grid.Row columns={3}>
-<Grid.Column width={1}>
-</Grid.Column>
-    <Grid.Column>
-         <Image
-          src="https://thumbnails.trvl-media.com/vff-vkeZvCEFxU78UgLUmpictkY=/773x530/smart/filters:quality(60)/images.trvl-media.com/hotels/1000000/20000/18200/18200/397a578b_z.jpg"
-          //size='medium'
-          width="250px"
-          height="150px"
-          />
-          <h3>Four Season San Francisco</h3>
-    </Grid.Column>
+	componentWillUnmount() {
+		this.subscribe();
+	}
 
-    <Grid.Column>
-      <h2>March 29th, 2019 - April 10th,2019</h2>
-       <Grid.Row>
-      <Button color='yellow' size='large'>Change Reservation</Button>
-      </Grid.Row>
-        <p></p>
-      <Grid.Row>
-      <Button color='red' size="large">Cancel  Reservation </Button>
-      </Grid.Row>
-    </Grid.Column>
+	render() {
+		const {reservations, isLoading, isEmpty, isError} = this.state;
+		console.log(isLoading);
+		return (
+			<Segment>
+				{isEmpty === true ? (
+					<Header as="h2" icon textAlign="center">
+						<Icon name="hotel" circular />
+						<Header.Content>No Reservation</Header.Content>
+					</Header>
+				) : (
+					<Segment>
+						<Loader active={isLoading} inline="centered" size="large" />
 
+						<Grid divided="vertically">
+							{reservations.map((reservation, i) => {
+								const hotel = this.state.hotels[i];
+								const startDate = new Date(reservation.data.start_date);
+								const endDate = new Date(reservation.data.end_date);
+								return (
+									<Grid.Row key={reservation.id} columns={4}>
+										<Grid.Column width={1} />
+										<Grid.Column with={5}>
+											<Image
+												src={hotel.data.image[0]}
+												//size='medium'
+												alt="No image"
+												width="250px"
+												height="150px"
+											/>
+											<h2> {hotel.data.name}</h2>
+											<Icon name="building" size="large" />
+											<i>
+												{hotel.data.address.street} , {hotel.data.address.city}{" "}
+												{hotel.data.address.state} {hotel.data.address.country}
+											</i>
+										</Grid.Column>
 
-</Grid.Row>
+										<Grid.Column width={7}>
+											<Grid centered columns={4}>
+												<p />
+												<h2>
+													{startDate.toDateString()} - {endDate.toDateString()}
+												</h2>
+												<Grid.Row>
+													<Icon name="bed" size="big" />
+													<font size="+2">
+														{reservation.data.roomQuantity}{" "}
+														{_.upperFirst(reservation.data.room_types)} Room(s)
+													</font>
+												</Grid.Row>
 
-<Grid.Row columns={3}>
-<Grid.Column width={1}>
-</Grid.Column>
-    <Grid.Column>
-         <Image
-          src="https://s-ec.bstatic.com/images/hotel/max1280x900/151/151408199.jpg"
-          //size='medium'
-          width="250px"
-          height="150px"
-          />
-          <h3>Shelton Sacramento</h3>
-    </Grid.Column>
+												<Grid.Row>
+													<Icon name="money" size="big" />
+													<font size="+2">${reservation.data.price}</font>
+												</Grid.Row>
 
-    <Grid.Column>
-      <h2>March 11th, 2019 - March 28th,2019</h2>
-       <Grid.Row>
-      <Button color='yellow' size='large'>Change Reservation</Button>
-      </Grid.Row>
-        <p></p>
-      <Grid.Row>
-      <Button color='red' size="large">Cancel  Reservation </Button>
-      </Grid.Row>
-    </Grid.Column>
+												<Grid.Row>
+													<List bulleted horizontal>
+														{hotel.data.details.split(", ").map(item => (
+															<List.Item>{item}</List.Item>
+														))}
+													</List>
+												</Grid.Row>
+											</Grid>
+										</Grid.Column>
 
-
-</Grid.Row>
-
-
-
-      </Grid>
-    );
-  }
+										<Grid.Column>
+											<p />
+											<div />
+											<Grid.Row>
+												<CancelReservation
+													hotel={hotel}
+													reservation={reservation}
+												/>
+											</Grid.Row>
+											<p />
+											<Grid.Row>
+												<ChangeReservation
+													hotel={hotel}
+													reservation={reservation}
+												/>
+											</Grid.Row>
+										</Grid.Column>
+									</Grid.Row>
+								);
+							})}
+						</Grid>
+					</Segment>
+				)}
+				{isError ? (
+					<Message floating negative hidden={!isError}>
+						<Message.Header>We could't load that content</Message.Header>
+						<p>Please contact us to resolve the problem</p>
+					</Message>
+				) : null}
+			</Segment>
+		);
+	}
 }
 const Reservations = compose(
-  withRouter,
-  withFirebase,
+	withRouter,
+	withFirebase
 )(Reservation);
 
 export default ReservationPage;

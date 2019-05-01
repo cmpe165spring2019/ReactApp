@@ -5,12 +5,6 @@ import { Dropdown } from 'semantic-ui-react';
 import * as util from 'util' // has no default export
 
 
-const createRoomQuantityOptions = () => {
-
-}
-
-const roomQuantityOptions = createRoomQuantityOptions();
-
 const RoomQuantitySelect = (props) => {
     // console.log('props: ' + typeof(Integer(props.defaultValue)));
 
