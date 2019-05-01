@@ -22,13 +22,14 @@ const CancelReservation = props => {
 	const user = JSON.parse(localStorage.getItem("authUser"));
 
 	const handleDeleteReservation = () => {
+		console.log("handle Delete for: " + reservation.id);
+
 		props.firebase
 			.deleteReservationFromDB(reservation.id, user.uid, reservation.data.price)
 			.catch(error => {
 				setIsError(true);
 				console.log(error);
 			});
-		console.log("handle Delete");
 	};
 
 	return (
@@ -42,9 +43,7 @@ const CancelReservation = props => {
 			}
 		>
 			<Modal.Header>Cancel Reservation</Modal.Header>
-			<Modal.Content image>
-
-				<Image wrapped src={hotel.data.image[0]} size="large" alt="No Image" />
+			<Modal.Content>
 				<Modal.Description>
 					<CancelReservationForm
 						reservation={reservation}

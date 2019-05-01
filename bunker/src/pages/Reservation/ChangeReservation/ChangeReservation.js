@@ -48,7 +48,7 @@ const ChangeReservation = props => {
 		>
 			<Modal.Header>Edit Reservation</Modal.Header>
 			<Modal.Content image>
-				<Image src={hotel.data.image[0]} size="medium" alt="No Image"/>
+				<Image wrapped src={hotel.data.image[0]} size="large" alt="No Image"/>
 				<Modal.Description>
 				<Header textAlign="center" color="blue">{hotel.data.name}</Header>
 					<ChangeReservationForm
