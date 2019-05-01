@@ -9,7 +9,7 @@ const RoomQuantitySelect = (props) => {
     // console.log('props: ' + typeof(Integer(props.defaultValue)));
 
     let roomQuantityOptions = [];
-    for(let i = 0; i < 17; i++){
+    for(let i = 1; i < 17; i++){
         let obj = {
             key: i,
             text: i,
