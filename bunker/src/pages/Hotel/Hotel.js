@@ -149,21 +149,51 @@ class HotelPage extends Component {
 				<Grid.Row width={13} centered columns={3}>
 					<Grid.Column width={8}>
 						<Segment textAlign="left" padded="very">
-							<Container textAlign="left">
+						<Grid>
+						<Grid.Row>
+						<Container textAlign="left">
+						
 								<Header as="h2">{name}</Header>
+								<Header as="h3">Location:</Header>
+
 								<p>
-									{address.street}
-									<br />
-									{address.city}, {address.state} {address.country}
+									{address.street}, {address.city}, {address.state} {address.country}
 								</p>
-							<List bulleted horizontal>
-								{hotel.data.details.split(", ").map(item => (
-									<List.Item>
-										{item}
-									</List.Item>
-								))}
-							</List>
 							</Container>
+
+						</Grid.Row>
+
+						<Grid.Row columns={2}>
+						<Grid.Column>
+							<Container>
+								<Header as="h3">Amenities:</Header>
+								<List bulleted>
+									{hotel.data.details.split(", ").map(item => (
+										<List.Item>
+											{item}
+										</List.Item>
+									))}
+								</List>
+							</Container>
+							</Grid.Column>
+							<Grid.Column>
+								<Container>
+									<Header as="h3">Nearby Spots:</Header>
+									<List bulleted>
+										{hotel.data.spots.split(", ").map(item => (
+											<List.Item>
+												{item}
+											</List.Item>
+										))}
+									</List>
+								</Container>
+							</Grid.Column>
+						</Grid.Row>
+						<Grid.Row>
+
+						</Grid.Row>
+
+						</Grid>
 						</Segment>
 					</Grid.Column>
 					<Grid.Column width={4}>
