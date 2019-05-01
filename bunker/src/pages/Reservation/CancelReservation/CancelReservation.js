@@ -41,9 +41,10 @@ const CancelReservation = props => {
 				</Button>
 			}
 		>
-			<Modal.Header>Edit Reservation</Modal.Header>
+			<Modal.Header>Cancel Reservation</Modal.Header>
 			<Modal.Content image>
-				<Image src={hotel.data.image[0]} size="medium" alt="No Image" />
+
+				<Image wrapped src={hotel.data.image[0]} size="large" alt="No Image" />
 				<Modal.Description>
 					<CancelReservationForm
 						reservation={reservation}
@@ -61,9 +62,9 @@ const CancelReservation = props => {
 				/>
 				<Confirm
 					content={
-						"You will only recieve 80% of your payment, do you still want to cancel reservation"
+						"You will only recieve 80% of your payment back, do you still want to cancel reservation?"
 					}
-					confirmButton={"Yes, I am sure"}
+					confirmButton={"Yes, Cancel My Reservation"}
 					open={isConfirmOpen}
 					onCancel={() => setIsConfirmOpen(false)}
 					onConfirm={handleDeleteReservation}
@@ -73,7 +74,7 @@ const CancelReservation = props => {
 
 			{isError ? (
 				<Message size="mini" negative>
-					<Message.Header>Opps!!!</Message.Header>
+					<Message.Header>Oops!!!</Message.Header>
 					<p>Something when wrong</p>
 				</Message>
 			) : null}
