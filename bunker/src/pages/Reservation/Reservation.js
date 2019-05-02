@@ -7,11 +7,9 @@ import {AuthUserContext} from "../../server/Session";
 import * as ROUTES from "../../constants/routes";
 import _ from "lodash";
 import {
-	Container,
 	Message,
 	Header,
 	Icon,
-	Dimmer,
 	Loader,
 	List,
 	Grid,
@@ -21,6 +19,7 @@ import {
 import ChangeReservation from "./ChangeReservation/ChangeReservation";
 import CancelReservation from "./CancelReservation/CancelReservation";
 import moment from "moment";
+import * as util from 'util';
 
 const ReservationPage = () => (
 	<div>
@@ -150,6 +149,10 @@ class Reservation extends Component {
 
 						<Grid divided="vertically">
 							{reservations.map((reservation, i) => {
+								console.log('reservation: ' + util.inspect(reservation));
+								const datesRange = reservation.data.datesRange;
+								const roomType = reservation.data.room_types;
+								const roomQuantity = reservation.data.roomQuantity;
 								const hotel = this.state.hotels[i];
 								const startDate = new Date(reservation.data.start_date);
 								const endDate = new Date(reservation.data.end_date);
@@ -157,6 +160,11 @@ class Reservation extends Component {
 									<Grid.Row key={reservation.id} columns={4}>
 										<Grid.Column width={1} />
 										<Grid.Column with={5}>
+										<Link to = {{
+										pathname: `${ROUTES.HOTEL}/${hotel.id}`,
+											state: { hotel, datesRange, roomType, roomQuantity }
+										}}
+										>
 											<Image
 												src={hotel.data.image[0]}
 												//size='medium'
@@ -164,6 +172,8 @@ class Reservation extends Component {
 												width="250px"
 												height="150px"
 											/>
+										</Link>
+											
 											<h2> {hotel.data.name}</h2>
 											<Icon name="building" size="large" />
 											<i>
