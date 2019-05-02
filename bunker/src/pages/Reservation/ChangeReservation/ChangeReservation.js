@@ -48,9 +48,7 @@ const ChangeReservation = props => {
 		>
 			<Modal.Header>Edit Reservation</Modal.Header>
 			<Modal.Content image>
-				<Image wrapped src={hotel.data.image[0]} size="large" alt="No Image"/>
 				<Modal.Description>
-				<Header textAlign="center" color="blue">{hotel.data.name}</Header>
 					<ChangeReservationForm
 						oldReservation={oldReservation}
 						setNewReservationData={setNewReservationData}
@@ -65,13 +63,13 @@ const ChangeReservation = props => {
 			</Modal.Content>
 			<Modal.Actions>
 				<Button
-					content={"Edit This Reservation"}
+					content={"Confirm Changes"}
 					color="yellow"
 					onClick={() => setIsConfirmOpen(true)}
 					disabled={newReservationData === {} ? true : false}
 				/>
 				<Confirm
-					content={"Do you still want to edited this reservation"}
+					content={"Do you still want to make changes to this reservation?"}
 					confirmButton={"Yes, I am sure"}
 					open={isConfirmOpen}
 					onCancel={() => setIsConfirmOpen(false)}
@@ -80,7 +78,7 @@ const ChangeReservation = props => {
 			</Modal.Actions>
 			{isError ? (
 				<Message negative>
-					<Message.Header>Opps!!!</Message.Header>
+					<Message.Header>Oops!!!</Message.Header>
 					{error.message === "multiplebooking" ? (
 						<Message.Content>
 							It seem like you have a reservation for the same day.
