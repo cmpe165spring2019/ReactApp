@@ -149,7 +149,6 @@ class HotelPage extends Component {
 				<Grid.Row width={13} centered columns={3}>
 					<Grid.Column width={8}>
 						<Segment textAlign="left" padded="very">
-<<<<<<< HEAD
 						<Grid>
 						<Grid.Row>
 						<Container textAlign="left">
@@ -195,23 +194,6 @@ class HotelPage extends Component {
 						</Grid.Row>
 
 						</Grid>
-=======
-							<Container textAlign="left">
-								<Header as="h2">{name}</Header>
-								<p>
-									{address.street}
-									<br />
-									{address.city}, {address.state} {address.country}
-								</p>
-							<List bulleted horizontal>
-								{hotel.data.details.split(", ").map(item => (
-									<List.Item>
-										{item}
-									</List.Item>
-								))}
-							</List>
-							</Container>
->>>>>>> 73137b997399c68c8f031e75e2c83e14d919d699
 						</Segment>
 					</Grid.Column>
 					<Grid.Column width={4}>
