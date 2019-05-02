@@ -15,6 +15,8 @@ import {withFirebase} from "../../../server/Firebase";
 import ChangeReservationForm from "./ChangeReservationForm";
 
 const ChangeReservation = props => {
+
+	const [openModal, setOpenModal] = React.useState(false);
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
 	const [error, setError] = React.useState(new Error("null"));
@@ -40,11 +42,13 @@ const ChangeReservation = props => {
 	return (
 		<Modal
 			trigger={
-				<Button size="small" color="yellow">
+				<Button size="small" color="yellow" onClick={()=>setOpenModal(true)}>
 					<Icon name="edit" size="large" />
-					Change this reservation
+					Change this Reservation
 				</Button>
 			}
+			open={openModal}
+			onClose={()=>setOpenModal(false)}
 		>
 			<Modal.Header>Edit Reservation</Modal.Header>
 			<Modal.Content image>
@@ -62,12 +66,22 @@ const ChangeReservation = props => {
 				</Modal.Description>
 			</Modal.Content>
 			<Modal.Actions>
+				<Button.Group>
+				<Button
+					content={"Cancel"}
+					onClick={()=> setOpenModal(false)}
+				/>
+				<Button.Or/>
 				<Button
 					content={"Confirm Changes"}
 					color="yellow"
 					onClick={() => setIsConfirmOpen(true)}
 					disabled={newReservationData === {} ? true : false}
 				/>
+				
+
+				</Button.Group>
+				
 				<Confirm
 					content={"Do you still want to make changes to this reservation?"}
 					confirmButton={"Yes, I am sure"}

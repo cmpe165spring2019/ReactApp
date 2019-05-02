@@ -116,9 +116,9 @@ const ChangeReservationForm = props => {
 							defaultValue={roomQuantity}
 						/>
                         <Header as='h4'>
-                            <Icon name="money" size="large" />Total Price:
+                            <Icon name="money" size="large" />Total Price: ${currentPrice}
                         </Header>
-                        ${currentPrice}
+                   
                     </Container>
                 </Grid.Column>
             </Grid>
@@ -136,6 +136,9 @@ const ChangeReservationForm = props => {
                 Bunker is not responsible for any miscalculated bookings, late cancellations, or forgetfulness upon your actions.
             </p>
         </Container>
+        <Label attached='top right'>
+            Reservation ID: 	{oldReservation.id}
+        </Label>
     </Segment>
 	);
 };

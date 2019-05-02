@@ -11,10 +11,12 @@ import {
 	Header,
 	Icon,
 	Loader,
-	List,
+	Label,
 	Grid,
 	Segment,
-	Image
+	Image,
+	Button,
+	Dropdown
 } from "semantic-ui-react";
 import ChangeReservation from "./ChangeReservation/ChangeReservation";
 import CancelReservation from "./CancelReservation/CancelReservation";
@@ -47,7 +49,11 @@ class Reservation extends Component {
 		this.setState({
 			isLoading: true,
 			isEmpty: false,
-			isError: false
+			isError: false,
+			user: user
+		},
+		()=>{
+			console.log('this.state.user: ' + util.inspect(this.state.user));
 		});
 		this.subscribe = this.props.firebase.subscribeReservations(
 			user.uid,
@@ -134,113 +140,122 @@ class Reservation extends Component {
 	}
 
 	render() {
-		const {reservations, isLoading, isEmpty, isError} = this.state;
-		console.log(isLoading);
+		const {reservations, isLoading, isEmpty, isError, user} = this.state;
 		return (
-			<Segment>
-				{isEmpty === true ? (
-					<Header as="h2" icon textAlign="center">
-						<Icon name="hotel" circular />
-						<Header.Content>No Reservation</Header.Content>
-					</Header>
-				) : (
-					<Segment>
-						<Loader active={isLoading} inline="centered" size="large" />
+			<div>
+				{ 
+					isEmpty === true ? 
+					(
+						<Segment placeholder padded="very">
+							<Header as="h2" icon textAlign="center">
+								<Icon name="hotel" circular />
+								<Header.Content>No Reservations Booked</Header.Content>
+							</Header>
+							<Link to={ROUTES.HOME}>
+								<Button primary>Book a Hotel</Button>
+							</Link>
+						</Segment>
+					) 
+					: 
+					(
+						<Segment padded="very">
+							<Grid centered columns={2}>
+								<Grid.Column width={12}>
 
-						<Grid divided="vertically">
-							{reservations.map((reservation, i) => {
-								console.log('reservation: ' + util.inspect(reservation));
-								const datesRange = reservation.data.datesRange;
-								const roomType = reservation.data.room_types;
-								const roomQuantity = reservation.data.roomQuantity;
-								const hotel = this.state.hotels[i];
-								const startDate = new Date(reservation.data.start_date);
-								const endDate = new Date(reservation.data.end_date);
-								return (
-									<Grid.Row key={reservation.id} columns={4}>
-										<Grid.Column width={1} />
-										<Grid.Column with={5}>
-										<Link to = {{
-										pathname: `${ROUTES.HOTEL}/${hotel.id}`,
-											state: { hotel, datesRange, roomType, roomQuantity }
-										}}
-										>
-											<Image
-												src={hotel.data.image[0]}
-												//size='medium'
-												alt="No image"
-												width="250px"
-												height="150px"
-											/>
-										</Link>
-											
-											<h2> {hotel.data.name}</h2>
-											<Icon name="building" size="large" />
-											<i>
-												{hotel.data.address.street} , {hotel.data.address.city}{" "}
-												{hotel.data.address.state} {hotel.data.address.country}
-											</i>
-										</Grid.Column>
+					
+									<Loader active={isLoading} inline="centered" size="large" />
+									<Header as='h2'>
+										Welcome, {user.username}!
+									</Header>
+									<Header as='h3'>
+									Your currently booked reservations:
+									</Header>
+									{
+										reservations.map((reservation, i) => {
 
-										<Grid.Column width={7}>
-											<Grid centered columns={4}>
-												<p />
-												<h2>
-													{startDate.toDateString()} - {endDate.toDateString()}
-												</h2>
-												<Grid.Row>
-													<Icon name="bed" size="big" />
-													<font size="+2">
-														{reservation.data.roomQuantity}{" "}
-														{_.upperFirst(reservation.data.room_types)} Room(s)
-													</font>
-												</Grid.Row>
+											console.log('reservation: ' + util.inspect(reservation));
+											const datesRange = reservation.data.datesRange;
+											const roomType = reservation.data.room_types;
+											const roomQuantity = reservation.data.roomQuantity;
+											const hotel = this.state.hotels[i];
+											const startDate = new Date(reservation.data.start_date);
+											const endDate = new Date(reservation.data.end_date);
+											return (
+												<Segment padded="very">
+													<Label attached='top left'>
+														Reservation ID: {reservation.id}
+													</Label>
+													<Grid columns={3} >
+														<Grid.Row>
+															<Grid.Column width={7}>
+																<Link to = {{
+																	pathname: `${ROUTES.HOTEL}/${hotel.id}`,
+																	state: { hotel, datesRange, roomType, roomQuantity }
+																}}>
+																<Image
+																	src={hotel.data.image[0]}
+																	wrapped size='large'
+																/>
+																</Link>
+															</Grid.Column>
+															<Grid.Column width={5}>
+																<Header as='h2'>
+																	{hotel.data.name}
+																</Header>
+																{hotel.data.address.street}, {hotel.data.address.city}, {hotel.data.address.state}, {hotel.data.address.country}
+																<Header as='h4'>
+																	<Icon name="calendar alternate outline" size="large" />
+																	Date Booked: 
+																</Header>
+																{startDate.toDateString()} - {endDate.toDateString()}
+																<Header as='h4'>
+																	<Icon name="bed" size="large" />
+																	Rooms:
+																</Header>
+																{reservation.data.roomQuantity}{" "}
+																{_.upperFirst(reservation.data.room_types)} Room(s)
+																<Header as='h4'>
+																	<Icon name="money" size="large" />
+																	Total Price:	${reservation.data.price}
+																</Header>
+															</Grid.Column>
+															<Grid.Column width={4}>
+																<Grid.Row>
+																	<Button.Group vertical>
+																		<ChangeReservation
+																			hotel={hotel}
+																			reservation={reservation}
+																		/>
+																		<CancelReservation
+																			hotel={hotel}
+																			reservation={reservation}
+																		/>
+																	</Button.Group>
+																</Grid.Row>
+															</Grid.Column>
+														</Grid.Row>
+													</Grid>
+												</Segment>
 
-												<Grid.Row>
-													<Icon name="money" size="big" />
-													<font size="+2">${reservation.data.price}</font>
-												</Grid.Row>
-
-												<Grid.Row>
-													<List bulleted horizontal>
-														{hotel.data.details.split(", ").map(item => (
-															<List.Item>{item}</List.Item>
-														))}
-													</List>
-												</Grid.Row>
-											</Grid>
-										</Grid.Column>
-
-										<Grid.Column>
-											<p />
-											<div />
-											<Grid.Row>
-												<CancelReservation
-													hotel={hotel}
-													reservation={reservation}
-												/>
-											</Grid.Row>
-											<p />
-											<Grid.Row>
-												<ChangeReservation
-													hotel={hotel}
-													reservation={reservation}
-												/>
-											</Grid.Row>
-										</Grid.Column>
-									</Grid.Row>
-								);
-							})}
-						</Grid>
-					</Segment>
-				)}
-				{isError ? (
-					<Message floating negative hidden={!isError}>
-						<Message.Header>We could't load that content</Message.Header>
-						<p>Please contact us to resolve the problem</p>
-					</Message>
-				) : null}
-			</Segment>
+											)
+										})
+									}
+								</Grid.Column>
+							</Grid>
+						</Segment>
+					)
+				}
+													
+				{
+					isError ? 
+					(
+						<Message floating negative hidden={!isError}>
+							<Message.Header>We could't load that content</Message.Header>
+							<p>Please contact an administrator to resolve the problem</p>
+						</Message>
+					) : null
+				}
+			</div>
 		);
 	}
 }

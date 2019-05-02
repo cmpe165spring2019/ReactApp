@@ -42,7 +42,7 @@ class HotelPage extends Component {
 
 	componentDidMount() {
 		//parse dates into check in and out
-
+		console.log('Hotel.js this.state: ' + this.state);
 		this.parseDatesRange(this.state.datesRange);
 		this.calculatePricePerNight();
 	}

@@ -35,9 +35,9 @@ const CancelReservationForm = props => {
 							{reservation.data.roomQuantity}{" "}
 							{_.upperFirst(reservation.data.room_types)}-Person Room(s)
 							<Header as='h4'>
-								<Icon name="money" size="large" />Total Price:
+								<Icon name="money" size="large" />Total Price: ${reservation.data.price}
 							</Header>
-							${reservation.data.price}
+							
 						</Container>
 					</Grid.Column>
 				</Grid>
