@@ -24,7 +24,7 @@ const CheckOutForm = props => {
 			{!isUseReward ? (
 				<h4>Total Price: ${totalPrice}</h4>
 			) : (
-				<p>Discounted Price: ${totalPrice}</p>
+				<h4>Discounted Price: ${totalPrice}</h4>
 			)}
 		</Segment>
 	);

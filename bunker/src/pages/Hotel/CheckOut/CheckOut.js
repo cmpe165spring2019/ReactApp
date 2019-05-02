@@ -103,7 +103,7 @@ const CheckOut = props => {
 			{ isError ? (
 				<Message negative>
 					<Message.Header>Oops!!!</Message.Header>
-					{error.message === "MultipleBookingError" ? <p> Cannot have multiple booking</p> :<p>Something when wrong</p>}
+					{error.message === "MultipleBookingError" ? <p> Multiple Booking Error: Sorry, Bunker does not allow multiple hotel bookings on concurrent dates!</p> :<p>Something went wrong!</p>}
 				</Message>
 			) : null }
 			{ isSuccess ? 			( <Message
