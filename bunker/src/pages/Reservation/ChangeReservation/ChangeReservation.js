@@ -22,6 +22,7 @@ const ChangeReservation = props => {
 	const [error, setError] = React.useState(new Error("null"));
 	const [isEditable, setIsEditable] = React.useState(false);
 	const [newReservationData, setNewReservationData] = React.useState({});
+	const [isSuccess, setIsSuccess] = React.useState(false);
 
 	const {hotel} = props;
 	const oldReservation = props.reservation;
@@ -31,6 +32,10 @@ const ChangeReservation = props => {
 		console.log(newReservationData);
 		props.firebase
 			.editReservationInfo(oldReservation.id, newReservationData, user.uid)
+			.then(() =>{
+				setIsSuccess(true);
+				setIsConfirmOpen(false);
+			})
 			.catch(error => {
 				setIsError(true);
 				setError(error);
@@ -78,10 +83,10 @@ const ChangeReservation = props => {
 					onClick={() => setIsConfirmOpen(true)}
 					disabled={newReservationData === {} ? true : false}
 				/>
-				
+
 
 				</Button.Group>
-				
+
 				<Confirm
 					content={"Do you still want to make changes to this reservation?"}
 					confirmButton={"Yes, I am sure"}
@@ -91,15 +96,31 @@ const ChangeReservation = props => {
 				/>
 			</Modal.Actions>
 			{isError ? (
-				<Message negative>
-					<Message.Header>Oops!!!</Message.Header>
-					{error.message === "multiplebooking" ? (
-						<Message.Content>
-							It seem like you have a reservation for the same day.
-						</Message.Content>
-					) : (
-						<Message.Content>Something when wrong</Message.Content>
-					)}
+				<Message onDismiss={()=> setIsError(false)} style={{ 'min-width':"350px", left: "40%", position: "fixed", top: "80%"}} negative>
+				<Message.Header>Oops!!!</Message.Header>
+				{false ? (
+					<Message.Content>
+						It seem like you have a reservation for the same day.
+					</Message.Content>
+				) : (
+					<Message.Content>Something when wrong</Message.Content>
+				)}
+			</Message>
+			) : null}
+			{isSuccess ? (
+				<Message
+					onDismiss={() => setIsSuccess(false)}
+					style={{
+						width: "330px",
+						height: "75px",
+						left: "40%",
+						position: "fixed",
+						top: "80%"
+					}}
+					positive
+				>
+					<Message.Header>Edit Successed</Message.Header>
+					<Message.Content>Your reservation have been changed</Message.Content>
 				</Message>
 			) : null}
 		</Modal>
