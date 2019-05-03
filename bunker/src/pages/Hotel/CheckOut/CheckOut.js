@@ -3,6 +3,7 @@ import {Modal, Button, Message, Image, Segment, Grid} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import CheckOutForm from "./CheckOutForm";
 import PayPalButton from "../../../server/Payment/PayPalButton";
+import semanticcss from "semantic-ui-css/semantic.min.css";
 
 const CheckOut = props => {
 	const [isError, setIsError] = React.useState(false);
@@ -40,8 +41,16 @@ const CheckOut = props => {
 
 	return (
 		<Modal
+			// style={semanticcss}
 			centered={true}
 			size="small"
+            role="dialog"
+            // autoFocus={false}
+            // animation={false}
+            // backdrop={false}
+            // enforceFocus ={false}
+            // keyboard={false}
+            // restoreFocus ={false}
 			trigger={
 				<Button
 					color="blue"
