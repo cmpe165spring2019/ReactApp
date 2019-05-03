@@ -31,13 +31,15 @@ class Navigation extends Component {
                 firebase: this.props.firebase
             }
         )
-        this.props.firebase.subscribeUserReward(user.uid,
-            reward_points => {
-              this.setState({
-                reward_points: reward_points
-              })
-            }
-        )
+
+        if(user)
+            this.props.firebase.subscribeUserReward(user.uid,
+                reward_points => {
+                this.setState({
+                    reward_points: reward_points
+                })
+                }
+            )
     }
 
     handleItemClick = (e, {name}) => {
