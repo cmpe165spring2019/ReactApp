@@ -49,12 +49,31 @@ class HomePage extends Component {
         //set initial values of checkIn/Out calendar
         const today=moment().format('MM-DD-YYYY');
         const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
-        const defaultDateRangeArray = [today, aWeekFromToday];
-        const defaultDateRange = defaultDateRangeArray.join(" - ");
-        this.setState({
-            datesRange: defaultDateRange
-        });
+        let dateRangeArray = [];
 
+        //Set date values into search box
+        if(this.props.location.state.dateIn == '' && this.props.location.state.dateOut == '')
+            dateRangeArray.push(today, aWeekFromToday);
+        else if(this.props.location.state.dateIn !== '' && this.props.location.state.dateOut == ''){
+            let parts=this.props.location.state.dateIn.split("-");
+            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
+            let datePlaceHolder=moment(dt).add(3,'days').format('MM-DD-YYYY');
+            dateRangeArray.push(this.props.location.state.dateIn, datePlaceHolder);
+        }
+        else if(this.props.location.state.dateIn == '' && this.props.location.state.dateOut !== ''){
+            let parts=this.props.location.state.dateOut.split("-");
+            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
+            let datePlaceHolder=moment(dt).add(-3,'days').format('MM-DD-YYYY');
+            dateRangeArray.push(datePlaceHolder, this.props.location.state.dateOut);
+        }
+        else
+            dateRangeArray.push(this.props.location.state.dateIn, this.props.location.state.dateOut);
+
+        const dateRange = dateRangeArray.join(" - ");
+        this.setState({
+            datesRange: dateRange
+        });
+        
         // this.setState({loading: true});
 
         //get the search location options from firebase, set locationOptions
@@ -410,7 +429,7 @@ class HomePage extends Component {
     }
 
     render() {
-
+        console.log(this.props.location.state.location);
         return (
             <div>
             <SearchBar
