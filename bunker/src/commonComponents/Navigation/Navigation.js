@@ -11,6 +11,8 @@ import { Link } from 'react-router-dom';
 import { Menu, Button, Dropdown, Image, Icon } from 'semantic-ui-react';
 import BunkerImage from '../../images/bunker.png';
 
+const user = JSON.parse(localStorage.getItem("authUser"));
+
 class Navigation extends Component {
     constructor(props){
         super(props);
@@ -19,6 +21,7 @@ class Navigation extends Component {
             firebase: null,
             location: "",
             activeItem: '',
+            reward_points: 0,
         }
     }
 
@@ -26,6 +29,13 @@ class Navigation extends Component {
         this.setState(
             {
                 firebase: this.props.firebase
+            }
+        )
+        this.props.firebase.subscribeUserReward(user.uid,
+            reward_points => {
+              this.setState({
+                reward_points: reward_points
+              })
             }
         )
     }
@@ -90,6 +100,9 @@ class Navigation extends Component {
                 )}
 
                 <Menu.Menu position='right'>
+                <Menu.Item>
+                  <Icon name="gift" color="red"/>Reward Points: {this.state.reward_points}
+                </Menu.Item>
                 <Link to={ROUTES.HOTEL_RESERVATION}>
                 <Menu.Item
                 name='myReservations'
