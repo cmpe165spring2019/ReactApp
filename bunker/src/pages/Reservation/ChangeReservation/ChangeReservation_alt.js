@@ -1,27 +1,15 @@
 import React from "react";
-import {
-	Modal,
-	Grid,
-	TransitionablePortal,
-	Button,
-	Icon,
-	Message,
-	Segment,
-	Header,
-	Image,
-	Confirm
-} from "semantic-ui-react";
+import {Modal, Button, Message, Segment, Confirm} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import ChangeReservationForm from "./ChangeReservationForm";
 
 const ChangeReservation = props => {
-
-	const [openModal, setOpenModal] = React.useState(false);
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
 	const [isError, setIsError] = React.useState(false);
 	const [error, setError] = React.useState(new Error("null"));
-	const [isEditable, setIsEditable] = React.useState(false);
-	const [newReservationData, setNewReservationData] = React.useState({});
+	const [newReservationData, setNewReservationData] = React.useState({
+		...props.reservation.data
+	});
 
 	const {hotel} = props;
 	const oldReservation = props.reservation;
@@ -40,50 +28,34 @@ const ChangeReservation = props => {
 	};
 
 	return (
-		<Modal
+		<Modal size="mini"
 			trigger={
-				<Button size="small" color="yellow" onClick={()=>setOpenModal(true)}>
-					<Icon name="edit" size="large" />
-					Change this Reservation
+				<Button size="small" color="yellow" width="70px">
+					Change this reservation
 				</Button>
 			}
-			open={openModal}
-			onClose={()=>setOpenModal(false)}
 		>
 			<Modal.Header>Edit Reservation</Modal.Header>
-			<Modal.Content image>
-				<Modal.Description>
+			<Modal.Description>
+				<Segment>
 					<ChangeReservationForm
 						oldReservation={oldReservation}
 						setNewReservationData={setNewReservationData}
 						isError={isError}
-						isEditable={isEditable}
-						setIsEditable={setIsEditable}
 						user={user}
 						hotel={hotel}
-						newReservationData={newReservationData}
+						newReservation={newReservationData}
 					/>
-				</Modal.Description>
-			</Modal.Content>
+				</Segment>
+			</Modal.Description>
 			<Modal.Actions>
-				<Button.Group>
 				<Button
-					content={"Cancel"}
-					onClick={()=> setOpenModal(false)}
-				/>
-				<Button.Or/>
-				<Button
-					content={"Confirm Changes"}
+					content={"Edit This Reservation"}
 					color="yellow"
 					onClick={() => setIsConfirmOpen(true)}
-					disabled={newReservationData === {} ? true : false}
 				/>
-				
-
-				</Button.Group>
-				
 				<Confirm
-					content={"Do you still want to make changes to this reservation?"}
+					content={"Do you still want to edited this reservation"}
 					confirmButton={"Yes, I am sure"}
 					open={isConfirmOpen}
 					onCancel={() => setIsConfirmOpen(false)}
@@ -92,7 +64,7 @@ const ChangeReservation = props => {
 			</Modal.Actions>
 			{isError ? (
 				<Message negative>
-					<Message.Header>Oops!!!</Message.Header>
+					<Message.Header>Opps!!!</Message.Header>
 					{error.message === "multiplebooking" ? (
 						<Message.Content>
 							It seem like you have a reservation for the same day.

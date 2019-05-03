@@ -18,6 +18,7 @@ const CheckInOutCalendar = (props) => (
     value={props.value}
     iconPosition="left"
     placeholder="From - To"
+    style={{"width": "220px"}}
     />
 )
 

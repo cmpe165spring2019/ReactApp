@@ -70,7 +70,7 @@ const SearchFilter = (props) => (
             <div>
                         Rating:
                     </div>
-                    <Select 
+                    <Select compact
                         name="rating"
                         placeholder='' 
                         options={ratingOptions}

@@ -23,7 +23,7 @@ const roomTypeOptions = [
 const RoomTypeSelect = (props) => (
     <Select
     compact
-    name="roomType"
+    name={props.name || "roomType"}
     placeholder=''
     options={roomTypeOptions}
     onChange={props.onChange}

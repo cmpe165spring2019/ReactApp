@@ -10,10 +10,13 @@ import {
 	Container,
 	Header,
 	Segment,
+	Icon,
+	List,
 	Divider,
 	Rating
 } from "semantic-ui-react";
 import CheckOut from "./CheckOut/CheckOut";
+
 
 // import Carousel from 'react-bootstrap/Carousel';
 // import { Carousel } from 'react-responsive-carousel';
@@ -46,7 +49,7 @@ class HotelPage extends Component {
 
 	componentDidMount() {
 		//parse dates into check in and out
-
+		console.log('Hotel.js this.state: ' + this.state);
 		this.parseDatesRange(this.state.datesRange);
 		this.calculatePricePerNight();
 	}
@@ -209,15 +212,51 @@ class HotelPage extends Component {
 				<Grid.Row width={13} centered columns={3}>
 					<Grid.Column width={8}>
 						<Segment textAlign="left" padded="very">
-							<Container textAlign="left">
+						<Grid>
+						<Grid.Row>
+						<Container textAlign="left">
+						
 								<Header as="h2">{name}</Header>
+								<Header as="h3">Location:</Header>
+
 								<p>
-									{address.street}
-									<br />
-									{address.city}, {address.state} {address.country}
+									{address.street}, {address.city}, {address.state} {address.country}
 								</p>
-								<p>{details}</p>
 							</Container>
+
+						</Grid.Row>
+
+						<Grid.Row columns={2}>
+						<Grid.Column>
+							<Container>
+								<Header as="h3">Amenities:</Header>
+								<List bulleted>
+									{hotel.data.details.split(", ").map(item => (
+										<List.Item>
+											{item}
+										</List.Item>
+									))}
+								</List>
+							</Container>
+							</Grid.Column>
+							<Grid.Column>
+								<Container>
+									<Header as="h3">Nearby Spots:</Header>
+									<List bulleted>
+										{hotel.data.spots.split(", ").map(item => (
+											<List.Item>
+												{item}
+											</List.Item>
+										))}
+									</List>
+								</Container>
+							</Grid.Column>
+						</Grid.Row>
+						<Grid.Row>
+
+						</Grid.Row>
+
+						</Grid>
 						</Segment>
 					</Grid.Column>
 					<Grid.Column width={4}>
@@ -255,9 +294,9 @@ class HotelPage extends Component {
 								<br />
 								<Divider />
 								<br />
-                                <CheckOut 
-                                datesRange={datesRange} 
-                                hotel={hotel} 
+                                <CheckOut
+                                datesRange={datesRange}
+                                hotel={hotel}
                                 reservation={{
                                     room_types: roomType,
                                     roomQuantity,
