@@ -50,9 +50,15 @@ class HomePage extends Component {
         const today=moment().format('MM-DD-YYYY');
         const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
         let dateRangeArray = [];
+        let location = '';
 
-        //Set date values into search box
-        if(this.props.location.state.dateIn == '' && this.props.location.state.dateOut == '')
+        //Check if location exists and set
+        if(typeof this.props.location.state !== 'undefined'){
+            location = this.props.location.state.location;
+        }
+        
+        //See if date range exists and then set
+        if(typeof this.props.location.state == 'undefined' || (this.props.location.state.dateIn == '' && this.props.location.state.dateOut == ''))
             dateRangeArray.push(today, aWeekFromToday);
         else if(this.props.location.state.dateIn !== '' && this.props.location.state.dateOut == ''){
             let parts=this.props.location.state.dateIn.split("-");
@@ -66,12 +72,16 @@ class HomePage extends Component {
             let datePlaceHolder=moment(dt).add(-3,'days').format('MM-DD-YYYY');
             dateRangeArray.push(datePlaceHolder, this.props.location.state.dateOut);
         }
-        else
+        else{
             dateRangeArray.push(this.props.location.state.dateIn, this.props.location.state.dateOut);
 
+        }
+
         const dateRange = dateRangeArray.join(" - ");
+
         this.setState({
-            datesRange: dateRange
+            datesRange: dateRange,
+            location: location
         });
         
         // this.setState({loading: true});
@@ -429,11 +439,11 @@ class HomePage extends Component {
     }
 
     render() {
-        console.log(this.props.location.state.location);
         return (
             <div>
             <SearchBar
             datesRange={this.state.datesRange}
+            location={this.state.location}
             locationOptions={this.state.locationOptions}
             defaultRoomType={this.state.search.roomType}
             defaultRoomQuantity={this.state.search.roomQuantity}
