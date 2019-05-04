@@ -4,11 +4,13 @@ import React, { Component } from 'react';
 import { withFirebase } from '../../server/Firebase';
 
 import {
+    Container,
   Button,
   Form,
   Grid,
   Header,
   Segment,
+    Divider,
   Message,
   Icon,
   Input,
@@ -53,11 +55,19 @@ class PasswordChangeForm extends Component {
       passwordOne !== passwordTwo || passwordOne === '';
 
     return (
-      <Grid.Row columns={5}>
+      <Grid.Row columns={3}>
       <Grid.Column></Grid.Column>
-      <Grid.Column></Grid.Column>
+      {/*<Grid.Column></Grid.Column>*/}
       <Grid.Column>
+          <Segment  >
       <Form onSubmit={this.onSubmit}>
+        <Header as={'h2'}>
+            <Icon name='settings' color='grey'/>
+
+            Account Settings
+        </Header>
+        <Divider/>
+          <h3>Reset Password</h3>
         <Form.Input
           name="passwordOne"
           value={passwordOne}
@@ -73,14 +83,15 @@ class PasswordChangeForm extends Component {
           type="password"
           placeholder="Confirm New Password"
         />
-        <Button disabled={isInvalid} type="submit">
+        <Button disabled={isInvalid} type="submit"  color='black' >
           Reset My Password
         </Button>
 
         {error && <p>{error.message}</p>}
       </Form>
+          </Segment>
       </Grid.Column>
-      <Grid.Column></Grid.Column>
+      {/*<Grid.Column></Grid.Column>*/}
       <Grid.Column></Grid.Column>
       </Grid.Row>
     );

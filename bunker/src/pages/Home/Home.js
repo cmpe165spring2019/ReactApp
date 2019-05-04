@@ -429,7 +429,7 @@ class HomePage extends Component {
     }
 
     render() {
-        console.log(this.props.location.state.location);
+        // console.log(this.props.location.state.location);
         return (
             <div>
             <SearchBar

@@ -21,145 +21,81 @@ import {
   Icon,
   Input,
 } from 'semantic-ui-react';
+// import Background from "../../images/accountBackground.jpeg";
+import Background from "../../images/accountBackground1.jpg";
 
 
-const SIGN_IN_METHODS = [
-  // {
-  //   id: 'password',
-  //   provider: null,
-  // },
-  {
-    id: 'google.com',
-    provider: 'googleProvider',
-  },
-  {
-    id: 'facebook.com',
-    provider: 'facebookProvider',
-  },
-  {
-    id: 'twitter.com',
-    provider: 'twitterProvider',
-  },
-];
+// const SIGN_IN_METHODS = [
+//   {
+//     id: 'password',
+//     provider: null,
+//   },
+//   {
+//     id: 'google.com',
+//     provider: 'googleProvider',
+//   },
+//   {
+//     id: 'facebook.com',
+//     provider: 'facebookProvider',
+//   },
+//   {
+//     id: 'twitter.com',
+//     provider: 'twitterProvider',
+//   },
+// ];
+const backgroundStyle = {
+    // width: "100%",
+    // height: "100%",
+    backgroundImage: `url(${Background})`,
+    backgroundRepeat: "null",
+    backgroundSize: 'cover',
+    overflow: 'hidden',
+};
 
 const AccountPage = () => (
+
   <AuthUserContext.Consumer>
     {authUser => (
+        <div style={backgroundStyle}>
       <Grid centered columns={3}>
           <Grid.Row></Grid.Row>
           <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+
       <Grid.Row></Grid.Row>
-        <div><Icon name="user" size="huge"/><font size="+3">{"   "}{authUser.username}</font></div>
+        <div>
+            {/*<Icon name="user" size="big"/>*/}
+            <font size="+5" color="white">{"Welcome, "}{authUser.username}</font>
+        </div>
         <Grid.Row></Grid.Row>
-        <Icon name="mail" size="big"/><font size="+2.5">{authUser.email}</font>
+
+        <Icon color="grey" name="mail" size="big"/>
+          <font size="+3" color="white">{authUser.email}</font>
+
         <Grid.Row></Grid.Row>
+
+          <Grid.Row></Grid.Row>
         <PasswordChangeForm />
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+          <Grid.Row></Grid.Row>
+
         {/*<LoginManagement authUser={authUser} />*/}
       </Grid>
+        </div>
     )}
   </AuthUserContext.Consumer>
 );
-
-// class LoginManagementBase extends Component {
-//   constructor(props) {
-//     super(props);
-//
-//     this.state = {
-//       activeSignInMethods: [],
-//       error: null,
-//     };
-//   }
-//
-//   componentDidMount() {
-//     this.fetchSignInMethods();
-//   }
-//
-//   fetchSignInMethods = () => {
-//     this.props.firebase.auth
-//       .fetchSignInMethodsForEmail(this.props.authUser.email)
-//       .then(activeSignInMethods =>
-//         this.setState({ activeSignInMethods, error: null }),
-//       )
-//       .catch(error => this.setState({ error }));
-//   };
-//
-//   onSocialLoginLink = provider => {
-//     this.props.firebase.auth.currentUser
-//       .linkWithPopup(this.props.firebase[provider])
-//       .then(this.fetchSignInMethods)
-//       .catch(error => this.setState({ error }));
-//   };
-//
-//   onDefaultLoginLink = password => {
-//     const credential = this.props.firebase.emailAuthProvider.credential(
-//       this.props.authUser.email,
-//       password,
-//     );
-//
-//     this.props.firebase.auth.currentUser
-//       .linkAndRetrieveDataWithCredential(credential)
-//       .then(this.fetchSignInMethods)
-//       .catch(error => this.setState({ error }));
-//   };
-//
-//   onUnlink = providerId => {
-//     this.props.firebase.auth.currentUser
-//       .unlink(providerId)
-//       .then(this.fetchSignInMethods)
-//       .catch(error => this.setState({ error }));
-//   };
-//
-//   render() {
-//     const { activeSignInMethods, error } = this.state;
-//
-//     return (
-//         <Grid.Column >
-//       <Header>
-//         Sign In Methods:
-//         </Header>
-//         <Segment.Group>
-//           {SIGN_IN_METHODS.map(signInMethod => {
-//             const onlyOneLeft = activeSignInMethods.length === 1;
-//             const isEnabled = activeSignInMethods.includes(
-//               signInMethod.id,
-//             );
-//
-//             return (
-//
-//               <Segment key={signInMethod.id}>
-//                 {signInMethod.id === 'password' ? (
-//                   <DefaultLoginToggle
-//                     onlyOneLeft={onlyOneLeft}
-//                     isEnabled={isEnabled}
-//                     signInMethod={signInMethod}
-//                     onLink={this.onDefaultLoginLink}
-//                     onUnlink={this.onUnlink}
-//                   />
-//                 ) :
-//                  (
-//                   <SocialLoginToggle
-//                     onlyOneLeft={onlyOneLeft}
-//                     isEnabled={isEnabled}
-//                     signInMethod={signInMethod}
-//                     onLink={this.onSocialLoginLink}
-//                     onUnlink={this.onUnlink}
-//                   />
-//                 )
-//
-//               }
-//               </Segment>
-//
-//             );
-//   })}
-//         </Segment.Group>
-//
-//         {error && <Message negative>{error.message}</Message>}
-//
-//       </Grid.Column>
-//
-//     );
-//   }
-// }
 
 const SocialLoginToggle = ({
   onlyOneLeft,
