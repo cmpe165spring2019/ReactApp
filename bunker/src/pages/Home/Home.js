@@ -50,9 +50,15 @@ class HomePage extends Component {
         const today=moment().format('MM-DD-YYYY');
         const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
         let dateRangeArray = [];
+        let location = '';
 
-        //Set date values into search box
-        if(this.props.location.state.dateIn == '' && this.props.location.state.dateOut == '')
+        //Check if location exists and set
+        if(typeof this.props.location.state !== 'undefined'){
+            location = this.props.location.state.location;
+        }
+
+        //See if date range exists and then set
+        if(typeof this.props.location.state == 'undefined' || (this.props.location.state.dateIn == '' && this.props.location.state.dateOut == ''))
             dateRangeArray.push(today, aWeekFromToday);
         else if(this.props.location.state.dateIn !== '' && this.props.location.state.dateOut == ''){
             let parts=this.props.location.state.dateIn.split("-");
@@ -66,14 +72,18 @@ class HomePage extends Component {
             let datePlaceHolder=moment(dt).add(-3,'days').format('MM-DD-YYYY');
             dateRangeArray.push(datePlaceHolder, this.props.location.state.dateOut);
         }
-        else
+        else{
             dateRangeArray.push(this.props.location.state.dateIn, this.props.location.state.dateOut);
 
+        }
+
         const dateRange = dateRangeArray.join(" - ");
+
         this.setState({
-            datesRange: dateRange
+            datesRange: dateRange,
+            location: location
         });
-        
+
         // this.setState({loading: true});
 
         //get the search location options from firebase, set locationOptions
@@ -104,7 +114,7 @@ class HomePage extends Component {
 
 
         //get all the hotels from firebase, set allHotels
-        this._asyncRequest = this.props.firebase.getAllHotels()
+        this.props.firebase.getAllHotels()
             .then(result => {
                 this._asyncRequest = null;
                 this.setState({
@@ -113,31 +123,13 @@ class HomePage extends Component {
                         filteredHotels: result
                     },
                     ()=>{
-                        // call the search function at initial load
-                        // it sets the room prices of each hotel based off of roomType criteria,
-                        // then sets each hotel data.currentRoomPrice for easier access
                         this.handleSearch();
-                        // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
-                        // console.log(this.state.allHotels[0].data.room_types);
-                        // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
-                        // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
                     });
             });
 
 
-        //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
-        // load hotel data for both arrays
-        // hotels[] stays constant
-        // set state of searchHotels[] to allHotels[]
-        // call filter and sort methods
-        // filteredHotels is what gets rendered after filtering/sorting hotels
 
-    }
 
-    componentWillUnmount() {
-        if (this._asyncRequest) {
-            this._asyncRequest.cancel();
-        }
     }
 
     componentDidUpdate(prevState) {
@@ -429,11 +421,11 @@ class HomePage extends Component {
     }
 
     render() {
-        // console.log(this.props.location.state.location);
         return (
             <div>
             <SearchBar
             datesRange={this.state.datesRange}
+            location={this.state.location}
             locationOptions={this.state.locationOptions}
             defaultRoomType={this.state.search.roomType}
             defaultRoomQuantity={this.state.search.roomQuantity}
