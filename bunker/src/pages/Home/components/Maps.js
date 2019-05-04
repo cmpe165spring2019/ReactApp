@@ -1,11 +1,13 @@
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from "google-maps-react";
 import { withRouter } from "react-router-dom";
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { BrowserRouter, Link } from "react-router-dom";
 import * as ROUTES from "../../../constants/routes";
 import { Segment, Image, Button } from "semantic-ui-react";
 // Backend functionalities
 import { withFirebase } from "../../../server/Firebase/index";
+
+import * as util from "util";
 
 export class MapContainer extends Component {
   constructor(props) {
@@ -18,11 +20,16 @@ export class MapContainer extends Component {
   }
 
   onMarkerClick = (props, marker, e) => {
+    // console.log("props: " + props);
     this.setState({
+      currentHotel: props.currenthotel,
       selectedPlace: props,
       activeMarker: marker,
       showingInfoWindow: true
     });
+    // console.log(
+    //   "state after clicking marker: " + util.inspect(this.state.currentHotel)
+    // );
   };
 
   onMapClicked = props => {
@@ -40,13 +47,24 @@ export class MapContainer extends Component {
   //loop this marker
   render() {
     const { datesRange, roomType, roomQuantity } = this.props;
+    // const hotel = this.state.currentHotel;
+    const hotel = this.state.currentHotel;
+    console.log("render current hotel: " + util.inspect(hotel));
+
     return (
       <div>
-        <Map google={this.props.google} onClick={this.onMapClicked}>
+        <Map
+          google={this.props.google}
+          onClick={this.onMapClicked}
+          initialCenter={{
+            lat: 37.3382,
+            lng: -121.8863
+          }}
+        >
           {this.props.hotels.map(hotel => {
             return (
               <Marker
-                hotel={hotel}
+                currenthotel={hotel}
                 name={hotel.data.name}
                 image={hotel.data.image[0]}
                 link={`${ROUTES.HOTEL}/${hotel.id}`}
@@ -66,7 +84,6 @@ export class MapContainer extends Component {
             <Segment>
               <h3>{this.state.selectedPlace.name}</h3>
               <Image src={this.state.selectedPlace.image} />
-              {/*<a href={this.state.selectedPlace.link}>Hotel</a>*/}
             </Segment>
           </InfoWindow>
         </Map>
