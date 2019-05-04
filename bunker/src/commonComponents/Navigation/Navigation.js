@@ -38,7 +38,7 @@ class Navigation extends Component {
                 reward_points: reward_points
               })
             }
-        )}
+        )}  
     }
 
     handleItemClick = (e, {name}) => {

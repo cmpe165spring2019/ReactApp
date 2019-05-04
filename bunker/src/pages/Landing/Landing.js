@@ -131,10 +131,7 @@ class Landing extends React.Component{
     // .then( (hotels) =>{
         this.props.history.push({
             pathname: ROUTES.HOME,
-             state: {
-                hotels: hotel,
-
-             }
+            state: {...this.state}
         })
     // });
     }
@@ -153,7 +150,7 @@ class Landing extends React.Component{
               <div style={Place}>
                   <Form.Field>
                       <label> WHERE</label>
-                      <input placeholder="Anywhere" />
+                      <input placeholder="Anywhere" onChange={(event) => {this.setState({location: event.target.value}); console.log(this.state.location);}} />
                   </Form.Field>
               </div>
 
