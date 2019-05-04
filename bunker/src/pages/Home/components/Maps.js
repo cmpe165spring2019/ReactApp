@@ -57,9 +57,10 @@ export class MapContainer extends Component {
           google={this.props.google}
           onClick={this.onMapClicked}
           initialCenter={{
-            lat: 37.3382,
-            lng: -121.8863
+            lat: 39.8283,
+            lng: -98.5795
           }}
+          zoom={3}
         >
           {this.props.hotels.map(hotel => {
             return (
