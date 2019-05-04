@@ -58,15 +58,15 @@ class HomePage extends Component {
         }
 
         //See if date range exists and then set
-        if(typeof this.props.location.state == 'undefined' || (this.props.location.state.dateIn == '' && this.props.location.state.dateOut == ''))
+        if(typeof this.props.location.state == 'undefined' || (this.props.location.state.dateIn === '' && this.props.location.state.dateOut === ''))
             dateRangeArray.push(today, aWeekFromToday);
-        else if(this.props.location.state.dateIn !== '' && this.props.location.state.dateOut == ''){
+        else if(this.props.location.state.dateIn !== '' && this.props.location.state.dateOut === ''){
             let parts=this.props.location.state.dateIn.split("-");
             let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
             let datePlaceHolder=moment(dt).add(3,'days').format('MM-DD-YYYY');
             dateRangeArray.push(this.props.location.state.dateIn, datePlaceHolder);
         }
-        else if(this.props.location.state.dateIn == '' && this.props.location.state.dateOut !== ''){
+        else if(this.props.location.state.dateIn === '' && this.props.location.state.dateOut !== ''){
             let parts=this.props.location.state.dateOut.split("-");
             let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
             let datePlaceHolder=moment(dt).add(-3,'days').format('MM-DD-YYYY');
@@ -84,7 +84,6 @@ class HomePage extends Component {
             location: location
         });
 
-        // this.setState({loading: true});
 
         this.props.firebase.getCities()
             .then(locationData => {
@@ -133,7 +132,6 @@ class HomePage extends Component {
     }
 
     handleCheckInOut=(event,{name,value})=>{
-        //   console.log("name: " + name + " value: " + value);
         if(this.state.hasOwnProperty(name)){
             this.setState({[name]:value});
         }
@@ -163,7 +161,6 @@ class HomePage extends Component {
                 }
             });
 
-            // console.log("check in :" + checkInDate + " check out: " + checkOutDate);
         }
     }
 
@@ -178,7 +175,6 @@ class HomePage extends Component {
     }
 
     handleLocation=(e, {name,value})=>{
-        // console.log(value);
         this.setState({
             search: {
                 ...this.state.search,
@@ -207,8 +203,6 @@ class HomePage extends Component {
         }
 
         // filter by room type
-        // console.log("roomType is: " + this.state.search.roomType);
-        // console.log("hotel data room types: " + this.state.allHotels[0].data.room_types)
         let maxRoomPrice, minRoomPrice;
         if(this.state.search.roomType){
             let roomTypePrices = [];
