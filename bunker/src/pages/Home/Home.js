@@ -86,10 +86,8 @@ class HomePage extends Component {
 
         // this.setState({loading: true});
 
-        //get the search location options from firebase, set locationOptions
-        this._asyncRequest = this.props.firebase.getCities()
+        this.props.firebase.getCities()
             .then(locationData => {
-                this._asyncRequest = null;
                 locationData.sort((a,b)=>{
                     if(a.data.city.toLowerCase() > b.data.city.toLowerCase()){
                         return 1
@@ -113,10 +111,8 @@ class HomePage extends Component {
 
 
 
-        //get all the hotels from firebase, set allHotels
         this.props.firebase.getAllHotels()
             .then(result => {
-                this._asyncRequest = null;
                 this.setState({
                         allHotels: result,
                         searchedSortedHotels: result,
@@ -134,9 +130,6 @@ class HomePage extends Component {
 
     componentDidUpdate(prevState) {
         console.log(this.state);
-        // console.log("allHotels: " + util.inspect(this.state.allHotels));
-        // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
-        // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
     }
 
     handleCheckInOut=(event,{name,value})=>{
