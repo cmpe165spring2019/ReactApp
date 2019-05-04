@@ -4,8 +4,13 @@ import React, { Component } from "react";
 import {
     Button,
     Grid,
-    Select,
-    Dropdown
+    Menu,
+    Input,
+    Dropdown,
+    Segment,
+    Table,
+    Icon,
+    Container
 } from "semantic-ui-react";
 
 import * as moment from 'moment';
@@ -31,7 +36,102 @@ class SearchBar extends Component {
     render() {
         console.log('this.props.defaultRoomQuantity : '  + util.inspect(this.props.defaultRoomQuantity));
         return (
-            <Grid centered>
+            <div>
+
+       
+            <Menu secondary>
+            <Menu.Item>
+            </Menu.Item>
+            <Menu.Item>
+            </Menu.Item>
+            <Menu.Item>
+            </Menu.Item>
+            <Menu.Item>
+                </Menu.Item>
+                <Menu.Item>
+                </Menu.Item>
+                <Menu.Item>
+                </Menu.Item>
+                <Menu.Item>
+                
+                </Menu.Item>
+                <Menu.Item>
+                
+                </Menu.Item>
+                            <Menu.Item>
+                
+            </Menu.Item>
+                <Menu.Item>
+                    <Container fluid>
+                   
+                    </Container>
+                </Menu.Item>
+                <Menu.Item>
+                    <Container fluid>
+                    <div>
+                                Location:
+                            </div>
+                    <Dropdown 
+                        search selection 
+                                    name='location'
+                                    options={this.props.locationOptions}
+                                    placeholder="City, Adress, Zip code..."
+                                    onChange={this.props.handleLocation}
+                                    onSearchChange={this.props.handleLocation}
+                                    onLabelClick={this.props.handleLocation}
+                            />
+
+                    </Container>
+                  
+               
+                </Menu.Item>
+                <Menu.Item>
+                    <Container fluid>
+                    Check In/Out:
+
+<CheckInOutCalendar
+            onChange={this.props.handleCheckInOut}
+            value={this.props.datesRange}
+        />
+                    </Container>
+                    
+                </Menu.Item>
+                <Menu.Item>
+                <Container fluid>
+                <div>Room Type/Quantity:</div>
+                        <RoomTypeSelect
+                        onChange={this.props.handleRoomTypeQuantity}
+                        defaultValue={this.props.defaultRoomType}
+                        />
+                        <RoomQuantitySelect
+                        onChange={this.props.handleRoomTypeQuantity}
+                        defaultValue={this.props.defaultRoomQuantity}
+                        />
+                </Container>
+
+                </Menu.Item>
+                <Menu.Item>
+                    <Container>
+                    <br></br>
+                <Button
+                primary
+                icon
+                            onClick={this.props.handleSearch}
+                            labelPosition='left'
+                        >
+                            
+                                 Search
+                                 <Icon name='search' />
+                        </Button>
+                    </Container>
+
+                </Menu.Item>
+
+
+               
+            </Menu>
+
+            {/* <Grid centered>
                 <Grid.Row/>
                 <Grid.Row centered>
                     <Grid.Column width={3}>
@@ -79,7 +179,8 @@ class SearchBar extends Component {
                         </Button>
                     </Grid.Column>
                 </Grid.Row>
-            </Grid>
+            </Grid> */}
+            </div>
         );
     }
 }
