@@ -39,11 +39,7 @@ class SearchBar extends Component {
 
 
             <Menu compact style={{position: "relative", left: "25%"}} secondary>
-                <Menu.Item>
-                    <Container fluid>
 
-                    </Container>
-                </Menu.Item>
                 <Menu.Item>
                     <Container fluid>
                     <div>
@@ -51,6 +47,7 @@ class SearchBar extends Component {
                             </div>
                     <Dropdown
                         search selection
+                        defaultValue={this.props.defaultLocationValue}
                                     name='location'
                                     options={this.props.locationOptions}
                                     placeholder="City, Adress, Zip code..."
