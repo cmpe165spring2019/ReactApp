@@ -9,6 +9,7 @@ import FilterSort from "./components/FilterSort";
 import { Divider, Grid, Segment } from "semantic-ui-react";
 import * as moment from "moment";
 import Maps from "./components/Maps";
+import './sticky.css'
 
 // Backend functionalities
 import { withFirebase } from "../../server/Firebase/index";
@@ -388,7 +389,7 @@ class HomePage extends Component {
       });
     }
   };
-
+  // contextRef = createRef()
   render() {
     return (
       <div>
@@ -415,7 +416,8 @@ class HomePage extends Component {
           minPrice={this.state.filter.minPrice}
         />
 
-          <Grid>
+      <Segment>
+          <Grid columns={2}>
             <Grid.Row>
             <Grid.Column width={10}>
               <ListingBase
@@ -425,14 +427,20 @@ class HomePage extends Component {
                 roomQuantity={this.state.search.roomQuantity}
               />
             </Grid.Column>
-              <Segment style={{overflow: 'auto', maxHeight: 540, width: 500 }}>
             <Grid.Column width={6}>
-              <Maps hotels={this.state.filteredHotels} homestate={this.state} />
-            </Grid.Column>
+              <div className="sticky">
+              <Segment compact
+                       style={{
+                         overflow: 'hidden',
+                         height: '100vh',
+                         width: '100%'}}>
+                <Maps hotels={this.state.filteredHotels} homestate={this.state}/>
               </Segment>
+              </div>
+            </Grid.Column>
             </Grid.Row>
           </Grid>
-        {/*</Segment>*/}
+        </Segment>
       </div>
     );
   }
