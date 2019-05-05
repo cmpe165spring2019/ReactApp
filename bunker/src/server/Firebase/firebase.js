@@ -63,6 +63,8 @@ class Firebase {
 
 	hotelRef = uid => this.database.collection("hotels").doc(uid);
 
+	locationRef = uid => this.database.collection("locations").doc(uid).get();
+
 	reservationRef = uid => this.database.collection("reservations").doc(uid);
 	reservationsRef = () => this.database.collection("reservations");
 
@@ -338,18 +340,17 @@ class Firebase {
 
 	//Data Retrive and filter
 	getLocationHotel = location => {
-		let hotels = [];
+		const promises = [];
 		location.data.hotels.forEach(hotelRef => {
-			let obj = {};
-			hotelRef.get().then(snapshot => {
-				obj = {
-					id: snapshot.id,
-					data: {...snapshot.data()}
-				};
-				hotels.push(obj);
-			});
+				promises.push(hotelRef.get());
 		});
-		return hotels;
+		return Promise.all(promises).then(snapshots =>{
+			let result = snapshots.map(snapshot => ({
+				id: snapshot.id,
+				data: snapshot.data()
+			}))
+			return result;
+		})
 	};
 
 	getHotelsRoomTypeSearch = (hotels, room_types) => {

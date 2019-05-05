@@ -49,41 +49,12 @@ class HomePage extends Component {
         //set initial values of checkIn/Out calendar
         const today=moment().format('MM-DD-YYYY');
         const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
-        let dateRangeArray = [];
-        let location = '';
 
-        //Check if location exists and set
-        if(typeof this.props.location.state !== 'undefined'){
-            location = this.props.location.state.location;
-        }
-
-        //See if date range exists and then set
-        if(typeof this.props.location.state == 'undefined' || (this.props.location.state.dateIn === '' && this.props.location.state.dateOut === ''))
-            dateRangeArray.push(today, aWeekFromToday);
-        else if(this.props.location.state.dateIn !== '' && this.props.location.state.dateOut === ''){
-            let parts=this.props.location.state.dateIn.split("-");
-            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
-            let datePlaceHolder=moment(dt).add(3,'days').format('MM-DD-YYYY');
-            dateRangeArray.push(this.props.location.state.dateIn, datePlaceHolder);
-        }
-        else if(this.props.location.state.dateIn === '' && this.props.location.state.dateOut !== ''){
-            let parts=this.props.location.state.dateOut.split("-");
-            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
-            let datePlaceHolder=moment(dt).add(-3,'days').format('MM-DD-YYYY');
-            dateRangeArray.push(datePlaceHolder, this.props.location.state.dateOut);
-        }
-        else{
-            dateRangeArray.push(this.props.location.state.dateIn, this.props.location.state.dateOut);
-
-        }
-
-        const dateRange = dateRangeArray.join(" - ");
+        const historyState = this.props.location.state || {};
 
         this.setState({
-            datesRange: dateRange,
-            location: location
+            datesRange: historyState.datesRange || (today + " - " + aWeekFromToday),
         });
-
 
         this.props.firebase.getCities()
             .then(locationData => {
@@ -108,22 +79,35 @@ class HomePage extends Component {
                 this.setState({locationOptions: locationOptions});
             });
 
-
-
         this.props.firebase.getAllHotels()
             .then(result => {
                 this.setState({
                         allHotels: result,
                         searchedSortedHotels: result,
-                        filteredHotels: result
+                        filteredHotels: result,
                     },
                     ()=>{
                         this.handleSearch();
                     });
             });
 
-
-
+      if(historyState.locationID){
+        console.log(1);
+        this.props.firebase.locationRef(historyState.locationID).then(
+          snapshot =>{
+            const location = {id: snapshot.id, data: snapshot.data()};
+            this.props.firebase.getLocationHotel(location).then(
+              result => {
+                console.log(result);
+                this.setState({
+                  searchedSortedHotels: result,
+                  filteredHotels: result,
+                })
+              }
+            )
+          }
+        )
+      }
 
     }
 
