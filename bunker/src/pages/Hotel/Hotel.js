@@ -13,6 +13,7 @@ import {
   List,
   Divider,
   Rating,
+    Card,
   Placeholder
 } from "semantic-ui-react";
 import CheckOut from "./CheckOut/CheckOut";
@@ -123,7 +124,7 @@ class HotelPage extends Component {
     let totalDays = b.diff(a, "days");
     let totalPrice = totalDays * pricePerNight;
     // console.log(totalPrice);
-    return totalPrice;
+  return totalPrice;
   }
 
   render() {

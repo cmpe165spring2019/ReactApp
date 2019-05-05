@@ -9,12 +9,13 @@ import FilterSort from "./components/FilterSort";
 import { Divider, Grid, Segment } from "semantic-ui-react";
 import * as moment from "moment";
 import Maps from "./components/Maps";
+import './sticky.css'
 
 // Backend functionalities
-import { withFirebase } from "../../server/Firebase/index";
+import { withFirebase } from '../../server/Firebase/index';
 
 //Debugging purposes
-import * as util from "util"; // has no default export
+import * as util from 'util' // has no default export
 
 class HomePage extends Component {
   constructor(props) {
@@ -388,7 +389,7 @@ class HomePage extends Component {
       });
     }
   };
-
+  // contextRef = createRef()
   render() {
     return (
       <div>
@@ -414,8 +415,10 @@ class HomePage extends Component {
           maxPrice={this.state.filter.maxPrice}
           minPrice={this.state.filter.minPrice}
         />
-        <Grid>
-          <Grid.Row>
+
+      <Segment>
+          <Grid columns={2}>
+            <Grid.Row>
             <Grid.Column width={10}>
               <ListingBase
                 hotels={this.state.filteredHotels}
@@ -424,16 +427,20 @@ class HomePage extends Component {
                 roomQuantity={this.state.search.roomQuantity}
               />
             </Grid.Column>
-            <Segment style={{ overflow: "auto", maxHeight: 540, width: 500 }}>
-              <Grid.Column width={6}>
-                <Maps
-                  hotels={this.state.filteredHotels}
-                  homestate={this.state}
-                />
-              </Grid.Column>
-            </Segment>
-          </Grid.Row>
-        </Grid>
+            <Grid.Column width={6}>
+              <div className="sticky">
+              <Segment compact
+                       style={{
+                         overflow: 'hidden',
+                         height: '100vh',
+                         width: '100%'}}>
+                <Maps hotels={this.state.filteredHotels} homestate={this.state}/>
+              </Segment>
+              </div>
+            </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Segment>
       </div>
     );
   }
