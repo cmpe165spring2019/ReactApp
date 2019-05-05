@@ -1,5 +1,8 @@
 import React, {Component} from "react";
-
+import Carousel from 'react-bootstrap/Carousel';
+import 'bootstrap/dist/css/bootstrap.css';
+import '../Hotel/CheckOut/conflict.css'
+// import CarouselComponent from './Carousel'
 // Components
 import {withFirebase} from "../../server/Firebase";
 import {
@@ -28,6 +31,7 @@ import RoomTypeSelect from "../../commonComponents/RoomTypeSelect";
 import RoomQuantitySelect from '../../commonComponents/RoomQuantitySelect';
 
 class HotelPage extends Component {
+
   constructor(props) {
     super(props);
     console.log(props.location.state);
@@ -37,12 +41,16 @@ class HotelPage extends Component {
       checkOutDate: "",
       start_date: 0,
       end_date: 0,
+        index: 0,
+        direction: null,
     };
+      this.handleSelect = this.handleSelect.bind(this);
   }
+
 
 	componentDidMount() {
 		//parse dates into check in and out
-
+		console.log('Hotel.js this.state: ' + this.state);
 		this.parseDatesRange(this.state.datesRange);
 		this.calculatePricePerNight();
 	}
@@ -77,6 +85,7 @@ class HotelPage extends Component {
 		}
 	};
 
+
 	handleCheckInOut = (event, {name, value}) => {
 		//set datesRange whenever calendar range is updated
 		if (this.state.hasOwnProperty(name)) {
@@ -86,6 +95,7 @@ class HotelPage extends Component {
 			});
 		}
 	};
+
 
 	handleRoomTypeQuantity = (e, {name, value}) => {
 		this.setState(
@@ -124,6 +134,12 @@ class HotelPage extends Component {
         // console.log(totalPrice);
         return totalPrice
 	}
+    handleSelect(selectedIndex, e) {
+        this.setState({
+            index: selectedIndex,
+            direction: e.direction,
+        });
+    }
 
 	render() {
 		const {
@@ -143,27 +159,105 @@ class HotelPage extends Component {
 			datesRange
 		} = this.state;
 
+        const image0 = this.state.hotel.data.image[0];
+        const image1 = this.state.hotel.data.image[1];
+        const image2 = this.state.hotel.data.image[2];
+        const image3 = this.state.hotel.data.image[3];
+        const { index, direction } = this.state;
+        const images = [image0,image1,image2,image3]
 		return (
 			<Grid centered celled columns={2}>
-				<Grid.Row>insert carousel</Grid.Row>
+				<Grid.Row>
+                    <Carousel
+                        activeIndex={index}
+                        direction={direction}
+                        onSelect={this.handleSelect}
+                    >
+                        <Carousel.Item>
+                            <img
+                                className="block"
+                                src={image0}
+                                alt="First slide"
+                                style={{width: 600, height: 400}}
+                            />
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            <img
+                                className="block"
+                                src={image1}
+                                alt="Third slide"
+                                style={{width: 600, height: 400}}
+                            />
+
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            <img
+                                className="block"
+                                src={image2}
+                                alt="Third slide"
+                                style={{width: 600, height: 400}}
+                            />
+
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            <img
+                                className="block"
+                                src={image3}
+                                alt="Third slide"
+                                style={{width: 600, height: 400}}
+                            />
+
+                        </Carousel.Item>
+                    </Carousel>
+				</Grid.Row>
 				<Grid.Row width={13} centered columns={3}>
 					<Grid.Column width={8}>
 						<Segment textAlign="left" padded="very">
-							<Container textAlign="left">
+						<Grid>
+						<Grid.Row>
+						<Container textAlign="left">
+						
 								<Header as="h2">{name}</Header>
+								<Header as="h3">Location:</Header>
+
 								<p>
-									{address.street}
-									<br />
-									{address.city}, {address.state} {address.country}
+									{address.street}, {address.city}, {address.state} {address.country}
 								</p>
-							<List bulleted horizontal>
-								{hotel.data.details.split(", ").map(item => (
-									<List.Item>
-										{item}
-									</List.Item>
-								))}
-							</List>
 							</Container>
+
+						</Grid.Row>
+
+						<Grid.Row columns={2}>
+						<Grid.Column>
+							<Container>
+								<Header as="h3">Amenities:</Header>
+								<List bulleted>
+									{hotel.data.details.split(", ").map(item => (
+										<List.Item>
+											{item}
+										</List.Item>
+									))}
+								</List>
+							</Container>
+							</Grid.Column>
+							<Grid.Column>
+								<Container>
+									<Header as="h3">Nearby Spots:</Header>
+									<List bulleted>
+										{hotel.data.spots.split(", ").map(item => (
+											<List.Item>
+												{item}
+											</List.Item>
+										))}
+									</List>
+								</Container>
+							</Grid.Column>
+						</Grid.Row>
+						<Grid.Row>
+
+						</Grid.Row>
+
+						</Grid>
 						</Segment>
 					</Grid.Column>
 					<Grid.Column width={4}>

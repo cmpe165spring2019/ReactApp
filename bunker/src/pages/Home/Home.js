@@ -49,10 +49,39 @@ class HomePage extends Component {
         //set initial values of checkIn/Out calendar
         const today=moment().format('MM-DD-YYYY');
         const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
-        const defaultDateRangeArray = [today, aWeekFromToday];
-        const defaultDateRange = defaultDateRangeArray.join(" - ");
+        let dateRangeArray = [];
+        let location = '';
+
+        //Check if location exists and set
+        if(typeof this.props.location.state !== 'undefined'){
+            location = this.props.location.state.location;
+        }
+
+        //See if date range exists and then set
+        if(typeof this.props.location.state == 'undefined' || (this.props.location.state.dateIn == '' && this.props.location.state.dateOut == ''))
+            dateRangeArray.push(today, aWeekFromToday);
+        else if(this.props.location.state.dateIn !== '' && this.props.location.state.dateOut == ''){
+            let parts=this.props.location.state.dateIn.split("-");
+            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
+            let datePlaceHolder=moment(dt).add(3,'days').format('MM-DD-YYYY');
+            dateRangeArray.push(this.props.location.state.dateIn, datePlaceHolder);
+        }
+        else if(this.props.location.state.dateIn == '' && this.props.location.state.dateOut !== ''){
+            let parts=this.props.location.state.dateOut.split("-");
+            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
+            let datePlaceHolder=moment(dt).add(-3,'days').format('MM-DD-YYYY');
+            dateRangeArray.push(datePlaceHolder, this.props.location.state.dateOut);
+        }
+        else{
+            dateRangeArray.push(this.props.location.state.dateIn, this.props.location.state.dateOut);
+
+        }
+
+        const dateRange = dateRangeArray.join(" - ");
+
         this.setState({
-            datesRange: defaultDateRange
+            datesRange: dateRange,
+            location: location
         });
 
         // this.setState({loading: true});
@@ -85,7 +114,7 @@ class HomePage extends Component {
 
 
         //get all the hotels from firebase, set allHotels
-        this._asyncRequest = this.props.firebase.getAllHotels()
+        this.props.firebase.getAllHotels()
             .then(result => {
                 this._asyncRequest = null;
                 this.setState({
@@ -94,31 +123,13 @@ class HomePage extends Component {
                         filteredHotels: result
                     },
                     ()=>{
-                        // call the search function at initial load
-                        // it sets the room prices of each hotel based off of roomType criteria,
-                        // then sets each hotel data.currentRoomPrice for easier access
                         this.handleSearch();
-                        // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
-                        // console.log(this.state.allHotels[0].data.room_types);
-                        // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
-                        // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
                     });
             });
 
 
-        //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
-        // load hotel data for both arrays
-        // hotels[] stays constant
-        // set state of searchHotels[] to allHotels[]
-        // call filter and sort methods
-        // filteredHotels is what gets rendered after filtering/sorting hotels
 
-    }
 
-    componentWillUnmount() {
-        if (this._asyncRequest) {
-            this._asyncRequest.cancel();
-        }
     }
 
     componentDidUpdate(prevState) {
@@ -410,11 +421,11 @@ class HomePage extends Component {
     }
 
     render() {
-
         return (
             <div>
             <SearchBar
             datesRange={this.state.datesRange}
+            location={this.state.location}
             locationOptions={this.state.locationOptions}
             defaultRoomType={this.state.search.roomType}
             defaultRoomQuantity={this.state.search.roomQuantity}

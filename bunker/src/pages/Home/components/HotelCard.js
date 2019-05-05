@@ -23,8 +23,8 @@ const HotelCard = (props) => {
       </Card.Content>
       <Card.Content extra>
         <Grid.Column floated='left'>
-            <Icon name='dollar sign'/>
-            <font size="+0.5">{currentRoomPrice} / night</font>
+            <Icon color='green' name='dollar sign'/>
+            <font color='green' size="+0.5">{currentRoomPrice} / night</font>
         </Grid.Column>
         <Grid.Column floated='right'>
           <Icon name='star' color='yellow' />
