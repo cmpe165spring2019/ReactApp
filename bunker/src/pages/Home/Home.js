@@ -44,76 +44,91 @@ class HomePage extends Component {
     };
   }
 
-  componentDidMount() {
-    //set initial values of checkIn/Out calendar
-    const today = moment().format("MM-DD-YYYY");
-    const aWeekFromToday = moment()
-      .add(5, "days")
-      .format("MM-DD-YYYY");
-    const defaultDateRangeArray = [today, aWeekFromToday];
-    const defaultDateRange = defaultDateRangeArray.join(" - ");
-    this.setState({
-      datesRange: defaultDateRange
-    });
 
-    // this.setState({loading: true});
+    componentDidMount() {
 
-    //get the search location options from firebase, set locationOptions
-    this._asyncRequest = this.props.firebase.getCities().then(locationData => {
-      this._asyncRequest = null;
-      locationData.sort((a, b) => {
-        if (a.data.city.toLowerCase() > b.data.city.toLowerCase()) {
-          return 1;
-        } else {
-          return -1;
+        //set initial values of checkIn/Out calendar
+        const today=moment().format('MM-DD-YYYY');
+        const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
+        let dateRangeArray = [];
+        let location = '';
+
+        //Check if location exists and set
+        if(typeof this.props.location.state !== 'undefined'){
+            location = this.props.location.state.location;
         }
-      });
 
-      const locationOptions = locationData.map(location => ({
-        key: location.data.city,
-        text: `${location.data.city} , ${location.data.state}, ${
-          location.data.country
-        }`,
-        value: location
-      }));
-
-      this.setState({ locationOptions: locationOptions });
-    });
-
-    //get all the hotels from firebase, set allHotels
-    this._asyncRequest = this.props.firebase.getAllHotels().then(result => {
-      this._asyncRequest = null;
-      this.setState(
-        {
-          allHotels: result,
-          searchedSortedHotels: result,
-          filteredHotels: result
-        },
-        () => {
-          // call the search function at initial load
-          // it sets the room prices of each hotel based off of roomType criteria,
-          // then sets each hotel data.currentRoomPrice for easier access
-          this.handleSearch();
-          // console.log("FIREBASE RETRIEVAL for this.state.allHotels: " + util.inspect(this.state.allHotels));
-          // console.log(this.state.allHotels[0].data.room_types);
-          // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
-          // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
+        //See if date range exists and then set
+        if(typeof this.props.location.state == 'undefined' || (this.props.location.state.dateIn == '' && this.props.location.state.dateOut == ''))
+            dateRangeArray.push(today, aWeekFromToday);
+        else if(this.props.location.state.dateIn !== '' && this.props.location.state.dateOut == ''){
+            let parts=this.props.location.state.dateIn.split("-");
+            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
+            let datePlaceHolder=moment(dt).add(3,'days').format('MM-DD-YYYY');
+            dateRangeArray.push(this.props.location.state.dateIn, datePlaceHolder);
         }
-      );
-    });
+        else if(this.props.location.state.dateIn == '' && this.props.location.state.dateOut !== ''){
+            let parts=this.props.location.state.dateOut.split("-");
+            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
+            let datePlaceHolder=moment(dt).add(-3,'days').format('MM-DD-YYYY');
+            dateRangeArray.push(datePlaceHolder, this.props.location.state.dateOut);
+        }
+        else{
+            dateRangeArray.push(this.props.location.state.dateIn, this.props.location.state.dateOut);
 
-    //** DELETE LATER WHEN FIREBASE DATA IS PULLED */
-    // load hotel data for both arrays
-    // hotels[] stays constant
-    // set state of searchHotels[] to allHotels[]
-    // call filter and sort methods
-    // filteredHotels is what gets rendered after filtering/sorting hotels
-  }
+        }
 
-  componentWillUnmount() {
-    if (this._asyncRequest) {
-      this._asyncRequest.cancel();
-    }
+        const dateRange = dateRangeArray.join(" - ");
+
+        this.setState({
+            datesRange: dateRange,
+            location: location
+        });
+
+        // this.setState({loading: true});
+
+        //get the search location options from firebase, set locationOptions
+        this._asyncRequest = this.props.firebase.getCities()
+            .then(locationData => {
+                this._asyncRequest = null;
+                locationData.sort((a,b)=>{
+                    if(a.data.city.toLowerCase() > b.data.city.toLowerCase()){
+                        return 1
+                    }
+                    else{
+                        return -1
+                    }
+                })
+
+                const locationOptions = locationData.map(
+                    (location) =>
+                        ({
+                            key: location.data.city,
+                            text: `${location.data.city} , ${location.data.state}, ${location.data.country}`,
+                            value: location
+                        })
+                );
+
+                this.setState({locationOptions: locationOptions});
+            });
+
+
+
+        //get all the hotels from firebase, set allHotels
+        this.props.firebase.getAllHotels()
+            .then(result => {
+                this._asyncRequest = null;
+                this.setState({
+                        allHotels: result,
+                        searchedSortedHotels: result,
+                        filteredHotels: result
+                    },
+                    ()=>{
+                        this.handleSearch();
+                    });
+            });
+
+
   }
 
   componentDidUpdate(prevState) {
@@ -354,41 +369,46 @@ class HomePage extends Component {
 
   handleFilter = type => {
     //update state for filteredHotels
-    const searchedSortedHotels = this.state.searchedSortedHotels;
-    const price = this.state.filter.price;
-    const rating = this.state.filter.rating;
+          const searchedSortedHotels = this.state.searchedSortedHotels;
+          const price = this.state.filter.price;
+          const rating = this.state.filter.rating;
 
-    let filteredHotels = this.state.filteredHotels;
+          let filteredHotels = this.state.filteredHotels;
 
-    //filter by rating
-    if (type === "rating") {
-      filteredHotels = searchedSortedHotels.filter(
-        hotel => hotel.data.rating >= rating
-      );
-    }
+          //filter by rating
+          if(type==='rating'){
+              filteredHotels = searchedSortedHotels.filter(
+                  hotel => hotel.data.rating >= rating
+              );
+          }
 
-    //filter by price
-    else if (type === "price") {
-      filteredHotels = searchedSortedHotels.filter(hotel => {
-        const roomTypeData = hotel.data.room_types.filter(
-          roomType => roomType.type === this.state.search.roomType
-        );
-        const roomPrice = roomTypeData[0].price;
-        hotel.data.currentRoomPrice = roomPrice;
-        return roomPrice <= price;
-      });
-    } else {
-      console.log("filtering both");
-    }
+          //filter by price
+          else if(type==='price'){
+              filteredHotels = searchedSortedHotels.filter(
+                  hotel => {
+                      const roomTypeData = hotel.data.room_types.filter(roomType=> roomType.type === this.state.search.roomType);
+                      const roomPrice = roomTypeData[0].price;
+                      hotel.data.currentRoomPrice = roomPrice;
+                      return(
+                          roomPrice <= price
+                      );
+                  }
+              );
+          }
 
-    this.sortHotels(filteredHotels, this.state.sort);
+          else{
+              console.log('filtering both');
+          }
 
-    if (filteredHotels !== this.state.filteredHotels) {
-      this.setState({
-        filteredHotels: filteredHotels
-      });
-    }
-  };
+          this.sortHotels(filteredHotels, this.state.sort)
+
+          if(filteredHotels!==this.state.filteredHotels){
+              this.setState({
+                  filteredHotels: filteredHotels
+
+              });
+          }
+  }
   // contextRef = createRef()
   render() {
     return (
