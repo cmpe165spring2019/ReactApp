@@ -180,8 +180,8 @@ class HotelPage extends Component {
                     {
                       this.state.hotel.data.image.map((i,index) => (
                         <Carousel.Item key={index}>
-                            <Image
-                                // className="d-block"
+                            <img
+                                className="block"
                                 src={i}
                                 alt={`slide ${index}`}
                                 style={{width: 600, height: 400}}
@@ -293,9 +293,13 @@ class HotelPage extends Component {
 						</Segment>
 					</Grid.Column>
 					<Grid.Row>
-                        <MapsHotel name={name} address={address} />
+                        {/*<MapsHotel name={name} address={address} />*/}
 					</Grid.Row>
 				</Grid.Row>
+                <Grid.Row centered stretched columns={3}>
+                    <MapsHotel name={name} address={address} />
+                </Grid.Row>
+
 			</Grid>
 		);
 	}
