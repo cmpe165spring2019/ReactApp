@@ -55,16 +55,9 @@ const CheckOut = props => {
 
 	return (
 		<Modal
-			// style={semanticcss}
 			centered={true}
 			size="small"
             role="dialog"
-            // autoFocus={false}
-            // animation={false}
-            // backdrop={false}
-            // enforceFocus ={false}
-            // keyboard={false}
-            // restoreFocus ={false}
 			trigger={
 				<Button
 					color="blue"

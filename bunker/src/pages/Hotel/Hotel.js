@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import Carousel from 'react-bootstrap/Carousel';
 import 'bootstrap/dist/css/bootstrap.css';
+import '../Hotel/CheckOut/conflict.css'
 // import CarouselComponent from './Carousel'
 // Components
 import {withFirebase} from "../../server/Firebase";
