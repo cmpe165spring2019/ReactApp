@@ -47,7 +47,6 @@ class SearchBar extends Component {
                             </div>
                     <Dropdown
                         search selection
-                        defaultValue={this.props.defaultLocationValue}
                                     name='location'
                                     options={this.props.locationOptions}
                                     placeholder="City, Adress, Zip code..."
