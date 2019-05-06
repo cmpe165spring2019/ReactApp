@@ -425,10 +425,10 @@ class HomePage extends Component {
           minPrice={this.state.filter.minPrice}
         />
 
-      <Segment padded='very'>
+      <Segment padded="very">
           <Grid columns={2}>
             <Grid.Row>
-            <Grid.Column width={9}>
+            <Grid.Column width={11}>
               <ListingBase
                 hotels={this.state.filteredHotels}
                 datesRange={this.state.datesRange}
@@ -436,7 +436,7 @@ class HomePage extends Component {
                 roomQuantity={this.state.search.roomQuantity}
               />
             </Grid.Column>
-            <Grid.Column width={6}>
+            <Grid.Column width={5}>
               <div className="sticky">
               <Container compact
                        style={{

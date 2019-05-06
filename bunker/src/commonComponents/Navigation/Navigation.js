@@ -67,7 +67,9 @@ class Navigation extends Component {
                     onClick={this.handleItemClick}
                 >
                 {/* <Image src = {BunkerImage} size='tiny'/> */}
+                
                 <Icon name='home' />
+                Bunker
                 </Menu.Item>
                 </Link>
                 <Link to={ROUTES.HOME}>
@@ -139,7 +141,9 @@ Sign Out
                 onClick={this.handleItemClick}
             >
             {/* <Image src = {BunkerImage} size='tiny'/> */}
+
             <Icon name='home' />
+            Bunker
             </Menu.Item>
             </Link>
             <Link to={ROUTES.HOME}>
