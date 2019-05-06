@@ -63,6 +63,8 @@ class Firebase {
 
 	hotelRef = uid => this.database.collection("hotels").doc(uid);
 
+	locationRef = uid => this.database.collection("locations").doc(uid).get();
+
 	reservationRef = uid => this.database.collection("reservations").doc(uid);
 	reservationsRef = () => this.database.collection("reservations");
 
@@ -158,7 +160,14 @@ class Firebase {
 	checkForConflictWithDates = (new_start, new_end, user_id) => {
 		return this.reservationsRef()
 			.where("user_id", "==", user_id)
-			.then(reservations => {
+			.get()
+			.then(snapshots => {
+				let reservations = [];
+				snapshots.forEach(snapshot => {
+					reservations.push({
+						data: snapshot.data()
+					});
+				});
 				return reservations.every(res => {
 					const check =
 						new_end < res.data.start_date || new_start > res.data.end_date;
@@ -174,7 +183,7 @@ class Firebase {
 			});
 	};
 
-	addReservationToDB = (user_id, data) => {
+	addReservationToDB = (user_id, data, isUseReward, usedReward) => {
 		return this.checkForConflictWithDates(
 			data.start_date,
 			data.end_date,
@@ -184,13 +193,21 @@ class Firebase {
 				this.reservationsRef()
 					.add(data)
 					.then(res_doc => {
-						this.editUserAccount(user_id, {
-							reservations: this.FieldValue.arrayUnion(res_doc.id),
-							reward_points: this.FieldValue.increment(
-								Math.floor((data.price || 0) / 10)
-							)
-						});
-						return true;
+						if (isUseReward) {
+							this.editUserAccount(user_id, {
+								reservations: this.FieldValue.arrayUnion(res_doc.id),
+								reward_points: this.FieldValue.increment(-usedReward)
+							});
+							return true;
+						} else {
+							this.editUserAccount(user_id, {
+								reservations: this.FieldValue.arrayUnion(res_doc.id),
+								reward_points: this.FieldValue.increment(
+									Math.floor((data.price || 0) / 10)
+								)
+							});
+							return true;
+						}
 					})
 					.catch(error => console.log("Failed to add res " + error));
 			} else {
@@ -257,6 +274,16 @@ class Firebase {
 
 				return cities;
 			});
+	subscribeUserReward = (userID, doChange, doError) => {
+		return this.user(userID).onSnapshot(
+			snapshot => {
+				doChange(snapshot.data().reward_points);
+			},
+			error => {
+				console.log(error);
+			}
+		);
+	};
 
 	subscribeReservations = (
 		userID,
@@ -264,23 +291,22 @@ class Firebase {
 		doChange,
 		doError
 	) => {
-		return (
-			this.reservationsRef()
-				.where("user_id", "==", userID)
-				// .where("start_date", ">=", start_date)
-				.onSnapshot(
-					snapshot => {
-						let reservations = [];
-						snapshot.forEach(doc =>
-							reservations.push({id: doc.id, data: doc.data()})
-						);
-						doChange(reservations);
-					},
-					error => {
-						doError(error);
-					}
-				)
-		);
+		return this.reservationsRef()
+			.where("user_id", "==", userID)
+			.orderBy("start_date")
+			.onSnapshot(
+				snapshot => {
+					let reservations = [];
+					snapshot.forEach(doc =>
+						reservations.push({id: doc.id, data: doc.data()})
+					);
+					doChange(reservations);
+				},
+				error => {
+					console.log(error);
+					doError(error);
+				}
+			);
 	};
 
 	getReservations = reservationIDs => {
@@ -314,18 +340,17 @@ class Firebase {
 
 	//Data Retrive and filter
 	getLocationHotel = location => {
-		let hotels = [];
+		const promises = [];
 		location.data.hotels.forEach(hotelRef => {
-			let obj = {};
-			hotelRef.get().then(snapshot => {
-				obj = {
-					id: snapshot.id,
-					data: {...snapshot.data()}
-				};
-				hotels.push(obj);
-			});
+				promises.push(hotelRef.get());
 		});
-		return hotels;
+		return Promise.all(promises).then(snapshots =>{
+			let result = snapshots.map(snapshot => ({
+				id: snapshot.id,
+				data: snapshot.data()
+			}))
+			return result;
+		})
 	};
 
 	getHotelsRoomTypeSearch = (hotels, room_types) => {

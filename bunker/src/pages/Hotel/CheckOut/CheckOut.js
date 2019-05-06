@@ -5,15 +5,27 @@ import CheckOutForm from "./CheckOutForm";
 import PayPalButton from "../../../server/Payment/PayPalButton";
 
 const CheckOut = props => {
+	const user = JSON.parse(localStorage.getItem("authUser"));
 	const [isError, setIsError] = React.useState(false);
 	const [isUseReward, setIsUseReward] = React.useState(false);
 	const [error, setError] = React.useState(new Error('null'));
 	const [isSuccess, setIsSuccess] = React.useState(false);
+	const [rewardPoints, setRewardPoints] = React.useState(0);
+
+	React.useEffect( () => {
+		const subscribe = props.firebase.subscribeUserReward(user.uid, reward_points => {
+			setRewardPoints(reward_points);
+
+		});
+
+		return () => {
+			subscribe();
+		}
+	}, [rewardPoints]);
 
 	const handleUseReward = () => {
 		setIsUseReward(!isUseReward);
 	};
-	const user = JSON.parse(localStorage.getItem("authUser"));
 	console.log(user);
 	const {reservation, hotel, datesRange} = props;
 
@@ -24,6 +36,8 @@ const CheckOut = props => {
 		props.firebase.addReservationToDB(
 			user.uid,
 			reservation_with_payment,
+			isUseReward,
+			rewardPoints,
 		);
 		setIsSuccess(payment.paid);
 	};
@@ -60,6 +74,7 @@ const CheckOut = props => {
 						hotel={hotel}
 						reservation={reservation}
 						user={user}
+						reward_points={rewardPoints}
 						isUseReward={isUseReward}
 					/>
 				</Modal.Description>
@@ -73,9 +88,9 @@ const CheckOut = props => {
 					content={
 						isUseReward
 							? "Reward is used"
-							: `Reward left: ${user.reward_points}`
+							: `Reward left: ${rewardPoints}`
 					}
-					disabled={user.reward_points <= 0}
+					disabled={rewardPoints <= 0}
 					negative={isUseReward}
 					positive={!isUseReward}
 					onClick={handleUseReward}
@@ -103,7 +118,7 @@ const CheckOut = props => {
 			{ isError ? (
 				<Message negative>
 					<Message.Header>Oops!!!</Message.Header>
-					{error.message === "MultipleBookingError" ? <p> Cannot have multiple booking</p> :<p>Something when wrong</p>}
+					{error.message === "MultipleBookingError" ? <p> Multiple Booking Error: Sorry, Bunker does not allow multiple hotel bookings on concurrent dates!</p> :<p>Something went wrong!</p>}
 				</Message>
 			) : null }
 			{ isSuccess ? 			( <Message

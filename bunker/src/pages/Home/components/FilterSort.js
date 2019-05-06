@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Button, Icon, Select, Segment } from 'semantic-ui-react';
+import { Grid, Menu, Container, Icon, Select, Segment } from 'semantic-ui-react';
 import Slider from 'react-input-slider';
 
 const RatingFilter = () => {
@@ -53,26 +53,72 @@ const sortOptions = [
   ];
 
 const SearchFilter = (props) => (
-    <Grid centered>
+    <div>
+        <Menu compact style={{position: "relative", left: "25%"}} secondary>
+            <Menu.Item>
+                <Container fluid>
+                <div>
+                        Price: ${props.minPrice} to ${Math.round(props.price)}
+                    </div>
+                    <Slider
+                    name="slider"
+                    axis="x"
+                    x={props.x}
+                    onChange={props.handleSlider}>
+                    </Slider>
+                </Container>
+
+            </Menu.Item>
+            <Menu.Item>
+                <Container fluid>
+                <div>
+                        Rating:
+                    </div>
+                    <Select compact
+                        name="rating"
+                        placeholder=''
+                        options={ratingOptions}
+                        defaultValue={props.defaultRating}
+                        onChange={props.handleRating} />
+                </Container>
+            </Menu.Item>
+            <Menu.Item>
+                <Container fluid>
+                <div>
+                        Sort By:
+                    </div>
+                        <Select
+                        name="sort"
+                        defaultValue={props.defaultSort}
+                        placeholder=''
+                        options={sortOptions}
+                        onChange={props.handleSort} />
+                </Container>
+            </Menu.Item>
+
+        </Menu>
+
+
+    {/* <Grid centered>
         <Grid.Row>
             <Grid.Column width={3}>
             <div>
                         Price: ${props.minPrice} to ${Math.round(props.price)}
                     </div>
-                    <Slider 
+                    <Slider
                     name="slider"
-                    axis="x" 
-                    x={props.x} 
+                    axis="x"
+                    x={props.x}
                     onChange={props.handleSlider}>
-                    </Slider>         
+                    </Slider>
             </Grid.Column>
             <Grid.Column width={2}>
             <div>
                         Rating:
                     </div>
-                    <Select 
+                    <Select compact
                         name="rating"
-                        placeholder='' 
+                        placeholder=''
                         options={ratingOptions}
                         defaultValue={props.defaultRating}
                         onChange={props.handleRating} />
@@ -81,18 +127,18 @@ const SearchFilter = (props) => (
             <div>
                         Sort By:
                     </div>
-                        <Select 
+                        <Select
                         name="sort"
                         defaultValue={props.defaultSort}
-                        placeholder='' 
+                        placeholder=''
                         options={sortOptions}
                         onChange={props.handleSort} />
             </Grid.Column>
             <Grid.Column>
             </Grid.Column>
         </Grid.Row>
-    </Grid>   
-    
+    </Grid>    */}
+    </div>
 )
 
 export default SearchFilter;

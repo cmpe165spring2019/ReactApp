@@ -1,30 +1,43 @@
 import React from "react";
-import {Header, Segment} from "semantic-ui-react";
+import {Icon, Segment} from "semantic-ui-react";
+import * as util from 'util';
+
 const CheckOutForm = props => {
-	const {reservation, isUseReward, user, hotel} = props;
+	const {reservation, isUseReward,reward_points,  hotel} = props;
 
 	const totalPrice = isUseReward
-		? reservation.price - user.reward_points
+		? ((reservation.price > reward_points) ? reservation.price - reward_points : 0)
 		: reservation.price;
 
 	const { name, address } = hotel.data;
 	const { roomQuantity, room_types } = reservation;
 	const roomTypeString = room_types.charAt(0).toUpperCase() + room_types.slice(1) + '-Person Room';
+console.log(util.inspect(reservation));
 
 	return (
 		<Segment>
-			<h3>Your booking for: </h3>
-
-			<p>{name}</p>
+			<h4>Your booking for: </h4>
+			<h3>{name}</h3>
 			<p>
 				{address.street}, {address.city},{" "}
 				{address.state}, {address.country}
 			</p>
-			<p>{roomQuantity} x {roomTypeString}</p>
+			<p>
+			<Icon name="calendar alternate outline" size="large" />
+
+				{new Date(reservation.start_date).toDateString()} -
+				{new Date(reservation.end_date).toDateString()}
+			</p>
+			<p>
+			<Icon name="bed" size="large" />
+
+			{roomQuantity} x {roomTypeString}
+			</p>
+
 			{!isUseReward ? (
-				<h4>Total Price: ${totalPrice}</h4>
+				<h4><Icon name="money" size="large" /> Price: ${totalPrice}</h4>
 			) : (
-				<p>Discounted Price: ${totalPrice}</p>
+				<h4><Icon name="money" size="large" /><font > Price: $</font> <font color="red">{totalPrice}</font> <s>{reservation.price}</s></h4>
 			)}
 		</Segment>
 	);
