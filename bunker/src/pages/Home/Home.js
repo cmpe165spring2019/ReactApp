@@ -45,6 +45,9 @@ class HomePage extends Component {
     };
   }
 
+  componentDidUpdate() {
+    console.log(this.state);
+  }
 
     componentDidMount() {
 
@@ -52,11 +55,24 @@ class HomePage extends Component {
         const today=moment().format('MM-DD-YYYY');
         const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
 
+        let locationOptions = [];
         const historyState = this.props.location.state || {};
 
-        this.setState({
-            datesRange: historyState.datesRange || (today + " - " + aWeekFromToday),
-        });
+        if(historyState.locationID){
+          this.props.firebase.locationRef(historyState.locationID).then(
+            snapshot =>{
+              const location = {id: snapshot.id, data: snapshot.data()};
+              this.setState({
+                search: {
+                  ...this.state.search,
+
+                  location: location,
+                  passedLocation: true
+                }
+              })
+            }
+          )
+        }
 
         this.props.firebase.getCities()
             .then(locationData => {
@@ -69,7 +85,7 @@ class HomePage extends Component {
                     }
                 })
 
-                const locationOptions = locationData.map(
+                locationOptions = locationData.map(
                     (location) =>
                         ({
                             key: location.data.city,
@@ -78,12 +94,15 @@ class HomePage extends Component {
                         })
                 );
 
-                this.setState({locationOptions: locationOptions});
+
             });
+
 
         this.props.firebase.getAllHotels()
             .then(result => {
                 this.setState({
+                        datesRange: historyState.datesRange || (today + " - " + aWeekFromToday),
+                        locationOptions: locationOptions,
                         allHotels: result,
                         searchedSortedHotels: result,
                         filteredHotels: result,
@@ -93,24 +112,6 @@ class HomePage extends Component {
                     });
             });
 
-      if(historyState.locationID){
-        console.log(1);
-        this.props.firebase.locationRef(historyState.locationID).then(
-          snapshot =>{
-            const location = {id: snapshot.id, data: snapshot.data()};
-            this.props.firebase.getLocationHotel(location).then(
-              result => {
-                console.log(result);
-                this.setState({
-                  searchedSortedHotels: result,
-                  filteredHotels: result,
-                  defaultLocationValue: location,
-                })
-              }
-            )
-          }
-        )
-      }
     }
 
   handleCheckInOut = (event, { name, value }) => {
@@ -236,7 +237,7 @@ class HomePage extends Component {
           }
         },
         () => {
-          console.log("post-search sort: " + this.state.sort);
+          this.handleFilter();
         }
       );
     }
@@ -322,7 +323,7 @@ class HomePage extends Component {
         }
       },
       () => {
-        this.handleFilter("price");
+        this.handleFilter('price');
       }
     );
   };
@@ -337,12 +338,12 @@ class HomePage extends Component {
         }
       },
       () => {
-        this.handleFilter("rating");
+        this.handleFilter('rating');
       }
     );
   };
 
-  handleFilter = type => {
+  handleFilter = (type) => {
     //update state for filteredHotels
           const searchedSortedHotels = this.state.searchedSortedHotels;
           const price = this.state.filter.price;
@@ -355,9 +356,19 @@ class HomePage extends Component {
               filteredHotels = searchedSortedHotels.filter(
                   hotel => hotel.data.rating >= rating
               );
+              filteredHotels = filteredHotels.filter(
+                hotel => {
+                    const roomTypeData = hotel.data.room_types.filter(roomType=> roomType.type === this.state.search.roomType);
+                    const roomPrice = roomTypeData[0].price;
+                    hotel.data.currentRoomPrice = roomPrice;
+                    return(
+                        roomPrice <= price
+                    );
+                }
+            );
           }
 
-          //filter by price
+          // filter by price
           else if(type==='price'){
               filteredHotels = searchedSortedHotels.filter(
                   hotel => {
@@ -369,10 +380,10 @@ class HomePage extends Component {
                       );
                   }
               );
-          }
 
-          else{
-              console.log('filtering both');
+              filteredHotels = filteredHotels.filter(
+                hotel => hotel.data.rating >= rating
+            );
           }
 
           this.sortHotels(filteredHotels, this.state.sort)
@@ -386,11 +397,13 @@ class HomePage extends Component {
   }
   // contextRef = createRef()
   render() {
+    console.log('render location: ' + util.inspect(this.state.search.location));
     return (
       <div>
         <SearchBar
           datesRange={this.state.datesRange}
           locationOptions={this.state.locationOptions}
+          defaultLocation={this.state.search.passedLocation && this.state.search.location}
           defaultRoomType={this.state.search.roomType}
           defaultRoomQuantity={this.state.search.roomQuantity}
           defaultLocationValue={this.state.defaultLocationValue}

@@ -141,7 +141,7 @@ class Landing extends React.Component{
           <Form>
               <div style={Place}>
                   <Form.Field>
-                      <label> WHERE</label>
+                      <p><b>Location:</b></p>
                       <Dropdown
                           search selection
                                       name='location'
@@ -155,15 +155,17 @@ class Landing extends React.Component{
               </div>
 
               <div style={InOutDiv}>
-                  <div>Check In/Out</div>
+              <p><b>Check In/Out: </b></p>
+                  
                   <CheckInOutCalendar
                   onChange={this.onChange}
                   value={this.state.datesRange}
                   />
+                  
                 </div>
 
               <div style={Guests}>
-                  <Form.Field size = "medium">
+                  {/* <Form.Field size = "medium">
                       <Container fluid>
                       <div>Room Type/Quantity:</div>
                       <RoomTypeSelect
@@ -173,11 +175,15 @@ class Landing extends React.Component{
                       <RoomQuantitySelect
                       defaultValue={1}
                       onChange={this.onChange}
-                      /></Container>
-                  </Form.Field>
+                      />
+                      </Container>
+                  </Form.Field> */}
               </div>
               <div style={buttonDiv}>
-                  <Form.Button onClick={this.onClick}>Submit</Form.Button>
+              <br></br>
+              <p>
+                  <Form.Button primary onClick={this.onClick}>Submit</Form.Button>
+                  </p>
               </div>
           </Form>
       </div>
@@ -215,7 +221,7 @@ const introD = {
     fontcolor:"grey",
 }
 const Place = {
-    margin:"20px auto 0 auto ",
+    margin:"0px auto 0 auto ",
     width:"360px",
 };
 const InOutDiv = {
@@ -247,7 +253,7 @@ const boxStyle = {
     border: '5px solid white',
     borderRadius:"5px",
     width: '500px',
-    height: '429px',
+    height: '360px',
     backgroundColor: 'white',
     backgroundRepeat:'',
     position:'center',

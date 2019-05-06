@@ -34,11 +34,10 @@ class SearchBar extends Component {
 
 
     render() {
-        console.log('this.props.defaultRoomQuantity : '  + util.inspect(this.props.defaultRoomQuantity));
         return (
 
 
-            <Menu compact style={{position: "relative", left: "25%"}} secondary>
+            <Menu compact style={{position: "relative", left: "20%"}} secondary>
 
                 <Menu.Item>
                     <Container fluid>
@@ -53,7 +52,8 @@ class SearchBar extends Component {
                                     onChange={this.props.handleLocation}
                                     onSearchChange={this.props.handleLocation}
                                     onLabelClick={this.props.handleLocation}
-                                    defaultValue={{id: this.props.defaultLocationValue.id}}
+                                    value={this.props.defaultLocation}
+                                    // defaultValue={{id: this.props.defaultLocationValue.id}}
                             />
 
                     </Container>
@@ -101,58 +101,6 @@ class SearchBar extends Component {
                     </Container>
 
                 </Menu.Item>
-
-
-
-                {/* <Grid centered>
-                  <Grid.Row/>
-                  <Grid.Row centered>
-                  <Grid.Column width={3}>
-                  <div>
-                  Location:
-                  </div>
-                  <Dropdown search selection fluid
-                  name="location"
-                  options={this.props.locationOptions}
-                  placeholder="City, Adress, Zip code..."
-                  onChange={this.props.handleLocation}
-                  onSearchChange={this.props.handleLocation}
-                  onLabelClick={this.props.handleLocation}
-                  />
-                  </Grid.Column>
-                  <Grid.Column width={3}>
-                  <div>
-                  Check In/Out:
-                  </div>
-                  <CheckInOutCalendar
-                  onChange={this.props.handleCheckInOut}
-                  value={this.props.datesRange}
-                  />
-                  </Grid.Column>
-                  <Grid.Column width={2}>
-                  <div>Room Type:</div>
-                  <RoomTypeSelect
-                  onChange={this.props.handleRoomTypeQuantity}
-                  defaultValue={this.props.defaultRoomType}
-                  />
-                  </Grid.Column>
-                  <Grid.Column width={1}>
-                  <div>Quantity:</div>
-                  <RoomQuantitySelect
-                  onChange={this.props.handleRoomTypeQuantity}
-                  defaultValue={this.props.defaultRoomQuantity}
-                  />
-                  </Grid.Column>
-                  <Grid.Column width={1}>
-                  <br></br>
-                  <Button
-                  onClick={this.props.handleSearch}
-                  >
-                  Search
-                  </Button>
-                  </Grid.Column>
-                  </Grid.Row>
-                  </Grid> */}
             </Menu>
 
         );
