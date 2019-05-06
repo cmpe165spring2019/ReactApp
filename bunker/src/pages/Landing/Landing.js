@@ -25,8 +25,8 @@ class Landing extends React.Component{
             maintxt :'Decentralized Certificates on the Ethereum Blockchain',
             speed : 100,
             displaytxt: '',
-            tmpTitle: 'Start your trip with Bunker!   ',
-            fullTitle: 'Start your trip with Bunker!',
+            tmpTitle: 'Make your first reservation with Bunker!',
+            fullTitle: 'Make your first reservation with Bunker!',
             j: 0
 
         }
@@ -118,43 +118,7 @@ class Landing extends React.Component{
           <div style={introDiv}>
               <h1 style={introD}>{displayTitle}</h1>
           </div>
-          <Form>
-              <div style={Place}>
-                  <Form.Field>
-                      <label> WHERE</label>
-                      <input placeholder="Anywhere" onChange={(event) => {this.setState({location: event.target.value}); console.log(this.state.location);}} />
-                  </Form.Field>
-              </div>
-
-              <div style={InOutDiv}>
-                  <div style={CheckIn}>
-                      {/*<Form.Field size = "medium">*/}
-                          {/*<label>CHECK IN</label>*/}
-                          {/*<input placeholder="Check In Date" />*/}
-                      {/*</Form.Field>*/}
-                      <div>Check-In</div><DateInput name="dateIn"  minDate={today} maxDate={this.state.maxCheckIn} dateFormat="MM-DD-YYYY" onChange={this.handleCheckInDate} value={this.state.dateIn} icon="bullhorn" iconPosition="left" placeholder="MM-DD-YYYY"/>
-                  </div>
-                  <div style={CheckOut}>
-                      <div>Check-Out</div>
-                      <DateInput name="dateOut"  minDate={this.state.minCheckout} dateFormat="MM-DD-YYYY" onChange={this.handleCheckOutDate} value={this.state.dateOut} icon="paper plane" iconPosition="left" placeholder="MM-DD-YYYY"/>
-                      {/*<Form.Field size = "medium">*/}
-                          {/*<label>CHECK OUT</label>*/}
-                          {/*<input placeholder="Check Out Date" type="text"/>*/}
-                      {/*</Form.Field >*/}
-                  </div>
-                </div>
-
-              <div style={Guests}>
-                  <Form.Field size = "medium">
-                      <label>GUESTS</label>
-                      {/*<input placeholder="Guests" />*/}
-                      <GuestNum />
-                  </Form.Field>
-              </div>
-              <div style={buttonDiv}>
-                  <Form.Button onClick={this.onClick}>Submit</Form.Button>
-              </div>
-          </Form>
+          
       </div>
   </div>
 );
@@ -222,7 +186,7 @@ const boxStyle = {
     border: '5px solid white',
     borderRadius:"5px",
     width: '500px',
-    height: '429px',
+    height: '300px',
     backgroundColor: 'white',
     backgroundRepeat:'',
     position:'center',
