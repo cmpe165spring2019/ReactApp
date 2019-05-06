@@ -56,7 +56,7 @@ const SearchFilter = (props) => (
     <div>
         <Grid>
             <Grid.Row>
-            <Menu compact style={{position: "relative", left: "20%"}} secondary>
+            <Menu compact style={{position: "relative", left: "17%"}} secondary>
             <Menu.Item>
                 <Container fluid>
                 <div>

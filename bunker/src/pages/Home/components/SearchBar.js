@@ -1,5 +1,6 @@
 // This component contains the search bar with filters for users to narrow down their search based on date, guests, price, location, stars
-
+import * as ROUTES from "../../../constants/routes";
+import {Link} from "react-router-dom";
 import React, { Component } from "react";
 import {
     Button,
@@ -39,12 +40,18 @@ class SearchBar extends Component {
         return (
 <Grid>
     <Grid.Row>
-    <Image src={BunkerImage} circular wrapped size="medium" centered></Image>
+        <p></p>
 
-    <Menu compact style={{position: "relative", left: "20%"}} secondary>
+    <Menu compact style={{position: "relative", left: "4%"}} secondary>
+<Menu.Item>
+<Link to={ROUTES.LANDING}>
+<Image src={BunkerImage} circular wrapped size="small" centered></Image>
+</Link>
 
+</Menu.Item>
 <Menu.Item>
     <Container fluid>
+    
     <div>
                 Location:
             </div>

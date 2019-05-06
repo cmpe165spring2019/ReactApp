@@ -164,22 +164,6 @@ class Landing extends React.Component{
                   />
                   
                 </div>
-
-              <div style={Guests}>
-                  {/* <Form.Field size = "medium">
-                      <Container fluid>
-                      <div>Room Type/Quantity:</div>
-                      <RoomTypeSelect
-                      defaultValue={'single'}
-                      onChange={this.onChange}
-                      />
-                      <RoomQuantitySelect
-                      defaultValue={1}
-                      onChange={this.onChange}
-                      />
-                      </Container>
-                  </Form.Field> */}
-              </div>
               <div style={buttonDiv}>
               <br></br>
               <p>
@@ -216,7 +200,7 @@ const GuestNum = () => {
 const bunkerStyle = {
     margin: "auto",
     width: "300px",
-    height: "20%",
+    height: "15%",
 };
 const introDiv = {
     margin:"20px auto 0 auto ",
@@ -251,13 +235,13 @@ const Guests = {
     width:"360px",
 };
 const buttonDiv = {
-    margin:"20px auto 0 auto ",
+    margin:"-46px 0px 0 340px ",
     width:"360px"
 };
 
 const image = {
         display: "block",
-margin: '30px auto 0 auto',
+margin: '50px auto 0 auto',
         width: "50%"
       
 }
@@ -269,7 +253,7 @@ const boxStyle = {
     border: '5px solid white',
     borderRadius:"5px",
     width: '500px',
-    height: '500px',
+    height: '450px',
     backgroundColor: 'white',
     backgroundRepeat:'',
     position:'center',
