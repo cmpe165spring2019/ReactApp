@@ -293,12 +293,10 @@ class HotelPage extends Component {
 						</Segment>
 					</Grid.Column>
 					<Grid.Row>
-                        {/*<MapsHotel name={name} address={address} />*/}
+                        <MapsHotel name={name} address={address} />
 					</Grid.Row>
 				</Grid.Row>
-                <Grid.Row centered stretched columns={3}>
-                    <MapsHotel name={name} address={address} />
-                </Grid.Row>
+
 
 			</Grid>
 		);
