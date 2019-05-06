@@ -6,7 +6,7 @@ import React, { Component } from "react";
 import SearchBar from "./components/SearchBar";
 import ListingBase from "./components/ListingBase";
 import FilterSort from "./components/FilterSort";
-import { Divider, Grid, Segment } from "semantic-ui-react";
+import { Divider, Grid, Container, Segment } from "semantic-ui-react";
 import * as moment from "moment";
 import Maps from "./components/Maps";
 import './sticky.css'
@@ -40,7 +40,7 @@ class HomePage extends Component {
         maxPrice: 1000,
         rating: 0
       },
-      location: "",
+      defaultLocationValue: "",
       sort: "ratingHL"
     };
   }
@@ -412,10 +412,10 @@ class HomePage extends Component {
           minPrice={this.state.filter.minPrice}
         />
 
-      <Segment>
+      <Segment padded='very'>
           <Grid columns={2}>
             <Grid.Row>
-            <Grid.Column width={10}>
+            <Grid.Column width={9}>
               <ListingBase
                 hotels={this.state.filteredHotels}
                 datesRange={this.state.datesRange}
@@ -425,13 +425,13 @@ class HomePage extends Component {
             </Grid.Column>
             <Grid.Column width={6}>
               <div className="sticky">
-              <Segment compact
+              <Container compact
                        style={{
                          overflow: 'hidden',
                          height: '100vh',
                          width: '100%'}}>
                 <Maps hotels={this.state.filteredHotels} homestate={this.state}/>
-              </Segment>
+              </Container>
               </div>
             </Grid.Column>
             </Grid.Row>
