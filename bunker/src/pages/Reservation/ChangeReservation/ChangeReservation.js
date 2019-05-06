@@ -35,6 +35,7 @@ const ChangeReservation = props => {
 			.then(() =>{
 				setIsSuccess(true);
 				setIsConfirmOpen(false);
+				setOpenModal(false);
 			})
 			.catch(error => {
 				setIsError(true);

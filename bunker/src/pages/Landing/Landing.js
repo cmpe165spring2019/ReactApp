@@ -1,12 +1,10 @@
 import React from 'react';
 import Background from '../../images/LandingBackground.jpg';
-// import BunkerImage from '../../images/bunkertransparent.png';
 import {Form, Select,Dropdown, Container} from 'semantic-ui-react';
 import RoomTypeSelect from '../../commonComponents/RoomTypeSelect';
 import RoomQuantitySelect from '../../commonComponents/RoomQuantitySelect';
 import CheckInOutCalendar from '../../commonComponents/CheckInOutCalendar'
 import {withFirebase} from '../../server/Firebase' ;
-// import BunkerImage from '../../../public/bunkertransparent.png';
 
 
 import * as ROUTES from '../../constants/routes';
@@ -27,6 +25,8 @@ class Landing extends React.Component{
             roomQuantity: 0,
             datesRange: '',
             locationOptions: '',
+
+
             i : 0,
             maintxt :'Decentralized Certificates on the Ethereum Blockchain',
             speed : 100,
@@ -70,6 +70,27 @@ class Landing extends React.Component{
       	this.setState({locationOptions: locationOptions});
       });
 
+      this.timeout = setInterval(() => {
+          if (this.state.i < this.state.maintxt.length) {
+              let newI = this.state.i+1;
+              this.setState({ i: newI });
+          }
+          //     else{
+          //         console.log("eh");
+          //           this.setState({i:0});
+          // }
+      }, 50);
+      this.timeout = setInterval(() => {
+          if(this.state.j < this.state.tmpTitle.length){
+              let newJ = this.state.j+1;
+              this.setState({ j: newJ });
+          }
+          //     else{
+          //         console.log("eh");
+          //           this.setState({i:0});
+          // }
+      }, 65);
+
     }
 
     onChange = (event, {name, value}) =>{
@@ -91,28 +112,6 @@ class Landing extends React.Component{
         })
     }
 
-    componentDidMount() {
-        this.timeout = setInterval(() => {
-            if (this.state.i < this.state.maintxt.length) {
-                let newI = this.state.i+1;
-                this.setState({ i: newI });
-            }
-            //     else{
-            //         console.log("eh");
-            //           this.setState({i:0});
-            // }
-        }, 50);
-        this.timeout = setInterval(() => {
-            if(this.state.j < this.state.tmpTitle.length){
-                let newJ = this.state.j+1;
-                this.setState({ j: newJ });
-            }
-            //     else{
-            //         console.log("eh");
-            //           this.setState({i:0});
-            // }
-        }, 65);
-    }
     componentWillUnmount() {
         clearInterval(this.timeout);
     }

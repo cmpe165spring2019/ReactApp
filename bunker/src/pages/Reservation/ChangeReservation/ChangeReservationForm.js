@@ -34,22 +34,27 @@ const ChangeReservationForm = props => {
 	React.useEffect(
 		() => {
 			if (newReservationData) {
-				console.log(newReservationData.room_types);
+				console.log(newReservationData);
 				const currentPrice = (_.find(hotel.data.room_types, {
 					type: newReservationData.room_types || room_types
 				})).price;
 				const currentQuantity = newReservationData.roomQuantity || roomQuantity;
-				console.log(room_types, currentPrice,currentQuantity);
-				setCurrentPrice(
+				console.log(currentPrice);
+				setCurrentPrice((
 					(currentQuantity *
 						currentPrice *
 						(newReservationData.end_date - newReservationData.start_date)) /
 						86400000
-				);
+				) || 0);
 			}
 		},
 		[newReservationData]
 	);
+	React.useEffect(
+		() => {
+			setNewReservationData({...newReservationData, price: currentPrice})
+		},
+	[currentPrice])
 
 	const parseDatesRange = editDateRanges => {
 		if (editDateRanges.length > 13) {
@@ -63,7 +68,7 @@ const ChangeReservationForm = props => {
 				...newReservationData,
 				start_date: checkInDate.getTime(),
 				end_date: checkOutDate.getTime(),
-				datesRange: newDatesRange
+				datesRange: newDatesRange,
 			});
 		}
 	};
@@ -77,7 +82,7 @@ const ChangeReservationForm = props => {
 	return (
         <Segment textAlign="left" padded="very">
         <Container text>
-            Your Reservation For: 
+            Your Reservation For:
             <Divider />
             <Grid container centered textAlign='center' verticalAlign='middle' columns={2}>
                 <Grid.Column width={8}>
@@ -93,7 +98,7 @@ const ChangeReservationForm = props => {
                         {hotel.data.address.street}, {hotel.data.address.city}, {hotel.data.address.state}, {hotel.data.address.country}
                         <Header as='h4'>
                             <Icon name="calendar alternate outline" size="large" />
-                            Edit Date Booked: 
+                            Edit Date Booked:
                         </Header>
 							<CheckInOutCalendar
 								onChange={(event, {name, value}) => {
@@ -118,21 +123,21 @@ const ChangeReservationForm = props => {
                         <Header as='h4'>
                             <Icon name="money" size="large" />Total Price: ${currentPrice}
                         </Header>
-                   
+
                     </Container>
                 </Grid.Column>
             </Grid>
             <Divider />
             <Header as='h3'>
-                Note to User: 	
+                Note to User:
             </Header>
             <p>
                 If changes need to be made to check-in/check-out dates or room types/quantity, requests will be granted based off of availability at the time of change.
                 Total price will be affected based off of changes made by the user.
                 Additional/reduced fees will be charged/refunded to the same method of payment used for the previous booking.
-                Refunds are only eligible within 48 hours of check-in date from the original booking date. 
-                After that, all fees and payments are non-refundable and any reward points spent are not guaranteed to be returned. 
-                By clicking "Edit Cancellation" you agree to abide by these rules and this policy. 
+                Refunds are only eligible within 48 hours of check-in date from the original booking date.
+                After that, all fees and payments are non-refundable and any reward points spent are not guaranteed to be returned.
+                By clicking "Edit Cancellation" you agree to abide by these rules and this policy.
                 Bunker is not responsible for any miscalculated bookings, late cancellations, or forgetfulness upon your actions.
             </p>
         </Container>

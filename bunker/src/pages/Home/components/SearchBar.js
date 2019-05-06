@@ -53,6 +53,7 @@ class SearchBar extends Component {
                                     onChange={this.props.handleLocation}
                                     onSearchChange={this.props.handleLocation}
                                     onLabelClick={this.props.handleLocation}
+                                    defaultValue={{id: this.props.defaultLocationValue.id}}
                             />
 
                     </Container>
