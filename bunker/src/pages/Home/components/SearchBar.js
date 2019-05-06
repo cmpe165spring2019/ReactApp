@@ -8,10 +8,12 @@ import {
     Input,
     Dropdown,
     Segment,
-    Table,
+    Image,
     Icon,
     Container
 } from "semantic-ui-react";
+import BunkerImage from '../../../images/bunker.png';
+
 
 import * as moment from 'moment';
 
@@ -35,73 +37,79 @@ class SearchBar extends Component {
 
     render() {
         return (
+<Grid>
+    <Grid.Row>
+    <Image src={BunkerImage} circular wrapped size="medium" centered></Image>
+
+    <Menu compact style={{position: "relative", left: "20%"}} secondary>
+
+<Menu.Item>
+    <Container fluid>
+    <div>
+                Location:
+            </div>
+    <Dropdown
+        search selection
+                    name='location'
+                    options={this.props.locationOptions}
+                    placeholder="City, Adress, Zip code..."
+                    onChange={this.props.handleLocation}
+                    onSearchChange={this.props.handleLocation}
+                    onLabelClick={this.props.handleLocation}
+                    value={this.props.defaultLocation}
+                    // defaultValue={{id: this.props.defaultLocationValue.id}}
+            />
+
+    </Container>
 
 
-            <Menu compact style={{position: "relative", left: "20%"}} secondary>
-
-                <Menu.Item>
-                    <Container fluid>
-                    <div>
-                                Location:
-                            </div>
-                    <Dropdown
-                        search selection
-                                    name='location'
-                                    options={this.props.locationOptions}
-                                    placeholder="City, Adress, Zip code..."
-                                    onChange={this.props.handleLocation}
-                                    onSearchChange={this.props.handleLocation}
-                                    onLabelClick={this.props.handleLocation}
-                                    value={this.props.defaultLocation}
-                                    // defaultValue={{id: this.props.defaultLocationValue.id}}
-                            />
-
-                    </Container>
-
-
-                </Menu.Item>
-                <Menu.Item>
-                    <Container fluid>
-                    Check In/Out:
+</Menu.Item>
+<Menu.Item>
+    <Container fluid>
+    Check In/Out:
 
 <CheckInOutCalendar
-            onChange={this.props.handleCheckInOut}
-            value={this.props.datesRange}
+onChange={this.props.handleCheckInOut}
+value={this.props.datesRange}
+/>
+    </Container>
+
+</Menu.Item>
+<Menu.Item>
+<Container fluid>
+<div>Room Type/Quantity:</div>
+        <RoomTypeSelect
+        onChange={this.props.handleRoomTypeQuantity}
+        defaultValue={this.props.defaultRoomType}
         />
-                    </Container>
+        <RoomQuantitySelect
+        onChange={this.props.handleRoomTypeQuantity}
+        defaultValue={this.props.defaultRoomQuantity}
+        />
+</Container>
 
-                </Menu.Item>
-                <Menu.Item>
-                <Container fluid>
-                <div>Room Type/Quantity:</div>
-                        <RoomTypeSelect
-                        onChange={this.props.handleRoomTypeQuantity}
-                        defaultValue={this.props.defaultRoomType}
-                        />
-                        <RoomQuantitySelect
-                        onChange={this.props.handleRoomTypeQuantity}
-                        defaultValue={this.props.defaultRoomQuantity}
-                        />
-                </Container>
+</Menu.Item>
+<Menu.Item>
+    <Container>
+    <br></br>
+<Button
+primary
+icon
+            onClick={this.props.handleSearch}
+            labelPosition='left'
+        >
 
-                </Menu.Item>
-                <Menu.Item>
-                    <Container>
-                    <br></br>
-                <Button
-                primary
-                icon
-                            onClick={this.props.handleSearch}
-                            labelPosition='left'
-                        >
+                 Search
+                 <Icon name='search' />
+        </Button>
+    </Container>
 
-                                 Search
-                                 <Icon name='search' />
-                        </Button>
-                    </Container>
+</Menu.Item>
+</Menu>
+    </Grid.Row>
+</Grid>
 
-                </Menu.Item>
-            </Menu>
+
 
         );
     }

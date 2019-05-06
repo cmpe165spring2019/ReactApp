@@ -54,7 +54,9 @@ const sortOptions = [
 
 const SearchFilter = (props) => (
     <div>
-        <Menu compact style={{position: "relative", left: "20%"}} secondary>
+        <Grid>
+            <Grid.Row>
+            <Menu compact style={{position: "relative", left: "20%"}} secondary>
             <Menu.Item>
                 <Container fluid>
                 <div>
@@ -96,6 +98,9 @@ const SearchFilter = (props) => (
                 </Container>
             </Menu.Item>
         </Menu>
+            </Grid.Row>
+        </Grid>
+        
     </div>
 )
 

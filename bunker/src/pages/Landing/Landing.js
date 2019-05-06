@@ -1,16 +1,14 @@
 import React from 'react';
 import Background from '../../images/LandingBackground.jpg';
-import {Form, Select,Dropdown, Container} from 'semantic-ui-react';
-import RoomTypeSelect from '../../commonComponents/RoomTypeSelect';
-import RoomQuantitySelect from '../../commonComponents/RoomQuantitySelect';
+import {Form, Select,Dropdown, Image, Segment} from 'semantic-ui-react';
 import CheckInOutCalendar from '../../commonComponents/CheckInOutCalendar'
 import {withFirebase} from '../../server/Firebase' ;
 
 
 import * as ROUTES from '../../constants/routes';
-import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import * as moment from "moment";
-import { DateInput } from "semantic-ui-calendar-react";
+import BunkerImage from '../../images/bunker.png';
+
 
 
 const today=moment().format('MM-DD-YYYY');
@@ -132,11 +130,14 @@ class Landing extends React.Component{
         return(
   <div style={backgroundStyle}>
       <div style={bunkerStyle}>
-          {/*<img src={BunkerImage} width="300" height="300" />*/}
       </div>
       <div style={boxStyle}>
+      <div style={image}>
+      <Image src={BunkerImage} circular wrapped size="medium" centered></Image>
+      </div>
           <div style={introDiv}>
-              <h1 style={introD}>{displayTitle}</h1>
+
+              <h1>{displayTitle}</h1>
           </div>
           <Form>
               <div style={Place}>
@@ -186,7 +187,15 @@ class Landing extends React.Component{
                   </p>
               </div>
           </Form>
+
+
+
+          
+
       </div>
+      {/* <Segment attached='bottom'>
+          <Image src={BunkerImage} wrapped size="small" centered></Image>
+          </Segment> */}
   </div>
 );
 }}
@@ -207,7 +216,7 @@ const GuestNum = () => {
 const bunkerStyle = {
     margin: "auto",
     width: "300px",
-    height: "200px",
+    height: "20%",
 };
 const introDiv = {
     margin:"20px auto 0 auto ",
@@ -215,11 +224,11 @@ const introDiv = {
     height: "70px",
     // color: 'white'
 }
-const introD = {
-    width:"360px",
-    height: "70px",
-    fontcolor:"grey",
-}
+// const introD = {
+//     width:"360px",
+//     height: "70px",
+//     fontcolor:"grey",
+// }
 const Place = {
     margin:"0px auto 0 auto ",
     width:"360px",
@@ -246,14 +255,21 @@ const buttonDiv = {
     width:"360px"
 };
 
+const image = {
+        display: "block",
+margin: '30px auto 0 auto',
+        width: "50%"
+      
+}
+
 const boxStyle = {
-    margin: "0 auto 50px auto",
+    margin: "15px auto 0px auto",
     // padding-left:'auto'
     // padding-right:'auto'
     border: '5px solid white',
     borderRadius:"5px",
     width: '500px',
-    height: '360px',
+    height: '500px',
     backgroundColor: 'white',
     backgroundRepeat:'',
     position:'center',
