@@ -41,6 +41,7 @@ const CheckOut = props => {
 			rewardPoints,
 		);
 		setIsSuccess(payment.paid);
+		setIsError(false);
 	};
 
 	const onCancel = data => {
@@ -50,6 +51,7 @@ const CheckOut = props => {
 	const onError = paypalError => {
 		console.log(paypalError);
 		setError(paypalError);
+		setIsSuccess(false);
 		setIsError(true);
 	};
 
