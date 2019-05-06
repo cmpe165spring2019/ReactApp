@@ -6,7 +6,7 @@ import React, { Component } from "react";
 import SearchBar from "./components/SearchBar";
 import ListingBase from "./components/ListingBase";
 import FilterSort from "./components/FilterSort";
-import { Divider, Grid, Segment } from "semantic-ui-react";
+import { Divider, Grid, Container, Segment } from "semantic-ui-react";
 import * as moment from "moment";
 import Maps from "./components/Maps";
 import './sticky.css'
@@ -40,6 +40,7 @@ class HomePage extends Component {
         maxPrice: 1000,
         rating: 0
       },
+      defaultLocationValue: "",
       sort: "ratingHL"
     };
   }
@@ -50,47 +51,15 @@ class HomePage extends Component {
         //set initial values of checkIn/Out calendar
         const today=moment().format('MM-DD-YYYY');
         const aWeekFromToday = moment().add(5, 'days').format('MM-DD-YYYY');
-        let dateRangeArray = [];
-        let location = '';
 
-        //Check if location exists and set
-        if(typeof this.props.location.state !== 'undefined'){
-            location = this.props.location.state.location;
-        }
-
-        //See if date range exists and then set
-        if(typeof this.props.location.state == 'undefined' || (this.props.location.state.dateIn == '' && this.props.location.state.dateOut == ''))
-            dateRangeArray.push(today, aWeekFromToday);
-        else if(this.props.location.state.dateIn !== '' && this.props.location.state.dateOut == ''){
-            let parts=this.props.location.state.dateIn.split("-");
-            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
-            let datePlaceHolder=moment(dt).add(3,'days').format('MM-DD-YYYY');
-            dateRangeArray.push(this.props.location.state.dateIn, datePlaceHolder);
-        }
-        else if(this.props.location.state.dateIn == '' && this.props.location.state.dateOut !== ''){
-            let parts=this.props.location.state.dateOut.split("-");
-            let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
-            let datePlaceHolder=moment(dt).add(-3,'days').format('MM-DD-YYYY');
-            dateRangeArray.push(datePlaceHolder, this.props.location.state.dateOut);
-        }
-        else{
-            dateRangeArray.push(this.props.location.state.dateIn, this.props.location.state.dateOut);
-
-        }
-
-        const dateRange = dateRangeArray.join(" - ");
+        const historyState = this.props.location.state || {};
 
         this.setState({
-            datesRange: dateRange,
-            location: location
+            datesRange: historyState.datesRange || (today + " - " + aWeekFromToday),
         });
 
-        // this.setState({loading: true});
-
-        //get the search location options from firebase, set locationOptions
-        this._asyncRequest = this.props.firebase.getCities()
+        this.props.firebase.getCities()
             .then(locationData => {
-                this._asyncRequest = null;
                 locationData.sort((a,b)=>{
                     if(a.data.city.toLowerCase() > b.data.city.toLowerCase()){
                         return 1
@@ -112,31 +81,37 @@ class HomePage extends Component {
                 this.setState({locationOptions: locationOptions});
             });
 
-
-
-        //get all the hotels from firebase, set allHotels
         this.props.firebase.getAllHotels()
             .then(result => {
-                this._asyncRequest = null;
                 this.setState({
                         allHotels: result,
                         searchedSortedHotels: result,
-                        filteredHotels: result
+                        filteredHotels: result,
                     },
                     ()=>{
                         this.handleSearch();
                     });
             });
 
-
-  }
-
-  componentDidUpdate(prevState) {
-    console.log(this.state);
-    // console.log("allHotels: " + util.inspect(this.state.allHotels));
-    // console.log("searchedHotels: " + util.inspect(this.state.searchedHotels));
-    // console.log("filteredHotels: " + util.inspect(this.state.filteredHotels));
-  }
+      if(historyState.locationID){
+        console.log(1);
+        this.props.firebase.locationRef(historyState.locationID).then(
+          snapshot =>{
+            const location = {id: snapshot.id, data: snapshot.data()};
+            this.props.firebase.getLocationHotel(location).then(
+              result => {
+                console.log(result);
+                this.setState({
+                  searchedSortedHotels: result,
+                  filteredHotels: result,
+                  defaultLocationValue: location,
+                })
+              }
+            )
+          }
+        )
+      }
+    }
 
   handleCheckInOut = (event, { name, value }) => {
     //   console.log("name: " + name + " value: " + value);
@@ -418,6 +393,7 @@ class HomePage extends Component {
           locationOptions={this.state.locationOptions}
           defaultRoomType={this.state.search.roomType}
           defaultRoomQuantity={this.state.search.roomQuantity}
+          defaultLocationValue={this.state.defaultLocationValue}
           handleLocation={this.handleLocation.bind(this)}
           handleCheckInOut={this.handleCheckInOut.bind(this)}
           handleRoomTypeQuantity={this.handleRoomTypeQuantity.bind(this)}
@@ -436,10 +412,10 @@ class HomePage extends Component {
           minPrice={this.state.filter.minPrice}
         />
 
-      <Segment>
+      <Segment padded='very'>
           <Grid columns={2}>
             <Grid.Row>
-            <Grid.Column width={10}>
+            <Grid.Column width={9}>
               <ListingBase
                 hotels={this.state.filteredHotels}
                 datesRange={this.state.datesRange}
@@ -449,20 +425,20 @@ class HomePage extends Component {
             </Grid.Column>
             <Grid.Column width={6}>
               <div className="sticky">
-              <Segment compact
+              <Container compact
                        style={{
                          overflow: 'hidden',
                          height: '100vh',
                          width: '100%'}}>
                 <Maps hotels={this.state.filteredHotels} homestate={this.state}/>
-              </Segment>
+              </Container>
               </div>
             </Grid.Column>
             </Grid.Row>
           </Grid>
         </Segment>
       </div>
-    );
+    )
   }
 }
 

@@ -1,7 +1,10 @@
 import React from 'react';
 import Background from '../../images/LandingBackground.jpg';
-// import BunkerImage from '../../../public/bunkertransparent.png';
-    import {Form, Select} from 'semantic-ui-react';
+import {Form, Select,Dropdown, Container} from 'semantic-ui-react';
+import RoomTypeSelect from '../../commonComponents/RoomTypeSelect';
+import RoomQuantitySelect from '../../commonComponents/RoomQuantitySelect';
+import CheckInOutCalendar from '../../commonComponents/CheckInOutCalendar'
+import {withFirebase} from '../../server/Firebase' ;
 
 
 import * as ROUTES from '../../constants/routes';
@@ -11,16 +14,19 @@ import { DateInput } from "semantic-ui-calendar-react";
 
 
 const today=moment().format('MM-DD-YYYY');
-const tommorrow=moment().add(1,'days').format('MM-DD-YYYY');
+const fivedayfromtoday=moment().add(5,'days').format('MM-DD-YYYY');
 
 class Landing extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            dateIn:'',
-            dateOut:'',
-            maxCheckIn: '',
-            minCheckout:tommorrow,
+            location: {},
+            roomType:'',
+            roomQuantity: 0,
+            datesRange: '',
+            locationOptions: '',
+
+
             i : 0,
             maintxt :'Decentralized Certificates on the Ethereum Blockchain',
             speed : 100,
@@ -37,61 +43,75 @@ class Landing extends React.Component{
         }
 
     }
-    handleCheckInDate=(event,{name,value})=>{
+    componentDidMount(){
+      this.setState({
+        roomType: 'single',
+        roomQuantity: 1,
+        datesRange: today + " - " + fivedayfromtoday
+      })
 
-        let parts=value.split("-");
-        let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
+      this.props.firebase.getCities().then(locationData => {
+      	locationData.sort((a, b) => {
+      		if (a.data.city.toLowerCase() > b.data.city.toLowerCase()) {
+      			return 1;
+      		} else {
+      			return -1;
+      		}
+      	});
 
-        let date=moment(dt).add(1,'days').format('MM-DD-YYYY');
-        console.log(date);
-        if(this.state.hasOwnProperty(name)){
-            console.log("good1")
-            this.setState({[name]:value,minCheckout:date});
-        }
+      	const locationOptions = locationData.map(location => ({
+      		key: location.data.city,
+      		text: `${location.data.city} , ${location.data.state}, ${
+      			location.data.country
+      		}`,
+      		value: location
+      	}));
+
+      	this.setState({locationOptions: locationOptions});
+      });
+
+      this.timeout = setInterval(() => {
+          if (this.state.i < this.state.maintxt.length) {
+              let newI = this.state.i+1;
+              this.setState({ i: newI });
+          }
+          //     else{
+          //         console.log("eh");
+          //           this.setState({i:0});
+          // }
+      }, 50);
+      this.timeout = setInterval(() => {
+          if(this.state.j < this.state.tmpTitle.length){
+              let newJ = this.state.j+1;
+              this.setState({ j: newJ });
+          }
+          //     else{
+          //         console.log("eh");
+          //           this.setState({i:0});
+          // }
+      }, 65);
+
     }
-    handleCheckOutDate=(event,{name,value})=>{
-        console.log("good2");
-        let parts=value.split("-");
-        let dt=new Date(parseInt(parts[2]),parseInt(parts[0]-1),parseInt(parts[1]));
-        let date=moment(dt).subtract(1,'days').format('MM-DD-YYYY');
-        if(this.state.hasOwnProperty(name)){
-            console.log("good3");
-            this.setState({[name]:value,maxCheckIn:date});
-        }
+
+    onChange = (event, {name, value}) =>{
+      this.setState({[name]: value})
     }
 
     onClick = () => {
-        // this.props.firebase.hotelFilter(this.state.location)
-    // .then( (hotels) =>{
+        const {location, roomType, roomQuantity, datesRange} = this.state;
+        const locationID = location.id;
+
         this.props.history.push({
             pathname: ROUTES.HOME,
-            state: {...this.state}
+            state: {
+              locationID,
+              roomType,
+              roomQuantity,
+              datesRange,
+            }
         })
-    // });
     }
 
-    componentDidMount() {
-        this.timeout = setInterval(() => {
-            if (this.state.i < this.state.maintxt.length) {
-                let newI = this.state.i+1;
-                this.setState({ i: newI });
-            }
-            //     else{
-            //         console.log("eh");
-            //           this.setState({i:0});
-            // }
-        }, 50);
-        this.timeout = setInterval(() => {
-            if(this.state.j < this.state.tmpTitle.length){
-                let newJ = this.state.j+1;
-                this.setState({ j: newJ });
-            }
-            //     else{
-            //         console.log("eh");
-            //           this.setState({i:0});
-            // }
-        }, 65);
-    }
     componentWillUnmount() {
         clearInterval(this.timeout);
     }
@@ -122,33 +142,38 @@ class Landing extends React.Component{
               <div style={Place}>
                   <Form.Field>
                       <label> WHERE</label>
-                      <input placeholder="Anywhere" onChange={(event) => {this.setState({location: event.target.value}); console.log(this.state.location);}} />
+                      <Dropdown
+                          search selection
+                                      name='location'
+                                      options={this.state.locationOptions}
+                                      placeholder="City, Adress, Zip code..."
+                                      onChange={this.onChange}
+                                      onSearchChange={this.onChange}
+                                      onLabelClick={this.onChange}
+                              />
                   </Form.Field>
               </div>
 
               <div style={InOutDiv}>
-                  <div style={CheckIn}>
-                      {/*<Form.Field size = "medium">*/}
-                          {/*<label>CHECK IN</label>*/}
-                          {/*<input placeholder="Check In Date" />*/}
-                      {/*</Form.Field>*/}
-                      <div>Check-In</div><DateInput name="dateIn"  minDate={today} maxDate={this.state.maxCheckIn} dateFormat="MM-DD-YYYY" onChange={this.handleCheckInDate} value={this.state.dateIn} icon="bullhorn" iconPosition="left" placeholder="MM-DD-YYYY"/>
-                  </div>
-                  <div style={CheckOut}>
-                      <div>Check-Out</div>
-                      <DateInput name="dateOut"  minDate={this.state.minCheckout} dateFormat="MM-DD-YYYY" onChange={this.handleCheckOutDate} value={this.state.dateOut} icon="paper plane" iconPosition="left" placeholder="MM-DD-YYYY"/>
-                      {/*<Form.Field size = "medium">*/}
-                          {/*<label>CHECK OUT</label>*/}
-                          {/*<input placeholder="Check Out Date" type="text"/>*/}
-                      {/*</Form.Field >*/}
-                  </div>
+                  <div>Check In/Out</div>
+                  <CheckInOutCalendar
+                  onChange={this.onChange}
+                  value={this.state.datesRange}
+                  />
                 </div>
 
               <div style={Guests}>
                   <Form.Field size = "medium">
-                      <label>GUESTS</label>
-                      {/*<input placeholder="Guests" />*/}
-                      <GuestNum />
+                      <Container fluid>
+                      <div>Room Type/Quantity:</div>
+                      <RoomTypeSelect
+                      defaultValue={'single'}
+                      onChange={this.onChange}
+                      />
+                      <RoomQuantitySelect
+                      defaultValue={1}
+                      onChange={this.onChange}
+                      /></Container>
                   </Form.Field>
               </div>
               <div style={buttonDiv}>
@@ -239,4 +264,4 @@ const backgroundStyle = {
 
 };
 
-export default Landing;
+export default withFirebase(Landing);
