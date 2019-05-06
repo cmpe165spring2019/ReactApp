@@ -3,6 +3,7 @@ import {Modal, Button, Message, Image, Segment, Grid} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import CheckOutForm from "./CheckOutForm";
 import PayPalButton from "../../../server/Payment/PayPalButton";
+import semanticcss from "semantic-ui-css/semantic.min.css";
 
 const CheckOut = props => {
 	const user = JSON.parse(localStorage.getItem("authUser"));
@@ -56,6 +57,7 @@ const CheckOut = props => {
 		<Modal
 			centered={true}
 			size="small"
+            role="dialog"
 			trigger={
 				<Button
 					color="blue"
