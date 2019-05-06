@@ -219,6 +219,19 @@ class HotelPage extends Component {
                   </Grid.Column>
                 </Grid.Row>
                 <Grid.Row />
+                <Grid.Row>
+            <Segment
+              compact
+              style={{
+                overflow: "hidden",
+                margin: "auto",
+                height: "55vh",
+                width: "75vh"
+              }}
+            >
+              <MapsHotel name={name} address={address} />
+            </Segment>
+          </Grid.Row>
               </Grid>
             </Segment>
           </Grid.Column>
@@ -271,19 +284,6 @@ class HotelPage extends Component {
               </Container>
             </Segment>
           </Grid.Column>
-          <Grid.Row>
-            <Segment
-              compact
-              style={{
-                overflow: "hidden",
-                margin: "auto",
-                height: "55vh",
-                width: "75vh"
-              }}
-            >
-              <MapsHotel name={name} address={address} />
-            </Segment>
-          </Grid.Row>
         </Grid.Row>
       </Grid>
     );
