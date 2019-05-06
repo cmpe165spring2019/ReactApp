@@ -112,7 +112,6 @@ class HomePage extends Component {
                     });
             });
 
-
     }
 
   handleCheckInOut = (event, { name, value }) => {
@@ -407,6 +406,7 @@ class HomePage extends Component {
           defaultLocation={this.state.search.passedLocation && this.state.search.location}
           defaultRoomType={this.state.search.roomType}
           defaultRoomQuantity={this.state.search.roomQuantity}
+          defaultLocationValue={this.state.defaultLocationValue}
           handleLocation={this.handleLocation.bind(this)}
           handleCheckInOut={this.handleCheckInOut.bind(this)}
           handleRoomTypeQuantity={this.handleRoomTypeQuantity.bind(this)}

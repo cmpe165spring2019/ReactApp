@@ -95,49 +95,7 @@ const SearchFilter = (props) => (
                         onChange={props.handleSort} />
                 </Container>
             </Menu.Item>
-
         </Menu>
-
-
-    {/* <Grid centered>
-        <Grid.Row>
-            <Grid.Column width={3}>
-            <div>
-                        Price: ${props.minPrice} to ${Math.round(props.price)}
-                    </div>
-                    <Slider
-                    name="slider"
-                    axis="x"
-                    x={props.x}
-                    onChange={props.handleSlider}>
-                    </Slider>
-            </Grid.Column>
-            <Grid.Column width={2}>
-            <div>
-                        Rating:
-                    </div>
-                    <Select compact
-                        name="rating"
-                        placeholder=''
-                        options={ratingOptions}
-                        defaultValue={props.defaultRating}
-                        onChange={props.handleRating} />
-            </Grid.Column>
-            <Grid.Column width={2}>
-            <div>
-                        Sort By:
-                    </div>
-                        <Select
-                        name="sort"
-                        defaultValue={props.defaultSort}
-                        placeholder=''
-                        options={sortOptions}
-                        onChange={props.handleSort} />
-            </Grid.Column>
-            <Grid.Column>
-            </Grid.Column>
-        </Grid.Row>
-    </Grid>    */}
     </div>
 )
 
