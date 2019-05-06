@@ -1,6 +1,5 @@
 import React from 'react';
 import Background from '../../images/LandingBackground.jpg';
-import BunkerImage from '../../images/bunkertransparent.png';
 import {Form, Select,Dropdown, Container} from 'semantic-ui-react';
 import RoomTypeSelect from '../../commonComponents/RoomTypeSelect';
 import RoomQuantitySelect from '../../commonComponents/RoomQuantitySelect';
@@ -27,7 +26,22 @@ class Landing extends React.Component{
             datesRange: '',
             locationOptions: '',
 
+
+            i : 0,
+            maintxt :'Decentralized Certificates on the Ethereum Blockchain',
+            speed : 100,
+            displaytxt: '',
+            tmpTitle: 'Start your trip with Bunker!   ',
+            fullTitle: 'Start your trip with Bunker!',
+            j: 0
+
         }
+        const spinner = document.getElementById('spinner');
+
+        if (spinner && !spinner.hasAttribute('hidden')) {
+            spinner.setAttribute('hidden', 'true');
+        }
+
     }
     componentDidMount(){
       this.setState({
@@ -77,15 +91,53 @@ class Landing extends React.Component{
         })
     }
 
+    componentDidMount() {
+        this.timeout = setInterval(() => {
+            if (this.state.i < this.state.maintxt.length) {
+                let newI = this.state.i+1;
+                this.setState({ i: newI });
+            }
+            //     else{
+            //         console.log("eh");
+            //           this.setState({i:0});
+            // }
+        }, 50);
+        this.timeout = setInterval(() => {
+            if(this.state.j < this.state.tmpTitle.length){
+                let newJ = this.state.j+1;
+                this.setState({ j: newJ });
+            }
+            //     else{
+            //         console.log("eh");
+            //           this.setState({i:0});
+            // }
+        }, 65);
+    }
+    componentWillUnmount() {
+        clearInterval(this.timeout);
+    }
+
+    goTo(event){
+        var destination = event.target.value;
+        this.props.history.push(`/${destination}`);
+    }
+
     render() {
+        let displaytext = this.state.maintxt.substring(0,this.state.i);
+        let displayTitle ='';
+        if(this.state.j >= this.state.tmpTitle.length){
+            displayTitle = this.state.fullTitle;
+        }else{
+            displayTitle = this.state.tmpTitle.substring(0,this.state.j);
+        }
         return(
   <div style={backgroundStyle}>
       <div style={bunkerStyle}>
-          <img src={BunkerImage} width="300" height="300" />
+          {/*<img src={BunkerImage} width="300" height="300" />*/}
       </div>
       <div style={boxStyle}>
           <div style={introDiv}>
-              <h1 style={introD}>Start Your Wonderful Trip With Bunker</h1>
+              <h1 style={introD}>{displayTitle}</h1>
           </div>
           <Form>
               <div style={Place}>
@@ -150,12 +202,13 @@ const GuestNum = () => {
 const bunkerStyle = {
     margin: "auto",
     width: "300px",
-    height: "300px",
+    height: "200px",
 };
 const introDiv = {
     margin:"20px auto 0 auto ",
     width:"360px",
     height: "70px",
+    // color: 'white'
 }
 const introD = {
     width:"360px",
@@ -198,16 +251,18 @@ const boxStyle = {
     height: '429px',
     backgroundColor: 'white',
     backgroundRepeat:'',
-    position:'center'
+    position:'center',
+    opacity: '0.95'
 };
 
 const backgroundStyle = {
     // width: "100%",
-    // height: "100%",
+    height: "100vh",
     backgroundImage: `url(${Background})`,
     backgroundRepeat: "null",
     backgroundSize: 'cover',
     overflow: 'hidden',
+
 };
 
 export default withFirebase(Landing);
