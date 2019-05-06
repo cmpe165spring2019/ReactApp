@@ -1,7 +1,7 @@
 import React from 'react';
 import Background from '../../images/LandingBackground.jpg';
-import BunkerImage from '../../images/bunkertransparent.png';
-import {Form, Select} from 'semantic-ui-react';
+// import BunkerImage from '../../../public/bunkertransparent.png';
+    import {Form, Select} from 'semantic-ui-react';
 
 
 import * as ROUTES from '../../constants/routes';
