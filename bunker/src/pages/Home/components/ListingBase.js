@@ -31,7 +31,7 @@ export default class ListingBase extends Component {
 
     return (
       <div>
-        <Grid stackable padded="vertically" columns={3}>
+        <Grid stackable padded="vertically" columns={3} style={{height: '70%'}}>
           <Grid.Row>
             {
               this.props.hotels.map(hotel => {
