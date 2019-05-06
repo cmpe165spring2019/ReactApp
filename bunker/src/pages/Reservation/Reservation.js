@@ -3,7 +3,7 @@ import {compose} from "recompose";
 import {withFirebase} from "../../server/Firebase";
 import {withRouter} from "react-router-dom";
 import {Link} from "react-router-dom";
-import {AuthUserContext} from "../../server/Session";
+import {AuthUserContext, withAuthorization} from "../../server/Session";
 import * as ROUTES from "../../constants/routes";
 
 import _ from "lodash";
@@ -144,8 +144,8 @@ class Reservation extends Component {
 		const {reservations, isLoading, isEmpty, isError, user} = this.state;
 		return (
 			<div>
-				{ 
-					isEmpty === true ? 
+				{
+					isEmpty === true ?
 					(
 						<Segment placeholder padded="very">
 							<Header as="h2" icon textAlign="center">
@@ -156,14 +156,14 @@ class Reservation extends Component {
 								<Button primary>Book a Hotel</Button>
 							</Link>
 						</Segment>
-					) 
-					: 
+					)
+					:
 					(
 						<Segment padded="very">
 							<Grid centered columns={2}>
 								<Grid.Column width={12}>
 
-					
+
 									<Loader active={isLoading} inline="centered" size="large" />
 									<Header as='h2'>
 										Welcome, {user.username}!
@@ -206,7 +206,7 @@ class Reservation extends Component {
 																{hotel.data.address.street}, {hotel.data.address.city}, {hotel.data.address.state}, {hotel.data.address.country}
 																<Header as='h4'>
 																	<Icon name="calendar alternate outline" size="large" />
-																	Date Booked: 
+																	Date Booked:
 																</Header>
 																{startDate.toDateString()} - {endDate.toDateString()}
 																<Header as='h4'>
@@ -246,9 +246,9 @@ class Reservation extends Component {
 						</Segment>
 					)
 				}
-													
+
 				{
-					isError ? 
+					isError ?
 					(
 						<Message floating negative hidden={!isError}>
 							<Message.Header>We could't load that content</Message.Header>
@@ -260,9 +260,13 @@ class Reservation extends Component {
 		);
 	}
 }
+const condition = authUser =>
+  authUser;
+
 const Reservations = compose(
 	withRouter,
-	withFirebase
+	withFirebase,
+	withAuthorization(condition),
 )(Reservation);
 
 export default ReservationPage;

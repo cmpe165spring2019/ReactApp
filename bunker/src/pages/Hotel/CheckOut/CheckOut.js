@@ -4,9 +4,10 @@ import {withFirebase} from "../../../server/Firebase";
 import CheckOutForm from "./CheckOutForm";
 import PayPalButton from "../../../server/Payment/PayPalButton";
 import semanticcss from "semantic-ui-css/semantic.min.css";
+import {withAuthentication} from "../../../server/Session";
 
 const CheckOut = props => {
-	const user = JSON.parse(localStorage.getItem("authUser"));
+	const user = JSON.parse(localStorage.getItem("authUser")) || null;
 	const [isError, setIsError] = React.useState(false);
 	const [isUseReward, setIsUseReward] = React.useState(false);
 	const [error, setError] = React.useState(new Error('null'));
@@ -14,14 +15,15 @@ const CheckOut = props => {
 	const [rewardPoints, setRewardPoints] = React.useState(0);
 
 	React.useEffect( () => {
-		const subscribe = props.firebase.subscribeUserReward(user.uid, reward_points => {
+
+		if(user)
+		{const subscribe = props.firebase.subscribeUserReward(user.uid, reward_points => {
 			setRewardPoints(reward_points);
 
-		});
-
-		return () => {
-			subscribe();
-		}
+			return () => {
+				subscribe();
+			}
+		});}
 	}, [rewardPoints]);
 
 	const handleUseReward = () => {
@@ -65,6 +67,7 @@ const CheckOut = props => {
 					color="blue"
 					size="small"
 					width="70px"
+					disabled={props.user || true}
 				>
 					Book now
 				</Button>
@@ -101,7 +104,7 @@ const CheckOut = props => {
 				/>
 							</Grid.Column>
 							<Grid.Column >
-						<PayPalButton
+						{user ? (<PayPalButton
 					new_end={reservation.end_date}
 					new_start={reservation.start_date}
 					user_id={user.uid}
@@ -111,7 +114,7 @@ const CheckOut = props => {
 					onSuccess={onSuccess}
 					onError={onError}
 					onCancel={onCancel}
-				/>
+				/>) : <div/>}
 						</Grid.Column>
 
 						</Grid.Row>
@@ -136,4 +139,4 @@ const CheckOut = props => {
 	);
 };
 
-export default withFirebase(CheckOut);
+export default withFirebase(withAuthentication(CheckOut));
