@@ -236,7 +236,7 @@ class HomePage extends Component {
           }
         },
         () => {
-          console.log("post-search sort: " + this.state.sort);
+          this.handleFilter();
         }
       );
     }
@@ -351,15 +351,15 @@ class HomePage extends Component {
           let filteredHotels = this.state.filteredHotels;
 
           //filter by rating
-          if(type==='rating'){
+          // if(type==='rating'){
               filteredHotels = searchedSortedHotels.filter(
                   hotel => hotel.data.rating >= rating
               );
-          }
+          // }
 
           //filter by price
-          else if(type==='price'){
-              filteredHotels = searchedSortedHotels.filter(
+          // else if(type==='price'){
+              filteredHotels = filteredHotels.filter(
                   hotel => {
                       const roomTypeData = hotel.data.room_types.filter(roomType=> roomType.type === this.state.search.roomType);
                       const roomPrice = roomTypeData[0].price;
@@ -369,15 +369,17 @@ class HomePage extends Component {
                       );
                   }
               );
-          }
+          // }
 
-          else{
-              console.log('filtering both');
-          }
+          // else{
+          //     console.log('filtering both');
+          // }
 
           this.sortHotels(filteredHotels, this.state.sort)
+          console.log(filteredHotels);
 
           if(filteredHotels!==this.state.filteredHotels){
+            console.log('setting state');
               this.setState({
                   filteredHotels: filteredHotels
 
