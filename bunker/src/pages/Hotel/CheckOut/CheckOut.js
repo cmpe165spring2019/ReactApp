@@ -3,17 +3,16 @@ import {Modal, Button, Message, Image, Segment, Grid} from "semantic-ui-react";
 import {withFirebase} from "../../../server/Firebase";
 import CheckOutForm from "./CheckOutForm";
 import PayPalButton from "../../../server/Payment/PayPalButton";
-import semanticcss from "semantic-ui-css/semantic.min.css";
 import {withAuthentication} from "../../../server/Session";
 
 const CheckOut = props => {
-	const user = JSON.parse(localStorage.getItem("authUser")) || null;
+
 	const [isError, setIsError] = React.useState(false);
 	const [isUseReward, setIsUseReward] = React.useState(false);
 	const [error, setError] = React.useState(new Error('null'));
 	const [isSuccess, setIsSuccess] = React.useState(false);
 	const [rewardPoints, setRewardPoints] = React.useState(0);
-
+	const user = JSON.parse(localStorage.getItem('authUser'));
 	React.useEffect( () => {
 
 		if(user)
@@ -67,7 +66,7 @@ const CheckOut = props => {
 					color="blue"
 					size="small"
 					width="70px"
-					disabled={props.user || true}
+					disabled={user ? false : true}
 				>
 					Book now
 				</Button>
