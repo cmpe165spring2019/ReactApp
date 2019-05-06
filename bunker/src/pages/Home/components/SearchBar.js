@@ -34,7 +34,6 @@ class SearchBar extends Component {
 
 
     render() {
-        console.log('this.props.defaultRoomQuantity : '  + util.inspect(this.props.defaultRoomQuantity));
         return (
 
 
@@ -53,7 +52,7 @@ class SearchBar extends Component {
                                     onChange={this.props.handleLocation}
                                     onSearchChange={this.props.handleLocation}
                                     onLabelClick={this.props.handleLocation}
-                                    defaultValue={{id: this.props.defaultLocationValue.id}}
+                                    // defaultValue={{id: this.props.defaultLocationValue.id}}
                             />
 
                     </Container>

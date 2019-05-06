@@ -45,6 +45,9 @@ class HomePage extends Component {
     };
   }
 
+  componentDidUpdate() {
+    console.log(this.state);
+  }
 
     componentDidMount() {
 
@@ -376,10 +379,8 @@ class HomePage extends Component {
           // }
 
           this.sortHotels(filteredHotels, this.state.sort)
-          console.log(filteredHotels);
 
           if(filteredHotels!==this.state.filteredHotels){
-            console.log('setting state');
               this.setState({
                   filteredHotels: filteredHotels
 

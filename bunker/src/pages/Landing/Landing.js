@@ -163,7 +163,7 @@ class Landing extends React.Component{
                 </div>
 
               <div style={Guests}>
-                  <Form.Field size = "medium">
+                  {/* <Form.Field size = "medium">
                       <Container fluid>
                       <div>Room Type/Quantity:</div>
                       <RoomTypeSelect
@@ -173,8 +173,9 @@ class Landing extends React.Component{
                       <RoomQuantitySelect
                       defaultValue={1}
                       onChange={this.onChange}
-                      /></Container>
-                  </Form.Field>
+                      />
+                      </Container>
+                  </Form.Field> */}
               </div>
               <div style={buttonDiv}>
                   <Form.Button onClick={this.onClick}>Submit</Form.Button>

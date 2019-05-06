@@ -59,7 +59,7 @@ class Navigation extends Component {
         const NavigationAuth = ({ authUser }) => (
 
             <div>
-                <Menu pointing secondary size="medium">
+                <Menu pointing secondary>
                 <Link to={ROUTES.LANDING}>
                 <Menu.Item
                     name='landing'
