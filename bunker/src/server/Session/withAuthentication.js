@@ -24,7 +24,7 @@ const withAuthentication = Component => {
           this.setState({ authUser: null });
         },
       );
-    }
+}
 
     componentWillUnmount() {
       this.listener();
@@ -33,7 +33,7 @@ const withAuthentication = Component => {
     render() {
       return (
         <AuthUserContext.Provider value={this.state.authUser}>
-          <Component {...this.props} />
+          <Component {...this.props} {...this.state} />
         </AuthUserContext.Provider>
       );
     }
