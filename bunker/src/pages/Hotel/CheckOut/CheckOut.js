@@ -11,24 +11,14 @@ const CheckOut = props => {
 	const [isUseReward, setIsUseReward] = React.useState(false);
 	const [error, setError] = React.useState(new Error('null'));
 	const [isSuccess, setIsSuccess] = React.useState(false);
-	const [rewardPoints, setRewardPoints] = React.useState(0);
-	const user = JSON.parse(localStorage.getItem('authUser'));
+	const [user, setUser] = React.useState({});
 	React.useEffect( () => {
-
-		if(user)
-		{const subscribe = props.firebase.subscribeUserReward(user.uid, reward_points => {
-			setRewardPoints(reward_points);
-
-			return () => {
-				subscribe();
-			}
-		});}
-	}, [rewardPoints]);
+		setUser(props.authUser)
+	}, [props.authUser]);
 
 	const handleUseReward = () => {
 		setIsUseReward(!isUseReward);
 	};
-	console.log(user);
 	const {reservation, hotel, datesRange} = props;
 
 	const onSuccess = payment => {
@@ -39,7 +29,7 @@ const CheckOut = props => {
 			user.uid,
 			reservation_with_payment,
 			isUseReward,
-			rewardPoints,
+			user.reward_points,
 		);
 		setIsSuccess(payment.paid);
 		setIsError(false);
@@ -80,7 +70,7 @@ const CheckOut = props => {
 						hotel={hotel}
 						reservation={reservation}
 						user={user}
-						reward_points={rewardPoints}
+						reward_points={user.reward_points}
 						isUseReward={isUseReward}
 					/>
 				</Modal.Description>
@@ -94,16 +84,16 @@ const CheckOut = props => {
 					content={
 						isUseReward
 							? "Reward is used"
-							: `Reward left: ${rewardPoints}`
+							: `Reward left: ${user.reward_points}`
 					}
-					disabled={rewardPoints <= 0}
+					disabled={user.reward_points <= 0}
 					negative={isUseReward}
 					positive={!isUseReward}
 					onClick={handleUseReward}
 				/>
 							</Grid.Column>
 							<Grid.Column >
-						{user ? (<PayPalButton
+						{user.uid ? (<PayPalButton
 					new_end={reservation.end_date}
 					new_start={reservation.start_date}
 					user_id={user.uid}
