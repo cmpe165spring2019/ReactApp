@@ -3,10 +3,10 @@ import {Icon, Segment} from "semantic-ui-react";
 import * as util from 'util';
 
 const CheckOutForm = props => {
-	const {reservation, isUseReward,reward_points,  hotel} = props;
+	const {reservation, isUseReward,user,  hotel} = props;
 
 	const totalPrice = isUseReward
-		? ((reservation.price > reward_points) ? reservation.price - reward_points : 0)
+		? ((reservation.price > user.reward_points) ? reservation.price - user.reward_points : 0)
 		: reservation.price;
 
 	const { name, address } = hotel.data;

@@ -72,10 +72,11 @@ class Firebase {
 
 	onAuthUserListener = (next, fallback) =>
 		this.auth.onAuthStateChanged(authUser => {
+			let subscribe;
 			if (authUser) {
-				this.user(authUser.uid)
-					.get()
-					.then(snapshot => {
+				subscribe = this.user(authUser.uid)
+					.onSnapshot( snapshot => {
+						console.log(1);
 						const dbUser = snapshot.data();
 
 						// default empty roles
@@ -93,7 +94,9 @@ class Firebase {
 						};
 
 						next(authUser);
-					});
+					}
+					)
+
 			} else {
 				fallback();
 			}
